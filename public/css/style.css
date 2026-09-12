@@ -1881,5 +1881,283 @@ body.bw-mode .btn-green {
   background: rgba(16, 185, 129, 0.1) !important;
 }
 
+/* ==========================================================================
+   WHITE MODE (body.bw-mode) CRISP LIGHT THEME STYLES
+   ========================================================================== */
+body.bw-mode {
+  background-color: #f1f5f9 !important;
+  background-image: radial-gradient(circle at 50% 0%, rgba(226, 232, 240, 0.8) 0%, #f1f5f9 100%) !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .header {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.bw-mode .header h1 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .header .subtitle {
+  color: #64748b !important;
+}
+
+body.bw-mode .target-pc-badge {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .target-pc-badge .label {
+  color: #475569 !important;
+}
+
+body.bw-mode .target-pc-badge input {
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .header-clock-badge {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .glass-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.bw-mode .card-header h3,
+body.bw-mode .card-header h2,
+body.bw-mode .section-title-bar h2 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .subtitle,
+body.bw-mode .card-header .subtitle,
+body.bw-mode .section-title-bar p {
+  color: #64748b !important;
+}
+
+body.bw-mode .form-group label {
+  color: #475569 !important;
+}
+
+body.bw-mode input[type="text"],
+body.bw-mode input[type="password"],
+body.bw-mode input[type="number"],
+body.bw-mode select {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode input::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.bw-mode select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Empty State Container in White Mode */
+body.bw-mode .empty-state {
+  background: #ffffff !important;
+  border: 1px dashed #cbd5e1 !important;
+  color: #334155 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.bw-mode .empty-state h4 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .empty-state p {
+  color: #64748b !important;
+}
+
+body.bw-mode .pulse-icon {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #2563eb !important;
+}
+
+/* Configured WAN Cards in White Mode */
+body.bw-mode .wan-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .wan-card-header h4 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .wan-subtitle {
+  color: #64748b !important;
+}
+
+body.bw-mode .stat-box {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .stat-lbl {
+  color: #64748b !important;
+}
+
+body.bw-mode .stat-val {
+  color: #0f172a !important;
+}
+
+body.bw-mode .speedtest-badge-row {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .speed-lbl {
+  color: #64748b !important;
+}
+
+body.bw-mode .speed-val {
+  color: #0f172a !important;
+}
+
+/* Speedtest History Table in White Mode */
+body.bw-mode .history-table th {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+body.bw-mode .history-table td {
+  border-bottom-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+body.bw-mode .history-table td strong {
+  color: #0f172a !important;
+}
+
+body.bw-mode .history-table tr:hover {
+  background: #f8fafc !important;
+}
+
+body.bw-mode .badge-wan {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* System Resources Grid in White Mode */
+body.bw-mode .res-item {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .res-label {
+  color: #64748b !important;
+}
+
+body.bw-mode .res-value {
+  color: #0f172a !important;
+}
+
+/* Buttons in White Mode */
+body.bw-mode .btn-secondary {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+body.bw-mode .btn-secondary:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .btn-icon-only {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .btn-detect-ip {
+  background: #f0fdf4 !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
+}
+
+body.bw-mode .badge {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+body.bw-mode .badge.connected {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+
+/* Speedtest Modal in White Mode */
+body.bw-mode .modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.bw-mode .ookla-top-header {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.bw-mode .ookla-top-header span {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-summary-val {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-ping-row-centered {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .ookla-ping-val-group {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-bottom-details {
+  background: #f8fafc !important;
+  border-top-color: #e2e8f0 !important;
+}
+
+body.bw-mode .ookla-detail-title {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-detail-icon {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.bw-mode #gaugeSpeedNum {
+  color: #0f172a !important;
+}
+
+body.bw-mode .update-version-card {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
 
 

@@ -1155,6 +1155,92 @@ body.bw-mode .btn-icon-only:hover {
   color: #000000 !important;
 }
 
+body.bw-mode #masterResetBtn {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode #masterResetBtn svg {
+  stroke: #0f172a !important;
+}
+
+body.bw-mode .badge {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode #routerStateBadge {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #10b981 !important;
+}
+
+/* Inner Card Containers (Ping Box & System Status) */
+body.bw-mode .ping-stats-row,
+body.bw-mode .res-item {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .speedtest-badge-row {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .speedtest-badge-row .speed-lbl,
+body.bw-mode .stat-lbl,
+body.bw-mode .res-label {
+  color: #64748b !important;
+}
+
+body.bw-mode .res-value {
+  color: #0f172a !important;
+}
+
+/* Speedtest History Table in Light Mode */
+body.bw-mode .table-responsive {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .history-table {
+  color: #0f172a !important;
+}
+
+body.bw-mode .history-table th {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+body.bw-mode .history-table td {
+  color: #0f172a !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.bw-mode .history-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+body.bw-mode .badge-wan {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .time-cell {
+  color: #475569 !important;
+}
+
+body.bw-mode #clearHistoryBtn {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Modals & Ookla Modal in Light Mode */
 body.bw-mode .modal-card {
   background: #ffffff !important;
   border-color: #cbd5e1 !important;
@@ -1178,8 +1264,7 @@ body.bw-mode .ookla-modal-card {
 
 body.bw-mode .ookla-header,
 body.bw-mode .ookla-gauge-box,
-body.bw-mode .ookla-bottom-details,
-body.bw-mode .ookla-result-panel {
+body.bw-mode .ookla-bottom-details {
   background: #f8fafc !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
@@ -1200,28 +1285,47 @@ body.bw-mode .ookla-detail-sub {
   color: #64748b !important;
 }
 
-body.bw-mode table {
-  color: #0f172a !important;
-}
-
-body.bw-mode table th {
+body.bw-mode .ookla-modal-close {
   background: #f1f5f9 !important;
-  color: #334155 !important;
-  border-bottom-color: #cbd5e1 !important;
-}
-
-body.bw-mode table td {
   color: #0f172a !important;
-  border-bottom-color: #e2e8f0 !important;
 }
 
-body.bw-mode table tr:hover td {
-  background: rgba(0, 0, 0, 0.02) !important;
+body.bw-mode .ookla-result-panel,
+body.bw-mode .ookla-result-right {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
-body.bw-mode .badge,
-body.bw-mode .status-badge {
-  color: #0f172a;
+body.bw-mode .survey-title {
+  color: #0f172a !important;
+}
+
+body.bw-mode #surveyIspName {
+  color: #0284c7 !important;
+}
+
+body.bw-mode .survey-btn {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .survey-btn:hover,
+body.bw-mode .survey-btn.selected {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+}
+
+body.bw-mode .survey-labels {
+  color: #64748b !important;
+}
+
+body.bw-mode #stopGaugeTestBtn {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
 /* Green elements stay vibrant green in both modes */
@@ -1230,7 +1334,8 @@ body.bw-mode .text-success,
 body.bw-mode .live-dot,
 body.bw-mode .badge-green,
 body.bw-mode .status-badge.active,
-body.bw-mode .wan-card.active {
+body.bw-mode .wan-card.active,
+body.bw-mode .stat-val.good {
   color: #10b981 !important;
   border-color: rgba(16, 185, 129, 0.4) !important;
 }

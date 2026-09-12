@@ -1465,5 +1465,29 @@ body.bw-mode iframe {
   font-weight: 600;
 }
 
+/* System Update Badge & Button */
+.update-badge-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 2px solid #000000;
+  animation: badgePulse 1.5s infinite alternate;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  100% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+}
+
+#systemUpdateBtn.has-update {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+}
+
 
 

@@ -748,6 +748,91 @@ app.get('/api/detect-speedtest-server', (req, res) => {
   });
 });
 
+// 10. System Version & Update API Endpoints (GitHub Integration)
+app.get('/api/system/version-info', (req, res) => {
+  exec('git log -1 --format="%h|%s|%cd" && git rev-parse --abbrev-ref HEAD', (err, stdout) => {
+    if (err || !stdout) {
+      return res.json({
+        success: true,
+        commit: '3336991',
+        message: 'Initial release v1.0.0',
+        date: new Date().toLocaleDateString(),
+        branch: 'main'
+      });
+    }
+    const lines = stdout.trim().split('\n');
+    const parts = (lines[0] || '').split('|');
+    res.json({
+      success: true,
+      commit: parts[0] || 'v1.0.0',
+      message: parts[1] || 'MikroTik Multi-WAN Console',
+      date: parts[2] || '',
+      branch: lines[1] || 'main'
+    });
+  });
+});
+
+app.get('/api/system/check-update', (req, res) => {
+  exec('git fetch origin main && git log HEAD..origin/main --format="%h|%s|%cd"', { timeout: 15000 }, (err, stdout) => {
+    if (err) {
+      return res.json({
+        success: false,
+        error: err.message || 'Could not fetch updates from GitHub.'
+      });
+    }
+
+    const raw = stdout.trim();
+    if (!raw) {
+      return res.json({
+        success: true,
+        hasUpdate: false,
+        behindCount: 0,
+        unpulledCommits: []
+      });
+    }
+
+    const commitLines = raw.split('\n').filter(l => l.trim().length > 0);
+    const unpulledCommits = commitLines.map(line => {
+      const parts = line.split('|');
+      return {
+        hash: parts[0] || '',
+        message: parts[1] || '',
+        date: parts[2] || ''
+      };
+    });
+
+    res.json({
+      success: true,
+      hasUpdate: unpulledCommits.length > 0,
+      behindCount: unpulledCommits.length,
+      unpulledCommits: unpulledCommits,
+      latestCommit: unpulledCommits[0] || null
+    });
+  });
+});
+
+app.post('/api/system/apply-update', (req, res) => {
+  exec('git fetch origin main && git reset --hard origin/main', { timeout: 30000 }, (err, stdout, stderr) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || 'Failed to pull update from GitHub.'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'System successfully updated to latest GitHub release! Restarting service...'
+    });
+
+    setTimeout(() => {
+      exec('pm2 restart speedtest-dashboard', () => {
+        process.exit(0);
+      });
+    }, 800);
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 MikroTik Multi-WAN Console running on http://localhost:${PORT}`);
 });

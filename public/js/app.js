@@ -1127,3 +1127,169 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// 13. System Update Engine Handler (GitHub Auto-Deployer)
+const systemUpdateBtn = document.getElementById('systemUpdateBtn');
+const systemUpdateModal = document.getElementById('systemUpdateModal');
+const closeUpdateModalBtn = document.getElementById('closeUpdateModalBtn');
+const cancelUpdateModalBtn = document.getElementById('cancelUpdateModalBtn');
+const applyUpdateBtn = document.getElementById('applyUpdateBtn');
+
+const currentVersionBadge = document.getElementById('currentVersionBadge');
+const updateStatusZone = document.getElementById('updateStatusZone');
+const updateBadgeDot = document.getElementById('updateBadgeDot');
+const updateBtnText = document.getElementById('updateBtnText');
+
+function closeSystemUpdateModal() {
+  if (systemUpdateModal) systemUpdateModal.style.display = 'none';
+}
+
+if (closeUpdateModalBtn) closeUpdateModalBtn.addEventListener('click', closeSystemUpdateModal);
+if (cancelUpdateModalBtn) cancelUpdateModalBtn.addEventListener('click', closeSystemUpdateModal);
+
+// Fetch Current Version Info on load
+async function fetchVersionInfo() {
+  try {
+    const res = await fetch('/api/system/version-info');
+    const data = await res.json();
+    if (data.success && currentVersionBadge) {
+      currentVersionBadge.innerText = `${data.branch}@${data.commit}`;
+    }
+  } catch (e) {}
+}
+
+// Check for updates against GitHub repository
+async function checkForUpdates(showModal = false) {
+  if (showModal && systemUpdateModal) {
+    systemUpdateModal.style.display = 'flex';
+  }
+
+  if (updateStatusZone) {
+    updateStatusZone.innerHTML = `
+      <div style="text-align: center; padding: 20px; color: #94a3b8;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">🔄</div>
+        <span>Checking GitHub repository for updates...</span>
+      </div>
+    `;
+  }
+
+  if (applyUpdateBtn) applyUpdateBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/system/check-update');
+    const data = await res.json();
+
+    if (!data.success) {
+      if (updateStatusZone) {
+        updateStatusZone.innerHTML = `
+          <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.85rem;">
+            ⚠️ Could not check GitHub: ${escapeHtml(data.error || 'Network error')}
+          </div>
+        `;
+      }
+      return;
+    }
+
+    if (data.hasUpdate) {
+      // Highlight Header Button with pulsing badge
+      if (updateBadgeDot) updateBadgeDot.style.display = 'block';
+      if (updateBtnText) updateBtnText.innerText = `✨ Update Available (${data.behindCount})`;
+      if (systemUpdateBtn) systemUpdateBtn.classList.add('has-update');
+
+      if (!showModal) {
+        showToast(`✨ ${data.behindCount} new update(s) available on GitHub! Click "Check Update" to apply.`, 'info');
+      }
+
+      if (updateStatusZone) {
+        const commitListHtml = (data.unpulledCommits || []).map(c => `
+          <div style="border-bottom: 1px solid #1e293b; padding: 8px 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <strong style="color: #60a5fa; font-family: var(--font-mono); font-size: 0.82rem;">${escapeHtml(c.hash)}</strong>
+              <span style="font-size: 0.72rem; color: #64748b;">${escapeHtml(c.date)}</span>
+            </div>
+            <div style="font-size: 0.84rem; color: #f1f5f9; margin-top: 2px;">${escapeHtml(c.message)}</div>
+          </div>
+        `).join('');
+
+        updateStatusZone.innerHTML = `
+          <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px; color: #10b981; font-weight: 700; font-size: 0.88rem;">
+            ✨ ${data.behindCount} New Commit Update(s) Ready to Install!
+          </div>
+          <div style="max-height: 180px; overflow-y: auto; padding-right: 6px;">
+            ${commitListHtml}
+          </div>
+        `;
+      }
+
+      if (applyUpdateBtn) applyUpdateBtn.disabled = false;
+    } else {
+      if (updateBadgeDot) updateBadgeDot.style.display = 'none';
+      if (updateBtnText) updateBtnText.innerText = 'Check Update';
+      if (systemUpdateBtn) systemUpdateBtn.classList.remove('has-update');
+
+      if (updateStatusZone) {
+        updateStatusZone.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: #10b981;">
+            <div style="font-size: 2rem; margin-bottom: 6px;">✓</div>
+            <strong style="font-size: 0.95rem; color: #ffffff;">System is up to date!</strong>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">You are running the latest GitHub commit release.</p>
+          </div>
+        `;
+      }
+    }
+  } catch (err) {
+    if (updateStatusZone) {
+      updateStatusZone.innerHTML = `
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.85rem;">
+          ⚠️ Error connecting to server update API: ${escapeHtml(err.message)}
+        </div>
+      `;
+    }
+  }
+}
+
+if (systemUpdateBtn) {
+  systemUpdateBtn.addEventListener('click', () => {
+    checkForUpdates(true);
+  });
+}
+
+if (applyUpdateBtn) {
+  applyUpdateBtn.addEventListener('click', async () => {
+    applyUpdateBtn.disabled = true;
+    applyUpdateBtn.innerHTML = `⏳ Updating from GitHub...`;
+
+    if (updateStatusZone) {
+      updateStatusZone.innerHTML = `
+        <div style="text-align: center; padding: 24px; color: #00f2fe;">
+          <div style="font-size: 2rem; margin-bottom: 8px;">⚙️</div>
+          <strong style="font-size: 0.95rem; color: #ffffff;">Applying GitHub Update (git pull & PM2 restart)...</strong>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px;">Dashboard will automatically refresh in 4 seconds.</p>
+        </div>
+      `;
+    }
+
+    try {
+      const res = await fetch('/api/system/apply-update', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✨ Update applied successfully! Reloading dashboard...', 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 3500);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      applyUpdateBtn.disabled = false;
+      applyUpdateBtn.innerText = '✨ Apply Update Now';
+      showToast(`Update failed: ${err.message}`, 'error');
+    }
+  });
+}
+
+// Initial fetch version info & silent update check on load
+fetchVersionInfo();
+setTimeout(() => {
+  checkForUpdates(false);
+}, 2000);
+

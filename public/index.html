@@ -26,6 +26,10 @@
           <span class="label">TARGET DEVICE:</span>
           <input type="text" id="targetIpInput" value="172.16.10.253" placeholder="172.16.10.253">
         </div>
+        <button id="systemUpdateBtn" class="btn btn-secondary btn-sm" title="Check GitHub System Updates" style="position: relative; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+          <span id="updateIcon">🔄</span> <span id="updateBtnText">Check Update</span>
+          <span id="updateBadgeDot" class="update-badge-dot" style="display: none;"></span>
+        </button>
         <button id="bwToggleBtn" class="btn-icon-only" title="Toggle Black & White / Color Mode">
           <span id="bwToggleIcon">☯</span>
         </button>
@@ -401,9 +405,53 @@
     </div>
   </div>
 
+  <!-- GitHub System Update Modal Overlay -->
+  <div class="modal-overlay" id="systemUpdateModal" style="display: none;">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.3rem;">🚀</span>
+          <div>
+            <h3 style="margin: 0;">System Update Engine</h3>
+            <span class="subtitle" style="font-size: 0.75rem; color: #94a3b8;">GitHub Live Auto-Deployer</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="closeUpdateModalBtn">✕</button>
+      </div>
+
+      <div style="padding: 16px 0;">
+        <div style="background: #090d16; border: 1px solid #1e293b; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">INSTALLED VERSION:</span>
+            <span id="currentVersionBadge" style="font-family: var(--font-mono); font-size: 0.82rem; color: #00f2fe; font-weight: 700; background: rgba(0,242,254,0.1); padding: 3px 8px; border-radius: 6px;">v1.0.0 (3336991)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">GITHUB REPOSITORY:</span>
+            <a href="https://github.com/mamamoblue52/mikrotik-multiwan-console" target="_blank" style="font-size: 0.78rem; color: #60a5fa; text-decoration: none; font-weight: 600;">mamamoblue52/mikrotik-multiwan-console ↗</a>
+          </div>
+        </div>
+
+        <!-- Status / Commit List Zone -->
+        <div id="updateStatusZone">
+          <div style="text-align: center; padding: 20px; color: #94a3b8;">
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">🔄</div>
+            <span>Checking GitHub repository for updates...</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #1e293b; padding-top: 14px;">
+        <button type="button" class="btn btn-secondary" id="cancelUpdateModalBtn">Close</button>
+        <button type="button" class="btn btn-primary" id="applyUpdateBtn" disabled style="background: linear-gradient(135deg, #00f2fe, #10b981); color: #000000; font-weight: 800;">
+          ✨ Apply Update Now
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260912_upload_reset_transition"></script>
+  <script src="js/app.js?v=20260912_system_update_engine"></script>
 </body>
 </html>

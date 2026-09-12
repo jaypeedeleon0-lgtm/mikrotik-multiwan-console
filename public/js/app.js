@@ -1166,7 +1166,11 @@ async function checkForUpdates(showModal = false) {
   if (updateStatusZone) {
     updateStatusZone.innerHTML = `
       <div style="text-align: center; padding: 20px; color: #94a3b8;">
-        <div style="font-size: 1.5rem; margin-bottom: 8px;">🔄</div>
+        <div style="margin-bottom: 12px; display: flex; justify-content: center;">
+          <svg style="width: 24px; height: 24px; animation: spin 1s linear infinite; stroke: #00f2fe;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
         <span>Checking GitHub repository for updates...</span>
       </div>
     `;
@@ -1182,7 +1186,7 @@ async function checkForUpdates(showModal = false) {
       if (updateStatusZone) {
         updateStatusZone.innerHTML = `
           <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.85rem;">
-            ⚠️ Could not check GitHub: ${escapeHtml(data.error || 'Network error')}
+            Could not check GitHub: ${escapeHtml(data.error || 'Network error')}
           </div>
         `;
       }
@@ -1192,11 +1196,11 @@ async function checkForUpdates(showModal = false) {
     if (data.hasUpdate) {
       // Highlight Header Button with pulsing badge
       if (updateBadgeDot) updateBadgeDot.style.display = 'block';
-      if (updateBtnText) updateBtnText.innerText = `✨ Update Available (${data.behindCount})`;
+      if (updateBtnText) updateBtnText.innerText = `Update Available (${data.behindCount})`;
       if (systemUpdateBtn) systemUpdateBtn.classList.add('has-update');
 
       if (!showModal) {
-        showToast(`✨ ${data.behindCount} new update(s) available on GitHub! Click "Check Update" to apply.`, 'info');
+        showToast(`${data.behindCount} new update(s) available on GitHub! Click "Check Update" to apply.`, 'info');
       }
 
       if (updateStatusZone) {
@@ -1211,8 +1215,9 @@ async function checkForUpdates(showModal = false) {
         `).join('');
 
         updateStatusZone.innerHTML = `
-          <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px; color: #10b981; font-weight: 700; font-size: 0.88rem;">
-            ✨ ${data.behindCount} New Commit Update(s) Ready to Install!
+          <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px; color: #10b981; font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            ${data.behindCount} New Commit Update(s) Ready to Install!
           </div>
           <div style="max-height: 180px; overflow-y: auto; padding-right: 6px;">
             ${commitListHtml}
@@ -1229,7 +1234,9 @@ async function checkForUpdates(showModal = false) {
       if (updateStatusZone) {
         updateStatusZone.innerHTML = `
           <div style="text-align: center; padding: 20px; color: #10b981;">
-            <div style="font-size: 2rem; margin-bottom: 6px;">✓</div>
+            <div style="width: 42px; height: 42px; background: rgba(16,185,129,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; color: #10b981;">
+              <svg style="width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.5; fill: none;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
             <strong style="font-size: 0.95rem; color: #ffffff;">System is up to date!</strong>
             <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">You are running the latest GitHub commit release.</p>
           </div>
@@ -1240,7 +1247,7 @@ async function checkForUpdates(showModal = false) {
     if (updateStatusZone) {
       updateStatusZone.innerHTML = `
         <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.85rem;">
-          ⚠️ Error connecting to server update API: ${escapeHtml(err.message)}
+          Error connecting to server update API: ${escapeHtml(err.message)}
         </div>
       `;
     }
@@ -1256,12 +1263,16 @@ if (systemUpdateBtn) {
 if (applyUpdateBtn) {
   applyUpdateBtn.addEventListener('click', async () => {
     applyUpdateBtn.disabled = true;
-    applyUpdateBtn.innerHTML = `⏳ Updating from GitHub...`;
+    applyUpdateBtn.innerHTML = `Updating from GitHub...`;
 
     if (updateStatusZone) {
       updateStatusZone.innerHTML = `
         <div style="text-align: center; padding: 24px; color: #00f2fe;">
-          <div style="font-size: 2rem; margin-bottom: 8px;">⚙️</div>
+          <div style="margin-bottom: 12px; display: flex; justify-content: center;">
+            <svg style="width: 28px; height: 28px; animation: spin 1s linear infinite; stroke: #00f2fe;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
           <strong style="font-size: 0.95rem; color: #ffffff;">Applying GitHub Update (git pull & PM2 restart)...</strong>
           <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px;">Dashboard will automatically refresh in 4 seconds.</p>
         </div>
@@ -1272,7 +1283,7 @@ if (applyUpdateBtn) {
       const res = await fetch('/api/system/apply-update', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        showToast('✨ Update applied successfully! Reloading dashboard...', 'success');
+        showToast('Update applied successfully! Reloading dashboard...', 'success');
         setTimeout(() => {
           window.location.reload();
         }, 3500);
@@ -1281,7 +1292,7 @@ if (applyUpdateBtn) {
       }
     } catch (err) {
       applyUpdateBtn.disabled = false;
-      applyUpdateBtn.innerText = '✨ Apply Update Now';
+      applyUpdateBtn.innerText = 'Apply Update Now';
       showToast(`Update failed: ${err.message}`, 'error');
     }
   });

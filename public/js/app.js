@@ -188,16 +188,17 @@ async function fetchClientIp(force = false) {
   try {
     const res = await fetch('/api/client-ip');
     const data = await res.json();
-    if (data.success && data.clientIp) {
+    const detectedIp = data.detectedIp || data.serverIp || data.clientIp;
+    if (data.success && detectedIp) {
       if (force || !targetIpInput.value || targetIpInput.value === '172.16.10.253') {
-        targetIpInput.value = data.clientIp;
+        targetIpInput.value = detectedIp;
         if (force) {
-          showToast(`Auto-detected Device IP: ${data.clientIp}`, 'info');
+          showToast(`Auto-detected Device IP: ${detectedIp}`, 'info');
         }
       }
     }
   } catch (err) {
-    console.warn('Could not auto-detect client IP:', err);
+    console.warn('Could not auto-detect IP:', err);
   }
 }
 
@@ -218,10 +219,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (result.success && result.hasSaved) {
       const d = result.data;
-      if (d.host) hostInput.value = d.host;
+      if (d.host && d.host !== '20.0.10.1') {
+        hostInput.value = d.host;
+      } else {
+        hostInput.value = '';
+      }
+
       if (d.username) usernameInput.value = d.username;
       if (d.password) passwordInput.value = d.password;
       if (d.port) portInput.value = d.port;
+
       if (d.targetIp && d.targetIp !== '172.16.10.253') {
         targetIpInput.value = d.targetIp;
       } else if (result.clientIp) {
@@ -232,8 +239,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         configuredWans = d.selectedWans;
       }
 
-      // Silent auto-connect without toast popups if host is configured
-      if (d.host) {
+      // Silent auto-connect without toast popups if valid host is configured
+      if (hostInput.value.trim()) {
         isInitialAutoConnect = true;
         connectForm.dispatchEvent(new Event('submit'));
       }

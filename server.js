@@ -63,6 +63,26 @@ app.use(express.static(path.join(__dirname, 'public'), {
 let activeApiConnection = null;
 let currentConfig = null;
 
+const os = require('os');
+
+function getServerIp(req) {
+  if (req && req.headers && req.headers.host) {
+    const hostHeader = req.headers.host.split(':')[0].trim();
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostHeader) && hostHeader !== '127.0.0.1') {
+      return hostHeader;
+    }
+  }
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return getClientIp(req);
+}
+
 async function getRosClient(config) {
   const isSameConfig = currentConfig &&
     currentConfig.host === config.host &&
@@ -85,7 +105,7 @@ async function getRosClient(config) {
     : (config.password || '');
 
   const conn = new RouterOSAPI({
-    host: config.host || '20.0.10.1',
+    host: config.host || '',
     user: config.username || 'admin',
     password: realPassword,
     port: parseInt(config.port, 10) || 8728,
@@ -140,16 +160,17 @@ function getClientIp(req) {
   return ip;
 }
 
-// Client IP Auto Detection API
+// Client / Server IP Auto Detection API
 app.get('/api/client-ip', (req, res) => {
+  const serverIp = getServerIp(req);
   const clientIp = getClientIp(req);
-  res.json({ success: true, clientIp });
+  res.json({ success: true, serverIp, clientIp, detectedIp: serverIp });
 });
 
 // 0. Load Saved Credentials
 app.get('/api/saved-config', (req, res) => {
   try {
-    const detectedIp = getClientIp(req);
+    const detectedIp = getServerIp(req);
     if (fs.existsSync(CONFIG_FILE)) {
       const raw = fs.readFileSync(CONFIG_FILE, 'utf8');
       const savedConfig = JSON.parse(raw);
@@ -158,16 +179,19 @@ app.get('/api/saved-config', (req, res) => {
         ? decryptText(savedConfig.encryptedPassword) 
         : (savedConfig.password || '');
 
+      const host = savedConfig.host === '20.0.10.1' ? '' : (savedConfig.host || '');
+      const targetIp = (savedConfig.targetIp === '172.16.10.253' || !savedConfig.targetIp) ? detectedIp : savedConfig.targetIp;
+
       return res.json({
         success: true,
-        hasSaved: true,
+        hasSaved: !!host,
         clientIp: detectedIp,
         data: {
-          host: savedConfig.host || '',
+          host: host,
           username: savedConfig.username || '',
           password: decryptedPassword,
           port: savedConfig.port || 8728,
-          targetIp: savedConfig.targetIp || detectedIp,
+          targetIp: targetIp,
           selectedWans: savedConfig.selectedWans || []
         }
       });
@@ -228,7 +252,7 @@ app.post('/api/connect', async (req, res) => {
         username,
         encryptedPassword,
         port,
-        targetIp: targetIp || '172.16.10.253'
+        targetIp: targetIp || getServerIp(req)
       };
       fs.writeFileSync(CONFIG_FILE, JSON.stringify(configToSave, null, 2), 'utf8');
     }

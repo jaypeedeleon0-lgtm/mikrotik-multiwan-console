@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MikroTik Multi-WAN Speedtest & Ping Monitor Console</title>
+  <link rel="stylesheet" href="css/style.css?v=20260912_clean_wan_card">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="header">
+      <div class="logo-group">
+        <div class="status-orb" id="connectionStatusOrb"></div>
+        <div>
+          <h1>MIKROTIK <span class="accent-text">MULTI-WAN</span> MANAGER</h1>
+          <p class="subtitle">Dynamic Policy Routing & Live Gateway Health Monitor</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="target-pc-badge">
+          <span class="label">TARGET DEVICE:</span>
+          <input type="text" id="targetIpInput" value="172.16.10.253" placeholder="172.16.10.253">
+        </div>
+        <button id="bwToggleBtn" class="btn-icon-only" title="Toggle Black & White / Color Mode">
+          <span id="bwToggleIcon">☯</span>
+        </button>
+        <button id="masterResetBtn" class="btn btn-danger">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Normal Load Balance Mode
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Left Column: Router Settings & WAN Management -->
+      <aside class="sidebar">
+        <!-- Router Connection Card -->
+        <div class="glass-card connection-card">
+          <div class="card-header">
+            <h3>1. Router Connection</h3>
+            <span class="badge" id="routerStateBadge">Disconnected</span>
+          </div>
+          <form id="connectForm">
+            <div class="form-group">
+              <label>Router IP / Host Address</label>
+              <input type="text" id="hostInput" value="20.0.10.1" required>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="usernameInput" value="admin" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Password">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>API Port (Port 8728)</label>
+              <input type="number" id="portInput" value="8728" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="connectBtn" style="margin-top: 6px;">
+              Connect Router
+            </button>
+          </form>
+        </div>
+
+        <!-- WAN Management Card -->
+        <div class="glass-card wan-config-card">
+          <div class="card-header">
+            <h3>2. WAN Management</h3>
+            <span class="badge" id="configuredWanCountBadge">0 WANs</span>
+          </div>
+
+          <p class="subtitle" style="margin-bottom: 14px;">Add and configure individual WAN interfaces from your MikroTik router.</p>
+          
+          <button type="button" class="btn btn-primary btn-full" id="openAddWanModalBtn" disabled>
+            + Add WAN Interface
+          </button>
+        </div>
+
+        <!-- System Resource Info Card -->
+        <div class="glass-card resource-card">
+          <div class="card-header">
+            <h3>System Status</h3>
+            <span class="live-dot" id="systemLiveDot"></span>
+          </div>
+          <div class="resource-grid">
+            <div class="res-item">
+              <span class="res-label">Router Model</span>
+              <span class="res-value" id="resModel">--</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">RouterOS Version</span>
+              <span class="res-value" id="resVersion">--</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">CPU Load</span>
+              <span class="res-value" id="resCpu">0%</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">System Uptime</span>
+              <span class="res-value" id="resUptime">--</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Configured WAN Speedtest Cards & Live Gateway Health -->
+      <section class="dashboard-body">
+        <div class="section-title-bar">
+          <div>
+            <h2>Configured WAN Cards (<span id="wanCountLabel">0</span>)</h2>
+            <p>Click any WAN card to force target device routing to that ISP instantly.</p>
+          </div>
+        </div>
+
+        <!-- Configured WAN Interface Cards Grid -->
+        <div class="wan-grid" id="wanGrid">
+          <div class="empty-state">
+            <div class="pulse-icon">📡</div>
+            <h4>No WANs Configured</h4>
+            <p>Connect your MikroTik router on the left sidebar, then click <strong>+ Add WAN Interface</strong> to select an interface.</p>
+          </div>
+        </div>
+
+        <!-- Speedtest History Log Section -->
+        <div class="glass-card speedtest-history-section">
+          <div class="card-header">
+            <div>
+              <h3>Speedtest History</h3>
+              <span class="subtitle">WAN Speedtest Metrics Log (Asia/Manila Timezone)</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="clearHistoryBtn">🗑 Clear History</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>WAN Interface</th>
+                  <th>Download</th>
+                  <th>Upload</th>
+                  <th>Latency (Unloaded / Loaded)</th>
+                  <th>Public IP / ISP</th>
+                  <th>Date & Time (Asia/Manila)</th>
+                </tr>
+              </thead>
+              <tbody id="speedtestHistoryBody">
+                <tr class="empty-row">
+                  <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px 10px;">
+                    No speedtest history recorded yet. Click <strong>Test Speed</strong> on any WAN card above to log test runs.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add WAN Interface Modal Overlay -->
+  <div class="modal-overlay" id="addWanModal" style="display: none;">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3>+ Add WAN Interface</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="closeAddWanModalBtn">✕</button>
+      </div>
+
+      <form id="addWanForm">
+        <div class="form-group">
+          <label>Select MikroTik Interface</label>
+          <select id="modalInterfaceSelect" required>
+            <option value="">Fetching router interfaces...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Display Label (Optional)</label>
+          <input type="text" id="modalWanLabelInput" placeholder="e.g. PLDT Fiber / Globe Backup">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn btn-secondary" id="cancelAddWanModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitAddWanBtn">Add & Apply Mangle Rule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Proxmox Server Speedtest Modal Overlay (Authentic Ookla UI) -->
+  <div class="modal-overlay" id="speedtestGaugeModal" style="display: none;">
+    <div class="modal-card ookla-modal-card">
+      <div class="ookla-top-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-weight:900; font-size:0.9rem; letter-spacing:1px; color:#ffffff;">SPEEDTEST</span>
+          <span style="font-size:0.65rem; color:#64748b; font-weight:700;">by OOKLA</span>
+        </div>
+        <button type="button" id="closeGaugeModalBtn" aria-label="Close Modal">✕</button>
+      </div>
+
+      <!-- Top Summary Metrics Row (Download & Upload) -->
+      <div class="ookla-top-summary">
+        <div class="ookla-summary-col">
+          <div class="ookla-summary-label"><span style="color:#00f2fe;">↓</span> DOWNLOAD <span style="font-size:0.6rem; color:#64748b;">Mbps</span></div>
+          <div class="ookla-summary-val" id="cliDlVal">--</div>
+        </div>
+        <div class="ookla-summary-col">
+          <div class="ookla-summary-label"><span style="color:#d946ef;">↑</span> UPLOAD <span style="font-size:0.6rem; color:#64748b;">Mbps</span></div>
+          <div class="ookla-summary-val" id="cliUlVal">--</div>
+        </div>
+      </div>
+
+      <!-- Ping Row (Centered below Download & Upload) -->
+      <div class="ookla-ping-row-centered">
+        <span class="ookla-ping-title">Ping <span style="font-size:0.65rem; color:#64748b;">ms</span></span>
+        <span title="Idle Ping" class="ookla-ping-val-group"><span class="ookla-icon-circle yellow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span> <span id="cliPingVal">--</span></span>
+        <span title="Download Ping" class="ookla-ping-val-group"><span class="ookla-icon-circle cyan"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span> <span id="cliPingDownVal">--</span></span>
+        <span title="Upload Ping" class="ookla-ping-val-group"><span class="ookla-icon-circle purple"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d946ef" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span> <span id="cliPingUpVal">--</span></span>
+      </div>
+
+      <!-- Ratings Icons Bar -->
+      <div class="ookla-ratings-bar">
+        <div class="rating-item" id="ratingItemBrowsing" title="Web Browsing: Awaiting speedtest...">
+          <span class="rating-icon">
+            <svg width="26" height="22" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="24" height="18" rx="3"/>
+              <line x1="2" y1="8" x2="26" y2="8"/>
+              <line x1="6" y1="5.5" x2="14" y2="5.5"/>
+              <path d="M14 11l6 6-2.5.8 1.7 3.2-1.7.9-1.7-3.2L12 20v-9z" fill="currentColor"/>
+            </svg>
+          </span>
+          <div class="rating-dots" id="dotsBrowsing"><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span></div>
+        </div>
+        <div class="rating-item" id="ratingItemGaming" title="Online Gaming: Awaiting speedtest...">
+          <span class="rating-icon">
+            <svg width="26" height="22" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 6h14a5 5 0 0 1 5 5v5a3 3 0 0 1-5 2.5l-3-3H10l-3 3A3 3 0 0 1 2 16v-5a5 5 0 0 1 7-5z"/>
+              <path d="M8 10v4M6 12h4"/>
+              <circle cx="18" cy="11" r="0.8" fill="currentColor"/>
+              <circle cx="20" cy="13" r="0.8" fill="currentColor"/>
+              <circle cx="16" cy="13" r="0.8" fill="currentColor"/>
+              <circle cx="18" cy="15" r="0.8" fill="currentColor"/>
+            </svg>
+          </span>
+          <div class="rating-dots" id="dotsGaming"><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span></div>
+        </div>
+        <div class="rating-item" id="ratingItemStreaming" title="Video Streaming: Awaiting speedtest...">
+          <span class="rating-icon">
+            <svg width="26" height="22" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="24" height="18" rx="3"/>
+              <polygon points="11,8 19,12 11,16" fill="currentColor"/>
+              <line x1="5" y1="18" x2="23" y2="18"/>
+              <circle cx="10" cy="18" r="1.5" fill="currentColor"/>
+            </svg>
+          </span>
+          <div class="rating-dots" id="dotsStreaming"><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span></div>
+        </div>
+        <div class="rating-item" id="ratingItemCalls" title="Video & Voice Calls: Awaiting speedtest...">
+          <span class="rating-icon">
+            <svg width="26" height="22" viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="24" height="18" rx="3"/>
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M6 18c0-3 2.5-4.5 6-4.5s6 1.5 6 4.5"/>
+              <rect x="18" y="5" width="6" height="5" rx="1" fill="#1e293b" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </span>
+          <div class="rating-dots" id="dotsCalls"><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span><span class="rating-dot"></span></div>
+        </div>
+      </div>
+
+      <!-- Center Zone: Standby GO Button OR Speedometer Gauge -->
+      <div id="ooklaStandbyBanner">
+        <!-- 1. Big GO Button Container (Visible in Standby / Finished) -->
+        <div id="goBtnContainer" class="ookla-go-container">
+          <button type="button" id="runServerCliBtn" class="ookla-go-btn-large">
+            GO
+          </button>
+        </div>
+
+        <!-- 2. Speedometer Gauge Container (Visible while test is running) -->
+        <div id="gaugeWrapper" class="ookla-gauge-wrapper" style="display: none;">
+          <div style="position: relative; width: 280px; height: 200px; margin: 0 auto;">
+            <svg viewBox="0 0 280 220" style="width: 100%; height: 100%;">
+              <defs>
+                <!-- Download Arc Gradient: Cyan to Emerald -->
+                <linearGradient id="downloadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00f2fe" />
+                  <stop offset="100%" stop-color="#10b981" />
+                </linearGradient>
+                <!-- Upload Arc Gradient: Magenta to Purple -->
+                <linearGradient id="uploadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#d946ef" />
+                  <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+                <!-- Needle Gradient -->
+                <linearGradient id="needleGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#00f2fe" />
+                </linearGradient>
+              </defs>
+
+              <!-- Track Arc -->
+              <path d="M 57.7 187.5 A 95 95 0 1 1 222.3 187.5" fill="none" stroke="#131b2e" stroke-width="16" stroke-linecap="round" />
+              
+              <!-- Dynamic Active Speed Arc -->
+              <path id="gaugeArcFill" d="M 57.7 187.5 A 95 95 0 1 1 222.3 187.5" fill="none" stroke="url(#downloadGradient)" stroke-width="16" stroke-linecap="round" stroke-dasharray="397.9" stroke-dashoffset="397.9" style="transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease;" />
+
+              <!-- Speed Dial Numbers (0, 5, 10, 50, 100, 250, 500, 750, 1000) -->
+              <g font-size="11" font-weight="800" fill="#64748b" text-anchor="middle" font-family="'Inter', sans-serif">
+                <text x="50" y="186">0</text>
+                <text x="32" y="142">5</text>
+                <text x="46" y="94">10</text>
+                <text x="82" y="56">50</text>
+                <text x="140" y="34">100</text>
+                <text x="198" y="56">250</text>
+                <text x="234" y="94">500</text>
+                <text x="248" y="142">750</text>
+                <text x="230" y="186">1000</text>
+              </g>
+
+              <!-- Rotating Tapered Wedge Needle -->
+              <g id="gaugeNeedle" style="transform-origin: 140px 140px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
+                <polygon points="133,140 147,140 142,48 138,48" fill="rgba(0,0,0,0.5)" />
+                <polygon points="135,140 145,140 142,50 138,50" fill="url(#needleGrad)" />
+              </g>
+              <circle cx="140" cy="140" r="8" fill="#ffffff" stroke="#00f2fe" stroke-width="2" />
+            </svg>
+
+            <!-- Center Digital Readout -->
+            <div style="position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;">
+              <div id="gaugeSpeedNum" style="font-size: 2.8rem; font-weight: 300; font-family: 'Inter', sans-serif; color: #ffffff; line-height: 1;">0.00</div>
+              <div id="gaugeLabelText" style="font-size: 0.8rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
+            </div>
+          </div>
+          <div style="font-size: 0.8rem; font-weight: 700; color: #00c6ff; margin-top: 8px;" id="cliStatusText">● Testing Live Download Speed...</div>
+        </div>
+
+        <!-- 3. Finished State Result Panel (GO button + Recommendation Scale) -->
+        <div id="resultPanelContainer" class="ookla-result-panel" style="display: none;">
+          <div class="ookla-result-left">
+            <button type="button" id="runServerCliBtnFinished" class="ookla-go-btn-medium">
+              GO
+            </button>
+          </div>
+          <div class="ookla-result-right">
+            <div class="survey-title">HOW LIKELY IS IT THAT YOU WOULD RECOMMEND <span id="surveyIspName" style="color:#00c6ff;">THIS ISP</span> TO A FRIEND OR COLLEAGUE?</div>
+            <div class="survey-buttons" id="surveyButtonsGrid">
+              <button class="survey-btn" data-val="0">0</button>
+              <button class="survey-btn" data-val="1">1</button>
+              <button class="survey-btn" data-val="2">2</button>
+              <button class="survey-btn" data-val="3">3</button>
+              <button class="survey-btn" data-val="4">4</button>
+              <button class="survey-btn" data-val="5">5</button>
+              <button class="survey-btn" data-val="6">6</button>
+              <button class="survey-btn" data-val="7">7</button>
+              <button class="survey-btn" data-val="8">8</button>
+              <button class="survey-btn" data-val="9">9</button>
+              <button class="survey-btn" data-val="10">10</button>
+            </div>
+            <div class="survey-labels">
+              <span>Not at all likely</span>
+              <span>Extremely Likely</span>
+            </div>
+            <div id="surveyFeedbackMsg" style="font-size:0.75rem; color:#00c6ff; font-weight:700; margin-top:8px; display:none;">Thank you for your feedback!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom ISP & Server Bar -->
+      <div class="ookla-bottom-details">
+        <div class="ookla-detail-item">
+          <div class="ookla-detail-icon">👤</div>
+          <div>
+            <div class="ookla-detail-title" id="gaugeIspBadge">WAN Interface</div>
+            <div class="ookla-detail-sub" id="gaugeIpText">Detecting Public IP...</div>
+          </div>
+        </div>
+        <div class="ookla-detail-item">
+          <div class="ookla-detail-icon">🏢</div>
+          <div>
+            <div class="ookla-detail-title" id="cliServerText">Auto Speedtest Server</div>
+            <div class="ookla-detail-sub" style="color: #00c6ff;">Ookla Server</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 10px 18px 14px 18px;">
+        <button type="button" class="btn btn-secondary btn-full" id="stopGaugeTestBtn" style="border-radius: 10px; background: #0f172a; border-color: #1e293b;">Close Modal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="js/app.js?v=20260912_upload_reset_transition"></script>
+</body>
+</html>

@@ -179,31 +179,70 @@ function showToast(message, type = 'success') {
   }, 4000);
 }
 
-// Auto-Load Saved AES-256 Encrypted Credentials & WAN Selection
+// Auto-Load Saved Credentials & Auto-Detect Target Device Client IP
 let isInitialAutoConnect = false;
+
+const detectTargetIpBtn = document.getElementById('detectTargetIpBtn');
+
+async function fetchClientIp(force = false) {
+  try {
+    const res = await fetch('/api/client-ip');
+    const data = await res.json();
+    if (data.success && data.clientIp) {
+      if (force || !targetIpInput.value || targetIpInput.value === '172.16.10.253') {
+        targetIpInput.value = data.clientIp;
+        if (force) {
+          showToast(`Auto-detected Device IP: ${data.clientIp}`, 'info');
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Could not auto-detect client IP:', err);
+  }
+}
+
+if (detectTargetIpBtn) {
+  detectTargetIpBtn.addEventListener('click', () => {
+    fetchClientIp(true);
+  });
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const res = await fetch('/api/saved-config');
     const result = await res.json();
+
+    if (result.clientIp) {
+      fetchClientIp(false);
+    }
+
     if (result.success && result.hasSaved) {
       const d = result.data;
       if (d.host) hostInput.value = d.host;
       if (d.username) usernameInput.value = d.username;
       if (d.password) passwordInput.value = d.password;
       if (d.port) portInput.value = d.port;
-      if (d.targetIp) targetIpInput.value = d.targetIp;
+      if (d.targetIp && d.targetIp !== '172.16.10.253') {
+        targetIpInput.value = d.targetIp;
+      } else if (result.clientIp) {
+        targetIpInput.value = result.clientIp;
+      }
 
       if (Array.isArray(d.selectedWans) && d.selectedWans.length > 0) {
         configuredWans = d.selectedWans;
       }
 
-      // Silent auto-connect without toast popups
-      isInitialAutoConnect = true;
-      connectForm.dispatchEvent(new Event('submit'));
+      // Silent auto-connect without toast popups if host is configured
+      if (d.host) {
+        isInitialAutoConnect = true;
+        connectForm.dispatchEvent(new Event('submit'));
+      }
+    } else {
+      fetchClientIp(true);
     }
   } catch (err) {
     console.error('Error loading saved config:', err);
+    fetchClientIp(true);
   }
 });
 

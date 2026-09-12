@@ -147,6 +147,24 @@ body {
   font-size: 0.9rem;
 }
 
+.btn-detect-ip {
+  background: rgba(0, 242, 254, 0.15);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  color: #00f2fe;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-detect-ip:hover {
+  background: rgba(0, 242, 254, 0.3);
+  color: #ffffff;
+}
+
 .header-clock-badge {
   display: flex;
   align-items: center;

@@ -126,9 +126,30 @@ async function runRosCmd(config, command, paramsObj = null) {
   }
 }
 
+function getClientIp(req) {
+  let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  if (ip.includes('::ffff:')) {
+    ip = ip.replace('::ffff:', '');
+  }
+  if (ip === '::1' || ip === '127.0.0.1') {
+    ip = '127.0.0.1';
+  }
+  if (ip.includes(',')) {
+    ip = ip.split(',')[0].trim();
+  }
+  return ip;
+}
+
+// Client IP Auto Detection API
+app.get('/api/client-ip', (req, res) => {
+  const clientIp = getClientIp(req);
+  res.json({ success: true, clientIp });
+});
+
 // 0. Load Saved Credentials
 app.get('/api/saved-config', (req, res) => {
   try {
+    const detectedIp = getClientIp(req);
     if (fs.existsSync(CONFIG_FILE)) {
       const raw = fs.readFileSync(CONFIG_FILE, 'utf8');
       const savedConfig = JSON.parse(raw);
@@ -140,17 +161,18 @@ app.get('/api/saved-config', (req, res) => {
       return res.json({
         success: true,
         hasSaved: true,
+        clientIp: detectedIp,
         data: {
-          host: savedConfig.host || '20.0.10.1',
-          username: savedConfig.username || 'admin',
+          host: savedConfig.host || '',
+          username: savedConfig.username || '',
           password: decryptedPassword,
           port: savedConfig.port || 8728,
-          targetIp: savedConfig.targetIp || '172.16.10.253',
+          targetIp: savedConfig.targetIp || detectedIp,
           selectedWans: savedConfig.selectedWans || []
         }
       });
     }
-    res.json({ success: true, hasSaved: false });
+    res.json({ success: true, hasSaved: false, clientIp: detectedIp });
   } catch (err) {
     res.json({ success: false, error: err.message });
   }

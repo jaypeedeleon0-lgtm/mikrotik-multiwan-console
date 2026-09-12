@@ -92,6 +92,19 @@ body {
   border-bottom: 2px solid #ffffff;
 }
 
+.creator-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #00f2fe, #10b981);
+  color: #000000;
+  font-weight: 900;
+  font-size: 0.72rem;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3);
+}
+
 .subtitle {
   font-size: 0.8rem;
   color: var(--text-muted);

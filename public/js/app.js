@@ -562,33 +562,53 @@ async function switchWan(wanName) {
   }
 }
 
-// 9. Master Reset / Normal Load Balance Mode
-masterResetBtn.addEventListener('click', async () => {
-  if (!routerConfig) return;
+// 9. Live Asia/Manila Time Header Clock & Master Reset
+function updateHeaderClock() {
+  const clockEl = document.getElementById('headerClockTime');
+  if (!clockEl) return;
+  const now = new Date();
+  const options = {
+    timeZone: 'Asia/Manila',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  };
+  clockEl.innerText = new Intl.DateTimeFormat('en-US', options).format(now);
+}
+setInterval(updateHeaderClock, 1000);
+updateHeaderClock();
 
-  try {
-    const res = await fetch('/api/switch-wan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        config: routerConfig,
-        targetWanName: null
-      })
-    });
+if (masterResetBtn) {
+  masterResetBtn.addEventListener('click', async () => {
+    if (!routerConfig) return;
 
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error);
+    try {
+      const res = await fetch('/api/switch-wan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          config: routerConfig,
+          targetWanName: null
+        })
+      });
 
-    activeWanName = null;
-    showToast('All Speedtest rules disabled. Returned to Normal Load Balancing!', 'success');
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error);
 
-    configuredWans.forEach(w => w.speedtestEnabled = false);
-    renderWanCards();
+      activeWanName = null;
+      showToast('All Speedtest rules disabled. Returned to Normal Load Balancing!', 'success');
 
-  } catch (err) {
-    showToast(`Reset failed: ${err.message}`, 'error');
-  }
-});
+      configuredWans.forEach(w => w.speedtestEnabled = false);
+      renderWanCards();
+    } catch (err) {
+      showToast(`Reset failed: ${err.message}`, 'error');
+    }
+  });
+}
 
 // 10. Speedtest History Log & Fast.com Modal Controller
 let speedtestHistory = JSON.parse(localStorage.getItem('speedtestHistory') || '[]');

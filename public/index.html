@@ -30,8 +30,10 @@
           <span id="updateBtnText">Check Update</span>
           <span id="updateBadgeDot" class="update-badge-dot" style="display: none;"></span>
         </button>
-        <button id="bwToggleBtn" class="btn-icon-only" title="Toggle Black & White / Color Mode">
-          <span id="bwToggleIcon">☯</span>
+        <button id="bwToggleBtn" class="btn-icon-only" title="Toggle White / Black Background Mode">
+          <span id="bwToggleIcon" style="display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
         </button>
         <button id="masterResetBtn" class="btn btn-danger">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -343,7 +345,7 @@
 
             <!-- Center Digital Readout -->
             <div style="position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;">
-              <div id="gaugeSpeedNum" style="font-size: 2.8rem; font-weight: 300; font-family: 'Inter', sans-serif; color: #ffffff; line-height: 1;">0.00</div>
+              <div id="gaugeSpeedNum" style="font-size: 2.8rem; font-weight: 300; font-family: 'Inter', sans-serif; line-height: 1;">0.00</div>
               <div id="gaugeLabelText" style="font-size: 0.8rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
             </div>
           </div>
@@ -420,7 +422,7 @@
       </div>
 
       <div style="padding: 16px 0;">
-        <div style="background: #090d16; border: 1px solid #1e293b; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;">
+        <div class="update-version-card" style="background: #090d16; border: 1px solid #1e293b; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">INSTALLED VERSION:</span>
             <span id="currentVersionBadge" style="font-family: var(--font-mono); font-size: 0.82rem; color: #00f2fe; font-weight: 700; background: rgba(0,242,254,0.1); padding: 3px 8px; border-radius: 6px;">v1.0.0 (3336991)</span>

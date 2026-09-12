@@ -1285,6 +1285,51 @@ body.bw-mode .ookla-detail-sub {
   color: #64748b !important;
 }
 
+body.bw-mode #gaugeSpeedNum {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-summary-val {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-ping-val-group {
+  color: #0f172a !important;
+}
+
+body.bw-mode #gaugeWrapper svg g text {
+  fill: #334155 !important;
+}
+
+body.bw-mode .rating-icon {
+  color: #0f172a !important;
+}
+
+/* Modal Select Dropdowns & Options in Light Mode */
+body.bw-mode select,
+body.bw-mode select option,
+body.bw-mode .form-group select,
+body.bw-mode .form-control {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* System Update Engine Version Card in Light Mode */
+body.bw-mode .update-version-card {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .update-version-card span {
+  color: #64748b !important;
+}
+
+body.bw-mode #currentVersionBadge {
+  color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.1) !important;
+}
+
 body.bw-mode .ookla-modal-close {
   background: #f1f5f9 !important;
   color: #0f172a !important;

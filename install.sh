@@ -83,6 +83,9 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
   echo -e "${CYAN}Waiting for LXC container CTID ${CTID} network initialization...${NC}"
   sleep 6
   
+  echo -e "${GREEN}Preparing LXC Container CTID ${CTID} (installing curl & git)...${NC}"
+  pct exec ${CTID} -- bash -c "apt-get update -y && apt-get install -y curl git"
+  
   echo -e "${GREEN}Running 1-Line Installer inside LXC Container CTID ${CTID}...${NC}"
   pct exec ${CTID} -- bash -c "curl -fsSL https://raw.githubusercontent.com/mamamoblue52/mikrotik-multiwan-console/main/install.sh | bash"
   

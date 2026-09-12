@@ -29,24 +29,44 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
   
   pveam update >/dev/null 2>&1 || true
   
-  if ! pveam list ${STORAGE} 2>/dev/null | grep -q "debian"; then
-    echo -e "${YELLOW}Downloading Debian 12 LXC Template...${NC}"
-    LATEST_DEBIAN=$(pveam available 2>/dev/null | grep debian-12 | head -n 1 | awk '{print $2}' || echo "")
-    if [ -n "$LATEST_DEBIAN" ]; then
-      pveam download ${STORAGE} "$LATEST_DEBIAN"
+  # Check local template cache directory first
+  TEMPLATE_PATH=""
+  if [ -d "/var/lib/vz/template/cache" ]; then
+    TEMPLATE_NAME=$(ls /var/lib/vz/template/cache/ 2>/dev/null | grep -i "debian" | head -n 1 || echo "")
+    if [ -n "$TEMPLATE_NAME" ]; then
+      TEMPLATE_PATH="${STORAGE}:vztmpl/${TEMPLATE_NAME}"
     fi
   fi
   
-  TEMPLATE=$(pveam list ${STORAGE} 2>/dev/null | grep debian | tail -n 1 | awk '{print $2}' || echo "")
-  
-  if [ -z "$TEMPLATE" ]; then
-    echo -e "${RED}Error: Could not find or download Debian LXC template on storage '${STORAGE}'.${NC}"
-    echo -e "Please create a Debian LXC container manually in Proxmox and run this installer inside it!"
+  # If not found locally in cache, download latest Debian 12 template
+  if [ -z "$TEMPLATE_PATH" ]; then
+    echo -e "${YELLOW}Downloading Debian 12 LXC Template...${NC}"
+    DEBIAN_AVAIL=$(pveam available 2>/dev/null | grep "debian-12" | head -n 1 | awk '{print $2}' || echo "")
+    if [ -n "$DEBIAN_AVAIL" ]; then
+      pveam download ${STORAGE} "$DEBIAN_AVAIL"
+    fi
+    TEMPLATE_NAME=$(ls /var/lib/vz/template/cache/ 2>/dev/null | grep -i "debian" | head -n 1 || echo "")
+    if [ -n "$TEMPLATE_NAME" ]; then
+      TEMPLATE_PATH="${STORAGE}:vztmpl/${TEMPLATE_NAME}"
+    fi
+  fi
+
+  # Fallback parse from pveam list if needed
+  if [ -z "$TEMPLATE_PATH" ]; then
+    PVEAM_ENTRY=$(pveam list ${STORAGE} 2>/dev/null | grep -i "debian" | head -n 1 | awk '{print $1}' || echo "")
+    if [ -n "$PVEAM_ENTRY" ]; then
+      TEMPLATE_PATH="$PVEAM_ENTRY"
+    fi
+  fi
+
+  if [ -z "$TEMPLATE_PATH" ]; then
+    echo -e "${RED}Error: Could not find or download Debian LXC template on Proxmox.${NC}"
+    echo -e "Please download a Debian template in Proxmox (Datacenter > local > CT Templates) and re-run."
     exit 1
   fi
   
-  echo -e "${GREEN}Creating LXC Container ID ${CTID}...${NC}"
-  pct create ${CTID} ${STORAGE}:vztmpl/${TEMPLATE} \
+  echo -e "${GREEN}Creating LXC Container ID ${CTID} using template ${TEMPLATE_PATH}...${NC}"
+  pct create ${CTID} "${TEMPLATE_PATH}" \
     --ostype debian \
     --hostname mikrotik-multiwan \
     --cores 2 \
@@ -57,7 +77,7 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
     --storage local-lvm \
     --unprivileged 0 \
     --onboot 1 \
-    --start 1 || pct create ${CTID} ${STORAGE}:vztmpl/${TEMPLATE} --hostname mikrotik-multiwan --cores 2 --memory 1024 --net0 name=eth0,bridge=vmbr0,ip=dhcp --start 1
+    --start 1 || pct create ${CTID} "${TEMPLATE_PATH}" --hostname mikrotik-multiwan --cores 2 --memory 1024 --net0 name=eth0,bridge=vmbr0,ip=dhcp --start 1
   
   echo -e "${CYAN}Waiting for LXC container CTID ${CTID} network initialization...${NC}"
   sleep 6

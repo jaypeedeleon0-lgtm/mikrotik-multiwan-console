@@ -1065,14 +1065,181 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
-/* Black & White Mode Toggle Styles */
+/* White Background Theme (Light Mode) Override System */
 body.bw-mode {
-  filter: grayscale(100%) contrast(105%);
-  transition: filter 0.3s ease;
+  background-color: #f8fafc !important;
+  background-image: none !important;
+  color: #0f172a !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.bw-mode iframe {
-  filter: grayscale(100%);
+body.bw-mode .header {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.bw-mode h1,
+body.bw-mode h2,
+body.bw-mode h3,
+body.bw-mode h4,
+body.bw-mode h5,
+body.bw-mode h6,
+body.bw-mode .card-header h3,
+body.bw-mode .logo-group h1 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .accent-text {
+  color: #0f172a !important;
+  border-bottom-color: #0f172a !important;
+}
+
+body.bw-mode .subtitle,
+body.bw-mode .text-muted,
+body.bw-mode .label {
+  color: #64748b !important;
+}
+
+body.bw-mode .glass-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .glass-card:hover {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09) !important;
+}
+
+body.bw-mode .target-pc-badge {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .target-pc-badge .label {
+  color: #334155 !important;
+}
+
+body.bw-mode .target-pc-badge input {
+  color: #0f172a !important;
+}
+
+body.bw-mode input[type="text"],
+body.bw-mode input[type="password"],
+body.bw-mode input[type="number"],
+body.bw-mode select {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode input[type="text"]::placeholder,
+body.bw-mode input[type="password"]::placeholder,
+body.bw-mode input[type="number"]::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.bw-mode .btn-secondary,
+body.bw-mode .btn-icon-only {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .btn-secondary:hover,
+body.bw-mode .btn-icon-only:hover {
+  background: #e2e8f0 !important;
+  color: #000000 !important;
+}
+
+body.bw-mode .modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.bw-mode .modal-card h3,
+body.bw-mode .modal-card span,
+body.bw-mode .modal-card p,
+body.bw-mode .modal-card label {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.bw-mode .ookla-header,
+body.bw-mode .ookla-gauge-box,
+body.bw-mode .ookla-bottom-details,
+body.bw-mode .ookla-result-panel {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-speed-display-box,
+body.bw-mode .ookla-detail-item {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-detail-title {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-detail-sub {
+  color: #64748b !important;
+}
+
+body.bw-mode table {
+  color: #0f172a !important;
+}
+
+body.bw-mode table th {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+body.bw-mode table td {
+  color: #0f172a !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.bw-mode table tr:hover td {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+body.bw-mode .badge,
+body.bw-mode .status-badge {
+  color: #0f172a;
+}
+
+/* Green elements stay vibrant green in both modes */
+body.bw-mode .status-good,
+body.bw-mode .text-success,
+body.bw-mode .live-dot,
+body.bw-mode .badge-green,
+body.bw-mode .status-badge.active,
+body.bw-mode .wan-card.active {
+  color: #10b981 !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+body.bw-mode .btn-primary,
+body.bw-mode .btn-green {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 
 /* Blue Speedtest Button */

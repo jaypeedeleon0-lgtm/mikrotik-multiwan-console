@@ -862,7 +862,7 @@ async function openSpeedtestGaugeModal(wanName) {
   }
 }
 
-// 11. Black & White Mode Toggle Handler
+// 11. Black & White Background Theme Toggle Handler
 const bwToggleBtn = document.getElementById('bwToggleBtn');
 const bwToggleText = document.getElementById('bwToggleText');
 const bwToggleIcon = document.getElementById('bwToggleIcon');
@@ -870,15 +870,15 @@ const bwToggleIcon = document.getElementById('bwToggleIcon');
 function setBwMode(enabled) {
   if (enabled) {
     document.body.classList.add('bw-mode');
-    if (bwToggleText) bwToggleText.innerText = 'Color Mode';
-    if (bwToggleIcon) bwToggleIcon.innerText = '🎨';
-    if (bwToggleBtn) bwToggleBtn.setAttribute('title', 'Switch to Color Mode');
+    if (bwToggleText) bwToggleText.innerText = 'Black Mode';
+    if (bwToggleIcon) bwToggleIcon.innerText = '🌙';
+    if (bwToggleBtn) bwToggleBtn.setAttribute('title', 'Switch to Black Background Mode');
     localStorage.setItem('bwMode', 'enabled');
   } else {
     document.body.classList.remove('bw-mode');
-    if (bwToggleText) bwToggleText.innerText = 'B&W Mode';
-    if (bwToggleIcon) bwToggleIcon.innerText = '☯';
-    if (bwToggleBtn) bwToggleBtn.setAttribute('title', 'Switch to Black & White Mode');
+    if (bwToggleText) bwToggleText.innerText = 'White Mode';
+    if (bwToggleIcon) bwToggleIcon.innerText = '☀️';
+    if (bwToggleBtn) bwToggleBtn.setAttribute('title', 'Switch to White Background Mode');
     localStorage.setItem('bwMode', 'disabled');
   }
 }
@@ -890,7 +890,7 @@ if (bwToggleBtn) {
   });
 }
 
-// Restore saved B&W preference on page load
+// Restore saved preference on page load
 if (localStorage.getItem('bwMode') === 'enabled') {
   setBwMode(true);
 }

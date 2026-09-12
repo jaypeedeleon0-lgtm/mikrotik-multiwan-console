@@ -219,17 +219,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (result.success && result.hasSaved) {
       const d = result.data;
-      if (d.host && d.host !== '20.0.10.1') {
-        hostInput.value = d.host;
-      } else {
-        hostInput.value = '';
-      }
-
+      if (d.host) hostInput.value = d.host;
       if (d.username) usernameInput.value = d.username;
       if (d.password) passwordInput.value = d.password;
       if (d.port) portInput.value = d.port;
 
-      if (d.targetIp && d.targetIp !== '172.16.10.253') {
+      if (d.targetIp) {
         targetIpInput.value = d.targetIp;
       } else if (result.clientIp) {
         targetIpInput.value = result.clientIp;
@@ -239,7 +234,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         configuredWans = d.selectedWans;
       }
 
-      // Silent auto-connect without toast popups if valid host is configured
+      // Silent auto-connect on page refresh if host is configured
       if (hostInput.value.trim()) {
         isInitialAutoConnect = true;
         connectForm.dispatchEvent(new Event('submit'));

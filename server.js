@@ -179,8 +179,8 @@ app.get('/api/saved-config', (req, res) => {
         ? decryptText(savedConfig.encryptedPassword) 
         : (savedConfig.password || '');
 
-      const host = savedConfig.host === '20.0.10.1' ? '' : (savedConfig.host || '');
-      const targetIp = (savedConfig.targetIp === '172.16.10.253' || !savedConfig.targetIp) ? detectedIp : savedConfig.targetIp;
+      const host = savedConfig.host || '';
+      const targetIp = savedConfig.targetIp || detectedIp;
 
       return res.json({
         success: true,

@@ -148,12 +148,12 @@ body {
 }
 
 .btn-detect-ip {
-  background: rgba(0, 242, 254, 0.15);
-  border: 1px solid rgba(0, 242, 254, 0.3);
-  color: #00f2fe;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   font-size: 0.72rem;
   font-weight: 800;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
@@ -161,8 +161,9 @@ body {
 }
 
 .btn-detect-ip:hover {
-  background: rgba(0, 242, 254, 0.3);
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
 .header-clock-badge {
@@ -181,13 +182,13 @@ body {
 }
 
 .header-clock-badge svg {
-  stroke: #00f2fe;
+  stroke: #ffffff;
 }
 
 .header-clock-badge .tz-pill {
   font-size: 0.65rem;
-  background: rgba(0, 242, 254, 0.15);
-  color: #00f2fe;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 800;

@@ -81,14 +81,20 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
     --start 1 || pct create ${CTID} "${TEMPLATE_PATH}" --hostname mikrotik-multiwan --cores 2 --memory 1024 --net0 name=eth0,bridge=vmbr0,ip=dhcp --start 1
   
   echo -e "${CYAN}Waiting for LXC container CTID ${CTID} network initialization...${NC}"
-  sleep 6
+  sleep 8
   
-  echo -e "${GREEN}Preparing LXC Container CTID ${CTID} (installing curl & git)...${NC}"
-  pct exec ${CTID} -- bash -c "apt-get update -y && apt-get install -y curl git"
-  
-  echo -e "${GREEN}Running 1-Line Installer inside LXC Container CTID ${CTID}...${NC}"
-  pct exec ${CTID} -- bash -c "curl -fsSL https://raw.githubusercontent.com/mamamoblue52/mikrotik-multiwan-console/main/install.sh | bash"
-  
+  echo -e "${CYAN}Step 1/4: Installing base packages (curl, git, speedtest)...${NC}"
+  pct exec ${CTID} -- bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -y && apt-get install -y curl git build-essential speedtest-cli ca-certificates gnupg"
+
+  echo -e "${CYAN}Step 2/4: Installing Node.js 20 LTS & PM2...${NC}"
+  pct exec ${CTID} -- bash -c "mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg --yes && echo 'deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main' | tee /etc/apt/sources.list.d/nodesource.list && apt-get update -y && apt-get install -y nodejs && npm install -g pm2"
+
+  echo -e "${CYAN}Step 3/4: Cloning application from GitHub...${NC}"
+  pct exec ${CTID} -- bash -c "rm -rf /root/app && git clone https://github.com/mamamoblue52/mikrotik-multiwan-console.git /root/app && cd /root/app && npm install --production"
+
+  echo -e "${CYAN}Step 4/4: Starting PM2 process daemon...${NC}"
+  pct exec ${CTID} -- bash -c "cd /root/app && pm2 stop speedtest-dashboard 2>/dev/null || true && pm2 delete speedtest-dashboard 2>/dev/null || true && pm2 start server.js --name 'speedtest-dashboard' && pm2 save && (pm2 startup systemd -u root --hp /root 2>/dev/null || true)"
+
   IP_ADDR=$(pct exec ${CTID} -- ip a s eth0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1 || echo "CONTAINER_IP")
   
   echo -e "${GREEN}${BOLD}"

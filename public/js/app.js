@@ -1456,11 +1456,13 @@ async function checkForUpdates(showModal = false) {
     if (data.hasUpdate) {
       // Highlight Header Button with pulsing badge
       if (updateBadgeDot) updateBadgeDot.style.display = 'block';
-      if (updateBtnText) updateBtnText.innerText = `Update Available (${data.behindCount})`;
-      if (systemUpdateBtn) systemUpdateBtn.classList.add('has-update');
+      if (systemUpdateBtn) {
+        systemUpdateBtn.classList.add('has-update');
+        systemUpdateBtn.title = `Update Available (${data.behindCount} new commits)`;
+      }
 
       if (!showModal) {
-        showToast(`${data.behindCount} new update(s) available on GitHub! Click "Check Update" to apply.`, 'info');
+        showToast(`${data.behindCount} new update(s) available on GitHub! Click "Check Update" icon to apply.`, 'info');
       }
 
       if (updateStatusZone) {
@@ -1488,8 +1490,10 @@ async function checkForUpdates(showModal = false) {
       if (applyUpdateBtn) applyUpdateBtn.disabled = false;
     } else {
       if (updateBadgeDot) updateBadgeDot.style.display = 'none';
-      if (updateBtnText) updateBtnText.innerText = 'Check Update';
-      if (systemUpdateBtn) systemUpdateBtn.classList.remove('has-update');
+      if (systemUpdateBtn) {
+        systemUpdateBtn.classList.remove('has-update');
+        systemUpdateBtn.title = 'Check System Updates';
+      }
 
       if (updateStatusZone) {
         updateStatusZone.innerHTML = `

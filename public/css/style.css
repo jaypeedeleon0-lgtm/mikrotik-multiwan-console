@@ -2213,15 +2213,19 @@ body.bw-mode .update-version-card {
 
 .btn-login-bw {
   width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   background: #ffffff !important;
   color: #000000 !important;
   font-weight: 800 !important;
   font-size: 0.95rem !important;
-  padding: 12px 0 !important;
+  padding: 12px 16px !important;
   border-radius: 10px !important;
   border: none !important;
   cursor: pointer !important;
-  margin-top: 10px !important;
+  margin-top: 16px !important;
   transition: all 0.2s ease !important;
   letter-spacing: 0.5px;
 }

@@ -125,8 +125,9 @@ function renderGaugeState(speedMbps, phase) {
   if (gaugeSpeedNum) gaugeSpeedNum.innerText = speedMbps.toFixed(2);
   
   if (gaugeArcFill) {
-    const dashoffset = 397.9 * (1 - pct);
+    const dashoffset = 377.0 * (1 - pct);
     gaugeArcFill.style.strokeDashoffset = dashoffset.toFixed(1);
+    gaugeArcFill.style.opacity = (pct <= 0 || speedMbps <= 0) ? '0' : '1';
     const needleStop = document.querySelector('#needleGrad stop:nth-child(2)');
     if (phase === 'upload') {
       gaugeArcFill.setAttribute('stroke', 'url(#uploadGradient)');

@@ -1,20 +1,189 @@
-// MikroTik Multi-WAN Speedtest & Gateway Health Dashboard Client
+// Session Authentication Helpers
+function getAuthToken() {
+  return localStorage.getItem('admin_token') || '';
+}
 
-let routerConfig = null;
-let allFetchedInterfaces = [];
-let configuredWans = [];
-let activeWanName = null;
-let pingIntervalTimer = null;
+function setAuthToken(token, username) {
+  if (token) localStorage.setItem('admin_token', token);
+  if (username) localStorage.setItem('admin_username', username);
+}
 
-// Helper: Escape HTML strings to prevent XSS / render errors
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+function clearAuthToken() {
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_username');
+}
+
+async function authFetch(url, options = {}) {
+  const token = getAuthToken();
+  const headers = options.headers ? { ...options.headers } : {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { ...options, headers });
+  if (response.status === 401 && !url.includes('/api/auth/login')) {
+    const loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    clearAuthToken();
+  }
+  return response;
+}
+
+// Authentication UI Controllers
+const loginOverlay = document.getElementById('loginOverlay');
+const loginForm = document.getElementById('loginForm');
+const loginUsernameInput = document.getElementById('loginUsernameInput');
+const loginPasswordInput = document.getElementById('loginPasswordInput');
+const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+const loginErrorMsg = document.getElementById('loginErrorMsg');
+
+const userAuthBadge = document.getElementById('userAuthBadge');
+const currentAdminName = document.getElementById('currentAdminName');
+const openChangePassBtn = document.getElementById('openChangePassBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const changePasswordModal = document.getElementById('changePasswordModal');
+const changePasswordForm = document.getElementById('changePasswordForm');
+const currentPassInput = document.getElementById('currentPassInput');
+const newUsernameInput = document.getElementById('newUsernameInput');
+const newPassInput = document.getElementById('newPassInput');
+const submitChangePassBtn = document.getElementById('submitChangePassBtn');
+const changePassErrorMsg = document.getElementById('changePassErrorMsg');
+const closeChangePassModalBtn = document.getElementById('closeChangePassModalBtn');
+const cancelChangePassModalBtn = document.getElementById('cancelChangePassModalBtn');
+
+async function checkAuthStatus() {
+  const token = getAuthToken();
+  if (!token) {
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    return false;
+  }
+
+  try {
+    const res = await authFetch('/api/auth/status');
+    const data = await res.json();
+    if (data.success && data.authenticated) {
+      if (loginOverlay) loginOverlay.style.display = 'none';
+      if (currentAdminName) currentAdminName.innerText = data.username || 'admin';
+      return true;
+    } else {
+      clearAuthToken();
+      if (loginOverlay) loginOverlay.style.display = 'flex';
+      return false;
+    }
+  } catch (err) {
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    return false;
+  }
+}
+
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = loginUsernameInput.value.trim();
+    const password = loginPasswordInput.value;
+
+    if (loginErrorMsg) loginErrorMsg.style.display = 'none';
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.innerText = 'Signing In...';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Invalid credentials');
+      }
+
+      setAuthToken(data.token, data.username);
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.innerText = 'Sign In';
+      if (loginOverlay) loginOverlay.style.display = 'none';
+      if (currentAdminName) currentAdminName.innerText = data.username;
+      showToast(`Welcome back, ${data.username}!`, 'success');
+
+      // Load saved config & connect to MikroTik
+      loadSavedDashboardConfig();
+    } catch (err) {
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.innerText = 'Sign In';
+      if (loginErrorMsg) {
+        loginErrorMsg.innerText = err.message;
+        loginErrorMsg.style.display = 'block';
+      }
+    }
+  });
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await authFetch('/api/auth/logout', { method: 'POST' });
+    } catch(e){}
+    clearAuthToken();
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    showToast('Logged out successfully.', 'info');
+  });
+}
+
+if (openChangePassBtn) {
+  openChangePassBtn.addEventListener('click', () => {
+    if (currentPassInput) currentPassInput.value = '';
+    if (newUsernameInput) newUsernameInput.value = currentAdminName ? currentAdminName.innerText : 'admin';
+    if (newPassInput) newPassInput.value = '';
+    if (changePassErrorMsg) changePassErrorMsg.style.display = 'none';
+    if (changePasswordModal) changePasswordModal.style.display = 'flex';
+  });
+}
+
+function closeChangePassModal() {
+  if (changePasswordModal) changePasswordModal.style.display = 'none';
+}
+if (closeChangePassModalBtn) closeChangePassModalBtn.addEventListener('click', closeChangePassModal);
+if (cancelChangePassModalBtn) cancelChangePassModalBtn.addEventListener('click', closeChangePassModal);
+
+if (changePasswordForm) {
+  changePasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const currentPassword = currentPassInput.value;
+    const newUsername = newUsernameInput.value.trim();
+    const newPassword = newPassInput.value;
+
+    if (changePassErrorMsg) changePassErrorMsg.style.display = 'none';
+    submitChangePassBtn.disabled = true;
+    submitChangePassBtn.innerText = 'Saving...';
+
+    try {
+      const res = await authFetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newUsername, newPassword })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update credentials');
+      }
+
+      setAuthToken(data.token, data.username);
+      if (currentAdminName) currentAdminName.innerText = data.username;
+      submitChangePassBtn.disabled = false;
+      submitChangePassBtn.innerText = 'Save Credentials';
+      closeChangePassModal();
+      showToast('Admin credentials updated successfully!', 'success');
+    } catch (err) {
+      submitChangePassBtn.disabled = false;
+      submitChangePassBtn.innerText = 'Save Credentials';
+      if (changePassErrorMsg) {
+        changePassErrorMsg.innerText = err.message;
+        changePassErrorMsg.style.display = 'block';
+      }
+    }
+  });
 }
 
 // DOM Elements
@@ -187,7 +356,7 @@ const detectTargetIpBtn = document.getElementById('detectTargetIpBtn');
 
 async function fetchClientIp(force = false) {
   try {
-    const res = await fetch('/api/client-ip');
+    const res = await authFetch('/api/client-ip');
     const data = await res.json();
     const detectedIp = data.detectedIp || data.serverIp || data.clientIp;
     if (data.success && detectedIp) {
@@ -210,8 +379,15 @@ if (detectTargetIpBtn) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  const isAuthenticated = await checkAuthStatus();
+  if (isAuthenticated) {
+    loadSavedDashboardConfig();
+  }
+});
+
+async function loadSavedDashboardConfig() {
   try {
-    const res = await fetch('/api/saved-config');
+    const res = await authFetch('/api/saved-config');
     const result = await res.json();
 
     if (result.clientIp) {
@@ -247,7 +423,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.error('Error loading saved config:', err);
     fetchClientIp(true);
   }
-});
+}
 
 // 1. Connect Router Handler
 connectForm.addEventListener('submit', async (e) => {
@@ -266,7 +442,7 @@ connectForm.addEventListener('submit', async (e) => {
   connectBtn.innerText = 'Connecting...';
 
   try {
-    const res = await fetch('/api/connect', {
+    const res = await authFetch('/api/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(routerConfig)
@@ -389,7 +565,7 @@ async function saveAndApplyWans(wansToApply, isAutoLoad = false) {
   if (!routerConfig) return;
 
   try {
-    const res = await fetch('/api/configure-wans', {
+    const res = await authFetch('/api/configure-wans', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -530,7 +706,7 @@ async function fetchPingStats() {
   if (!routerConfig || configuredWans.length === 0) return;
 
   try {
-    const res = await fetch('/api/ping-all', {
+    const res = await authFetch('/api/ping-all', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -579,7 +755,7 @@ async function switchWan(wanName) {
   }
 
   try {
-    const res = await fetch('/api/switch-wan', {
+    const res = await authFetch('/api/switch-wan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -629,7 +805,7 @@ if (masterResetBtn) {
     if (!routerConfig) return;
 
     try {
-      const res = await fetch('/api/switch-wan', {
+      const res = await authFetch('/api/switch-wan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -758,7 +934,7 @@ async function closeSpeedtestModal() {
   // Automatically disable mangle policy routing rule when modal is closed
   if (routerConfig && activeWanName) {
     try {
-      await fetch('/api/switch-wan', {
+      await authFetch('/api/switch-wan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1214,7 +1390,7 @@ if (cancelUpdateModalBtn) cancelUpdateModalBtn.addEventListener('click', closeSy
 // Fetch Current Version Info on load
 async function fetchVersionInfo() {
   try {
-    const res = await fetch('/api/system/version-info');
+    const res = await authFetch('/api/system/version-info');
     const data = await res.json();
     if (data.success && currentVersionBadge) {
       currentVersionBadge.innerText = `${data.branch}@${data.commit}`;
@@ -1244,7 +1420,7 @@ async function checkForUpdates(showModal = false) {
   if (applyUpdateBtn) applyUpdateBtn.disabled = true;
 
   try {
-    const res = await fetch('/api/system/check-update');
+    const res = await authFetch('/api/system/check-update');
     const data = await res.json();
 
     if (!data.success) {
@@ -1345,7 +1521,7 @@ if (applyUpdateBtn) {
     }
 
     try {
-      const res = await fetch('/api/system/apply-update', { method: 'POST' });
+      const res = await authFetch('/api/system/apply-update', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
         showToast('Update applied successfully! Reloading dashboard...', 'success');

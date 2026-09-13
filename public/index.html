@@ -41,6 +41,14 @@
           <span id="headerClockTime">--:--:-- PM</span>
           <span class="tz-pill">PHT</span>
         </div>
+        <div class="user-auth-badge" id="userAuthBadge" style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" id="openChangePassBtn" class="btn btn-secondary btn-sm" title="Change Admin Password" style="font-weight: 700;">
+            👤 <span id="currentAdminName">admin</span>
+          </button>
+          <button type="button" id="logoutBtn" class="btn btn-secondary btn-sm" title="Logout Session" style="font-weight: 700;">
+            Logout
+          </button>
+        </div>
       </div>
     </header>
 
@@ -448,9 +456,71 @@
     </div>
   </div>
 
+  <!-- Full-screen Monochrome Black & White Admin Login Overlay -->
+  <div class="modal-overlay login-modal-overlay" id="loginOverlay" style="display: flex;">
+    <div class="modal-card login-card-bw">
+      <div class="login-header-bw">
+        <h2>MIKROTIK MANAGER</h2>
+        <p>Enter Admin Credentials to Access Dashboard</p>
+      </div>
+
+      <form id="loginForm">
+        <div id="loginErrorMsg" class="login-error-alert" style="display: none;"></div>
+        
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="loginUsernameInput" placeholder="admin" value="admin" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPasswordInput" placeholder="Enter password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn btn-login-bw" id="loginSubmitBtn">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal Overlay -->
+  <div class="modal-overlay" id="changePasswordModal" style="display: none;">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="card-header">
+        <h3>Change Admin Credentials</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="closeChangePassModalBtn">✕</button>
+      </div>
+
+      <form id="changePasswordForm" style="padding-top: 10px;">
+        <div id="changePassErrorMsg" class="login-error-alert" style="display: none; margin-bottom: 12px;"></div>
+
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="currentPassInput" placeholder="Enter current password" required>
+        </div>
+
+        <div class="form-group">
+          <label>New Admin Username</label>
+          <input type="text" id="newUsernameInput" placeholder="admin" required>
+        </div>
+
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="newPassInput" placeholder="Minimum 3 characters" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn btn-secondary" id="cancelChangePassModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitChangePassBtn">Save Credentials</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260912_system_update_engine"></script>
+  <script src="js/app.js?v=20260913_auth_system"></script>
 </body>
 </html>

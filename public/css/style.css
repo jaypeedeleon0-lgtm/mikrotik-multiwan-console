@@ -2160,5 +2160,109 @@ body.bw-mode .update-version-card {
   border-color: #e2e8f0 !important;
 }
 
+/* ==========================================================================
+   MINIMALIST BLACK & WHITE ADMIN LOGIN OVERLAY STYLES
+   ========================================================================== */
+.login-modal-overlay {
+  background: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(25px) !important;
+  z-index: 99999 !important;
+}
+
+.login-card-bw {
+  max-width: 400px !important;
+  width: 100% !important;
+  background: #09090b !important;
+  border: 1px solid #27272a !important;
+  border-radius: 16px !important;
+  padding: 32px 28px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  color: #ffffff !important;
+}
+
+.login-header-bw {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-header-bw h2 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.login-header-bw p {
+  font-size: 0.78rem;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.login-error-alert {
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  color: #f43f5e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.btn-login-bw {
+  width: 100%;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  padding: 12px 0 !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+  margin-top: 10px !important;
+  transition: all 0.2s ease !important;
+  letter-spacing: 0.5px;
+}
+
+.btn-login-bw:hover {
+  background: #e4e4e7 !important;
+  transform: translateY(-1px);
+}
+
+.btn-login-bw:active {
+  transform: translateY(0);
+}
+
+/* White Mode / Light Mode overrides for Login Modal */
+body.bw-mode .login-modal-overlay {
+  background: rgba(255, 255, 255, 0.94) !important;
+}
+
+body.bw-mode .login-card-bw {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.bw-mode .login-header-bw h2 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .login-header-bw p {
+  color: #64748b !important;
+}
+
+body.bw-mode .btn-login-bw {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.bw-mode .btn-login-bw:hover {
+  background: #1e293b !important;
+}
+
 
 

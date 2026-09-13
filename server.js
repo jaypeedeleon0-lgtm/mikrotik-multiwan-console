@@ -59,6 +59,150 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
+// ==========================================================================
+// ADMIN AUTHENTICATION SYSTEM (scrypt Hashing & Session Guard)
+// ==========================================================================
+const AUTH_FILE = path.join(__dirname, 'auth.json');
+const activeSessions = new Map(); // token -> { username, expiresAt }
+
+function hashPassword(password, salt) {
+  return crypto.scryptSync(password || '', salt, 64).toString('hex');
+}
+
+function getAuthData() {
+  if (fs.existsSync(AUTH_FILE)) {
+    try {
+      const raw = fs.readFileSync(AUTH_FILE, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.username && parsed.hash && parsed.salt) {
+        return parsed;
+      }
+    } catch (e) {}
+  }
+  
+  // Initialize default admin / admin credentials on first launch
+  const salt = crypto.randomBytes(16).toString('hex');
+  const defaultHash = hashPassword('admin', salt);
+  const defaultAuth = {
+    username: 'admin',
+    hash: defaultHash,
+    salt: salt,
+    updatedAt: new Date().toISOString()
+  };
+  fs.writeFileSync(AUTH_FILE, JSON.stringify(defaultAuth, null, 2), 'utf8');
+  return defaultAuth;
+}
+
+function createSession(username) {
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 Hours valid
+  activeSessions.set(token, { username, expiresAt });
+  return token;
+}
+
+function verifyToken(token) {
+  if (!token || !activeSessions.has(token)) return false;
+  const session = activeSessions.get(token);
+  if (Date.now() > session.expiresAt) {
+    activeSessions.delete(token);
+    return false;
+  }
+  return session;
+}
+
+function requireAuth(req, res, next) {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '').trim() || req.query.token;
+  const session = verifyToken(token);
+  if (!session) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: Please log in first.' });
+  }
+  req.user = session;
+  next();
+}
+
+// Authentication API Endpoints
+app.post('/api/auth/login', (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const authData = getAuthData();
+
+    if (!username || username.trim() !== authData.username) {
+      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+    }
+
+    const inputHash = hashPassword(password, authData.salt);
+    if (inputHash !== authData.hash) {
+      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+    }
+
+    const token = createSession(authData.username);
+    res.json({ success: true, token, username: authData.username });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/auth/status', (req, res) => {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '').trim() || req.query.token;
+  const session = verifyToken(token);
+  if (session) {
+    res.json({ success: true, authenticated: true, username: session.username });
+  } else {
+    res.json({ success: true, authenticated: false });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '').trim();
+  if (token) activeSessions.delete(token);
+  res.json({ success: true });
+});
+
+app.post('/api/auth/change-password', requireAuth, (req, res) => {
+  try {
+    const { currentPassword, newUsername, newPassword } = req.body;
+    const authData = getAuthData();
+
+    const inputHash = hashPassword(currentPassword, authData.salt);
+    if (inputHash !== authData.hash) {
+      return res.status(400).json({ success: false, error: 'Current password is incorrect.' });
+    }
+
+    if (!newPassword || newPassword.trim().length < 3) {
+      return res.status(400).json({ success: false, error: 'New password must be at least 3 characters.' });
+    }
+
+    const newSalt = crypto.randomBytes(16).toString('hex');
+    const newHash = hashPassword(newPassword, newSalt);
+    const updatedUsername = (newUsername && newUsername.trim()) ? newUsername.trim() : authData.username;
+
+    const updatedAuth = {
+      username: updatedUsername,
+      hash: newHash,
+      salt: newSalt,
+      updatedAt: new Date().toISOString()
+    };
+
+    fs.writeFileSync(AUTH_FILE, JSON.stringify(updatedAuth, null, 2), 'utf8');
+
+    // Invalidate old sessions
+    activeSessions.clear();
+    const newToken = createSession(updatedUsername);
+
+    res.json({
+      success: true,
+      message: 'Admin credentials updated successfully.',
+      token: newToken,
+      username: updatedUsername
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Persistent Connection Pool
 let activeApiConnection = null;
 let currentConfig = null;
@@ -168,7 +312,7 @@ app.get('/api/client-ip', (req, res) => {
 });
 
 // 0. Load Saved Credentials
-app.get('/api/saved-config', (req, res) => {
+app.get('/api/saved-config', requireAuth, (req, res) => {
   try {
     const detectedIp = getServerIp(req);
     if (fs.existsSync(CONFIG_FILE)) {
@@ -203,7 +347,7 @@ app.get('/api/saved-config', (req, res) => {
 });
 
 // 1. Connect Router & Get System Info + All Interfaces
-app.post('/api/connect', async (req, res) => {
+app.post('/api/connect', requireAuth, async (req, res) => {
   try {
     const { host, username, password, port, saveCredentials, targetIp } = req.body;
     const config = { host, username, password, port };
@@ -273,7 +417,7 @@ app.post('/api/connect', async (req, res) => {
 });
 
 // 2. Save WAN Selection & AUTOMATICALLY Provision Mangle & Routes
-app.post('/api/configure-wans', async (req, res) => {
+app.post('/api/configure-wans', requireAuth, async (req, res) => {
   try {
     const { config, targetIp, selectedWans } = req.body;
 
@@ -432,7 +576,7 @@ function parseRosv7TimeMs(timeRaw) {
 }
 
 // 3. Live Ping & Interface Health Monitor (5s Polling)
-app.post('/api/ping-all', async (req, res) => {
+app.post('/api/ping-all', requireAuth, async (req, res) => {
   try {
     const { config, wans, targetAddress = '8.8.8.8' } = req.body;
 
@@ -565,7 +709,7 @@ app.post('/api/ping-all', async (req, res) => {
 });
 
 // 4. Switch Speedtest WAN
-app.post('/api/switch-wan', async (req, res) => {
+app.post('/api/switch-wan', requireAuth, async (req, res) => {
   try {
     const { config, targetWanName } = req.body;
     const mangleRules = await runRosCmd(config, '/ip/firewall/mangle/print');
@@ -662,7 +806,7 @@ app.post('/api/speedtest/upload', (req, res) => {
 });
 
 // 7. Proxmox Server-Side Ookla Speedtest CLI Runner Endpoint
-app.post('/api/run-server-speedtest', (req, res) => {
+app.post('/api/run-server-speedtest', requireAuth, (req, res) => {
   const { wanName } = req.body;
   const cmd = 'speedtest --format=json';
 
@@ -818,7 +962,7 @@ app.get('/api/system/version-info', (req, res) => {
   });
 });
 
-app.get('/api/system/check-update', (req, res) => {
+app.get('/api/system/check-update', requireAuth, (req, res) => {
   exec('git fetch origin main && git log HEAD..origin/main --format="%h|%s|%cd"', { timeout: 15000 }, (err, stdout) => {
     if (err) {
       return res.json({
@@ -857,7 +1001,7 @@ app.get('/api/system/check-update', (req, res) => {
   });
 });
 
-app.post('/api/system/apply-update', (req, res) => {
+app.post('/api/system/apply-update', requireAuth, (req, res) => {
   exec('git fetch origin main && git reset --hard origin/main', { timeout: 30000 }, (err, stdout, stderr) => {
     if (err) {
       return res.status(500).json({

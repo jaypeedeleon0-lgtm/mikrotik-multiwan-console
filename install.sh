@@ -39,14 +39,27 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
     fi
   fi
   
-  # If not found locally in cache, download latest Debian 12 template
+  # If not found locally in cache, download latest Debian 12 template automatically
   if [ -z "$TEMPLATE_PATH" ]; then
-    echo -e "${YELLOW}Downloading Debian 12 LXC Template...${NC}"
-    DEBIAN_AVAIL=$(pveam available 2>/dev/null | grep "debian-12" | head -n 1 | awk '{print $2}' || echo "")
+    echo -e "${YELLOW}Debian template not found locally. Auto-downloading Debian 12 LXC Template from Proxmox repository...${NC}"
+    DEBIAN_AVAIL=$(pveam available 2>/dev/null | grep -E "debian-12|debian-11" | head -n 1 | awk '{print $2}' || echo "")
     if [ -n "$DEBIAN_AVAIL" ]; then
-      pveam download ${STORAGE} "$DEBIAN_AVAIL"
+      pveam download ${STORAGE} "$DEBIAN_AVAIL" || pveam download local "$DEBIAN_AVAIL" || true
     fi
-    TEMPLATE_NAME=$(ls /var/lib/vz/template/cache/ 2>/dev/null | grep -i "debian" | head -n 1 || echo "")
+    TEMPLATE_NAME=$(ls /var/lib/vz/template/cache/ 2>/dev/null | grep -E -i "debian|ubuntu" | head -n 1 || echo "")
+    if [ -n "$TEMPLATE_NAME" ]; then
+      TEMPLATE_PATH="${STORAGE}:vztmpl/${TEMPLATE_NAME}"
+    fi
+  fi
+
+  # Direct HTTP fallback download if pveam was unable to download
+  if [ -z "$TEMPLATE_PATH" ] && [ -d "/var/lib/vz/template/cache" ]; then
+    echo -e "${YELLOW}Downloading Debian 12 LXC Template directly via Proxmox official mirror...${NC}"
+    mkdir -p /var/lib/vz/template/cache
+    curl -fL -o /var/lib/vz/template/cache/debian-12-standard_12.7-1_amd64.tar.zst "http://download.proxmox.com/images/system/debian-12-standard_12.7-1_amd64.tar.zst" 2>/dev/null || \
+    curl -fL -o /var/lib/vz/template/cache/debian-12-standard_12.2-1_amd64.tar.zst "http://download.proxmox.com/images/system/debian-12-standard_12.2-1_amd64.tar.zst" 2>/dev/null || true
+    
+    TEMPLATE_NAME=$(ls /var/lib/vz/template/cache/ 2>/dev/null | grep -E -i "debian" | head -n 1 || echo "")
     if [ -n "$TEMPLATE_NAME" ]; then
       TEMPLATE_PATH="${STORAGE}:vztmpl/${TEMPLATE_NAME}"
     fi

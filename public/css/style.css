@@ -122,7 +122,8 @@ body {
   align-items: center;
   gap: 8px;
   background: #000000;
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid var(--border-glass);
   font-size: 0.85rem;
@@ -171,7 +172,8 @@ body {
   align-items: center;
   gap: 8px;
   background: #000000;
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid var(--border-glass);
   font-size: 0.82rem;
@@ -193,6 +195,62 @@ body {
   border-radius: 4px;
   font-weight: 800;
   letter-spacing: 0.5px;
+}
+
+/* User Auth Badge Header Component */
+.user-auth-badge {
+  display: flex;
+  align-items: center;
+  background: #000000;
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 4px;
+  overflow: hidden;
+}
+
+.user-badge-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0 10px;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-badge-btn:hover {
+  color: #00f2fe;
+}
+
+.user-badge-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.user-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0 10px;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-logout-btn:hover {
+  color: #f43f5e;
 }
 
 .btn-icon-only {
@@ -2262,6 +2320,31 @@ body.bw-mode .btn-login-bw {
 
 body.bw-mode .btn-login-bw:hover {
   background: #1e293b !important;
+}
+
+body.bw-mode .user-auth-badge {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.bw-mode .user-badge-btn {
+  color: #0f172a !important;
+}
+
+body.bw-mode .user-badge-btn:hover {
+  color: #2563eb !important;
+}
+
+body.bw-mode .user-badge-divider {
+  background: #cbd5e1 !important;
+}
+
+body.bw-mode .user-logout-btn {
+  color: #64748b !important;
+}
+
+body.bw-mode .user-logout-btn:hover {
+  color: #dc2626 !important;
 }
 
 

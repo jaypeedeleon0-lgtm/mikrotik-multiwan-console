@@ -1,3 +1,22 @@
+// MikroTik Multi-WAN Speedtest & Gateway Health Dashboard Client
+
+let routerConfig = null;
+let allFetchedInterfaces = [];
+let configuredWans = [];
+let activeWanName = null;
+let pingIntervalTimer = null;
+
+// Helper: Escape HTML strings to prevent XSS / render errors
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Session Authentication Helpers
 function getAuthToken() {
   return localStorage.getItem('admin_token') || '';

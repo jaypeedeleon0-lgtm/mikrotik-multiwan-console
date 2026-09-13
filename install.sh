@@ -96,8 +96,9 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
   echo -e "${CYAN}Waiting for LXC container CTID ${CTID} network initialization...${NC}"
   sleep 8
   
-  echo -e "${CYAN}Step 1/4: Installing base packages (curl, git, speedtest)...${NC}"
-  pct exec ${CTID} -- bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -y && apt-get install -y curl git build-essential speedtest-cli ca-certificates gnupg"
+  echo -e "${CYAN}Step 1/4: Installing base packages (curl, git, build tools)...${NC}"
+  pct exec ${CTID} -- bash -c "export DEBIAN_FRONTEND=noninteractive && apt-get update -y && apt-get install -y curl git build-essential ca-certificates gnupg"
+  pct exec ${CTID} -- bash -c "command -v speedtest >/dev/null 2>&1 || apt-get install -y speedtest-cli || true"
 
   echo -e "${CYAN}Step 2/4: Installing Node.js 20 LTS & PM2...${NC}"
   pct exec ${CTID} -- bash -c "mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg --yes && echo 'deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main' | tee /etc/apt/sources.list.d/nodesource.list && apt-get update -y && apt-get install -y nodejs && npm install -g pm2"
@@ -125,7 +126,10 @@ fi
 echo -e "${CYAN}Step 1/5: Updating package lists & base tools...${NC}"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y curl git build-essential speedtest-cli ca-certificates gnupg
+apt-get install -y curl git build-essential ca-certificates gnupg
+if ! command -v speedtest >/dev/null 2>&1; then
+  apt-get install -y speedtest-cli || true
+fi
 
 # Step 2: Install Node.js 20 LTS
 if ! command -v node >/dev/null 2>&1 || [ $(node -v | cut -d. -f1 | tr -d 'v') -lt 18 ]; then

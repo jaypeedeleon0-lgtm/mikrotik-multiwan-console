@@ -2,7 +2,7 @@
 
 A high-performance, real-time web dashboard for **MikroTik RouterOS** Multi-WAN load balancing, policy routing, gateway failover health monitoring, and Ookla speedtesting.
 
-Developed by **Joshua Limbaga** (Maintainer: `jaypeedeleon0-lgtm`).
+Developed by **Joshua Limbaga || Pee Deleon** (Maintainer: `jaypeedeleon0-lgtm`).
 
 ---
 

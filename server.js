@@ -13,6 +13,13 @@ const PORT = process.env.PORT || 5000;
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 const ENV_FILE = path.join(__dirname, '.env');
 
+process.on('uncaughtException', (err) => {
+  console.error('Safe Process Guard (Uncaught Exception):', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Safe Process Guard (Unhandled Rejection):', reason ? (reason.message || reason) : 'Unknown');
+});
+
 // Master Encryption Key
 let ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 if (!ENCRYPTION_KEY) {
@@ -277,16 +284,21 @@ async function getRosClient(config) {
 async function runRosCmd(config, command, paramsObj = null) {
   try {
     const conn = await getRosClient(config);
+    let res;
     if (paramsObj && typeof paramsObj === 'object') {
       const args = [command];
       for (const [key, val] of Object.entries(paramsObj)) {
         args.push(`=${key}=${val}`);
       }
-      return await conn.write(args);
+      res = await conn.write(args);
     } else {
-      return await conn.write(command);
+      res = await conn.write(command);
     }
+    return res;
   } catch (err) {
+    if (err && (err.errno === 'UNKNOWNREPLY' || (err.message && err.message.includes('!empty')))) {
+      return [];
+    }
     if (activeApiConnection) {
       try { activeApiConnection.close(); } catch(e){}
       activeApiConnection = null;

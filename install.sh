@@ -104,7 +104,7 @@ if [ -d "/etc/pve" ] && [ ! -f "/.dockerenv" ] && [ ! -f "/run/systemd/container
   pct exec ${CTID} -- bash -c "mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg --yes && echo 'deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main' | tee /etc/apt/sources.list.d/nodesource.list && apt-get update -y && apt-get install -y nodejs && npm install -g pm2"
 
   echo -e "${CYAN}Step 3/4: Cloning application from GitHub...${NC}"
-  pct exec ${CTID} -- bash -c "rm -rf /root/app && git clone https://github.com/mamamoblue52/mikrotik-multiwan-console.git /root/app && cd /root/app && npm install --production"
+  pct exec ${CTID} -- bash -c "rm -rf /root/app && git clone https://github.com/jaypeedeleon0-lgtm/mikrotik-multiwan-console.git /root/app && cd /root/app && npm install --production"
 
   echo -e "${CYAN}Step 4/4: Starting PM2 process daemon...${NC}"
   pct exec ${CTID} -- bash -c "cd /root/app && pm2 stop speedtest-dashboard 2>/dev/null || true && pm2 delete speedtest-dashboard 2>/dev/null || true && pm2 start server.js --name 'speedtest-dashboard' && pm2 save && (pm2 startup systemd -u root --hp /root 2>/dev/null || true)"
@@ -153,7 +153,7 @@ fi
 
 # Step 4: Clone or Update Application
 APP_DIR="/root/app"
-REPO_URL="https://github.com/mamamoblue52/mikrotik-multiwan-console.git"
+REPO_URL="https://github.com/jaypeedeleon0-lgtm/mikrotik-multiwan-console.git"
 
 echo -e "${CYAN}Step 4/5: Setting up application in ${APP_DIR}...${NC}"
 if [ -d "$APP_DIR/.git" ]; then

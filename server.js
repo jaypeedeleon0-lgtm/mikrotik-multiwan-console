@@ -60,10 +60,9 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 // ==========================================================================
-// ADMIN AUTHENTICATION SYSTEM (scrypt Hashing & Session Guard)
+// ADMIN AUTHENTICATION SYSTEM (Stateless HMAC-SHA256 Session Guard)
 // ==========================================================================
 const AUTH_FILE = path.join(__dirname, 'auth.json');
-const activeSessions = new Map(); // token -> { username, expiresAt }
 
 function hashPassword(password, salt) {
   return crypto.scryptSync(password || '', salt, 64).toString('hex');
@@ -93,21 +92,32 @@ function getAuthData() {
   return defaultAuth;
 }
 
-function createSession(username) {
-  const token = crypto.randomBytes(32).toString('hex');
-  const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 Hours valid
-  activeSessions.set(token, { username, expiresAt });
-  return token;
+function createSessionToken(username) {
+  const expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 Days valid
+  const payload = `${username}:${expiresAt}`;
+  const hmac = crypto.createHmac('sha256', KEY_BUFFER).update(payload).digest('hex');
+  return Buffer.from(`${payload}:${hmac}`).toString('base64url');
 }
 
 function verifyToken(token) {
-  if (!token || !activeSessions.has(token)) return false;
-  const session = activeSessions.get(token);
-  if (Date.now() > session.expiresAt) {
-    activeSessions.delete(token);
+  if (!token) return false;
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString('utf8');
+    const parts = decoded.split(':');
+    if (parts.length !== 3) return false;
+    const [username, expiresAtStr, hmac] = parts;
+    const expiresAt = parseInt(expiresAtStr, 10);
+    if (isNaN(expiresAt) || Date.now() > expiresAt) return false;
+
+    const payload = `${username}:${expiresAtStr}`;
+    const expectedHmac = crypto.createHmac('sha256', KEY_BUFFER).update(payload).digest('hex');
+
+    if (hmac !== expectedHmac) return false;
+
+    return { username, expiresAt };
+  } catch (e) {
     return false;
   }
-  return session;
 }
 
 function requireAuth(req, res, next) {
@@ -136,7 +146,7 @@ app.post('/api/auth/login', (req, res) => {
       return res.status(401).json({ success: false, error: 'Invalid username or password.' });
     }
 
-    const token = createSession(authData.username);
+    const token = createSessionToken(authData.username);
     res.json({ success: true, token, username: authData.username });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -155,9 +165,6 @@ app.get('/api/auth/status', (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  const authHeader = req.headers['authorization'] || '';
-  const token = authHeader.replace('Bearer ', '').trim();
-  if (token) activeSessions.delete(token);
   res.json({ success: true });
 });
 
@@ -188,9 +195,7 @@ app.post('/api/auth/change-password', requireAuth, (req, res) => {
 
     fs.writeFileSync(AUTH_FILE, JSON.stringify(updatedAuth, null, 2), 'utf8');
 
-    // Invalidate old sessions
-    activeSessions.clear();
-    const newToken = createSession(updatedUsername);
+    const newToken = createSessionToken(updatedUsername);
 
     res.json({
       success: true,

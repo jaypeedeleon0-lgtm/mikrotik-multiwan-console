@@ -1205,10 +1205,12 @@ async function openSpeedtestGaugeModal(wanName) {
   // Reset ratings dots to default 0 active (dim pending state)
   updateExperienceRatings(0, 0, 0);
 
-  gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-  gaugeIpText.innerText = 'Detecting Public IP...';
-  
-  // Auto-Detect nearest Ookla Speedtest Server immediately on modal open
+  speedtestGaugeModal.style.display = 'flex';
+
+  // 1. Enable Policy Routing Mark for this WAN on MikroTik FIRST
+  await switchWan(wanName);
+
+  // 2. Auto-Detect nearest Ookla Speedtest Server over the routed WAN line
   if (cliServerText) cliServerText.innerText = 'Detecting nearest Ookla server...';
   fetch('/api/detect-speedtest-server')
     .then(r => r.json())
@@ -1216,18 +1218,15 @@ async function openSpeedtestGaugeModal(wanName) {
       if (data.success && data.server) {
         const loc = data.server.location ? ` (${data.server.location})` : '';
         if (cliServerText) cliServerText.innerText = `${data.server.name}${loc}`;
+      } else {
+        if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
       }
     })
     .catch(() => {
-      if (cliServerText) cliServerText.innerText = 'Globe Telecom (Bacolod)';
+      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
     });
 
-  speedtestGaugeModal.style.display = 'flex';
-
-  // 1. Enable Policy Routing Mark for this WAN on MikroTik
-  await switchWan(wanName);
-
-  // 2. Fetch Egress Public IP details for Modal header
+  // 3. Fetch Egress Public IP details for Modal header
   try {
     const res = await fetch('/api/public-ip');
     const data = await res.json();

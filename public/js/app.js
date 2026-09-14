@@ -2,8 +2,10 @@
 
 let routerConfig = null;
 let allFetchedInterfaces = [];
+let allFetchedRoutingMarks = [];
 let configuredWans = [];
 let activeWanName = null;
+let editingWanName = null;
 let pingIntervalTimer = null;
 
 // Helper: Escape HTML strings to prevent XSS / render errors
@@ -344,14 +346,72 @@ function updateGaugeSpeed(speedMbps, phase = 'download') {
   renderGaugeState(speedMbps, phase);
 }
 
-// Modal Elements
-const addWanModal = document.getElementById('addWanModal');
-const closeAddWanModalBtn = document.getElementById('closeAddWanModalBtn');
-const cancelAddWanModalBtn = document.getElementById('cancelAddWanModalBtn');
-const addWanForm = document.getElementById('addWanForm');
-const modalInterfaceSelect = document.getElementById('modalInterfaceSelect');
-const modalWanLabelInput = document.getElementById('modalWanLabelInput');
+const modalWanRoutingMarkSelect = document.getElementById('modalWanRoutingMarkSelect');
+const modalCustomRoutingMarkInput = document.getElementById('modalCustomRoutingMarkInput');
+const addWanModalTitle = document.getElementById('addWanModalTitle');
 const submitAddWanBtn = document.getElementById('submitAddWanBtn');
+
+function populateRoutingMarkOptions(currentSelectedMark = '', ifaceName = '') {
+  if (!modalWanRoutingMarkSelect) return;
+  const defaultMark = ifaceName ? `to-${ifaceName}` : '';
+  
+  let html = `<option value="${defaultMark}">Auto Default (${defaultMark || 'to-{interface}'})</option>`;
+  
+  const uniqueMarks = Array.from(new Set(allFetchedRoutingMarks));
+  if (uniqueMarks.length > 0) {
+    html += `<optgroup label="Fetched from MikroTik (WinBox)">`;
+    uniqueMarks.forEach(mark => {
+      if (!mark || mark === 'main') return;
+      const isSelected = (currentSelectedMark === mark);
+      html += `<option value="${escapeHtml(mark)}" ${isSelected ? 'selected' : ''}>${escapeHtml(mark)}</option>`;
+    });
+    html += `</optgroup>`;
+  }
+  
+  const isCustom = (currentSelectedMark === '__custom__' || (currentSelectedMark && !uniqueMarks.includes(currentSelectedMark) && currentSelectedMark !== defaultMark));
+  
+  html += `<option value="__custom__" ${isCustom ? 'selected' : ''}>+ Enter Custom Routing Mark...</option>`;
+  
+  modalWanRoutingMarkSelect.innerHTML = html;
+  
+  if (modalCustomRoutingMarkInput) {
+    if (isCustom) {
+      modalCustomRoutingMarkInput.style.display = 'block';
+      if (currentSelectedMark && currentSelectedMark !== '__custom__') {
+        modalCustomRoutingMarkInput.value = currentSelectedMark;
+      }
+    } else {
+      modalCustomRoutingMarkInput.style.display = 'none';
+      modalCustomRoutingMarkInput.value = '';
+    }
+  }
+}
+
+if (modalWanRoutingMarkSelect) {
+  modalWanRoutingMarkSelect.addEventListener('change', () => {
+    if (modalWanRoutingMarkSelect.value === '__custom__') {
+      if (modalCustomRoutingMarkInput) {
+        modalCustomRoutingMarkInput.style.display = 'block';
+        modalCustomRoutingMarkInput.focus();
+      }
+    } else {
+      if (modalCustomRoutingMarkInput) {
+        modalCustomRoutingMarkInput.style.display = 'none';
+      }
+    }
+  });
+}
+
+async function refreshRoutingMarksAndPopulate(currentSelectedMark = '', ifaceName = '') {
+  try {
+    const res = await authFetch('/api/routing-marks');
+    const data = await res.json();
+    if (data.success && Array.isArray(data.routingMarks)) {
+      allFetchedRoutingMarks = data.routingMarks;
+    }
+  } catch(e) {}
+  populateRoutingMarkOptions(currentSelectedMark, ifaceName);
+}
 
 const wanGrid = document.getElementById('wanGrid');
 const wanCountLabel = document.getElementById('wanCountLabel');
@@ -488,11 +548,7 @@ connectForm.addEventListener('submit', async (e) => {
     resUptime.innerText = sys.uptime;
 
     allFetchedInterfaces = sys.allInterfaces || [];
-
-    // Populate Routing Marks Datalist
-    if (Array.isArray(sys.routingMarks) && routingMarksDatalist) {
-      routingMarksDatalist.innerHTML = sys.routingMarks.map(rm => `<option value="${escapeHtml(rm)}"></option>`).join('');
-    }
+    allFetchedRoutingMarks = sys.routingMarks || [];
 
     // Enable Add WAN Modal Button
     openAddWanModalBtn.disabled = false;
@@ -523,7 +579,7 @@ connectForm.addEventListener('submit', async (e) => {
 });
 
 // 2. Open Add WAN Modal Dialog Handler
-openAddWanModalBtn.addEventListener('click', () => {
+openAddWanModalBtn.addEventListener('click', async () => {
   if (allFetchedInterfaces.length === 0) {
     showToast('Please connect to your MikroTik router first!', 'error');
     return;
@@ -538,13 +594,24 @@ openAddWanModalBtn.addEventListener('click', () => {
   }).join('');
   modalInterfaceSelect.disabled = false;
 
+  const firstIface = allFetchedInterfaces[0] ? allFetchedInterfaces[0].name : '';
+  await refreshRoutingMarksAndPopulate('', firstIface);
+
   if (modalWanLabelInput) modalWanLabelInput.value = '';
-  if (modalWanRoutingMarkInput) modalWanRoutingMarkInput.value = '';
   addWanModal.style.display = 'flex';
 });
 
+// Change listener on modalInterfaceSelect to update default routing mark label
+if (modalInterfaceSelect) {
+  modalInterfaceSelect.addEventListener('change', () => {
+    if (!editingWanName) {
+      populateRoutingMarkOptions(modalWanRoutingMarkSelect ? modalWanRoutingMarkSelect.value : '', modalInterfaceSelect.value);
+    }
+  });
+}
+
 // Edit WAN Handler
-function editWan(wanName) {
+async function editWan(wanName) {
   const wan = configuredWans.find(w => w.name === wanName);
   if (!wan) return;
 
@@ -557,7 +624,7 @@ function editWan(wanName) {
   modalInterfaceSelect.disabled = true;
 
   if (modalWanLabelInput) modalWanLabelInput.value = wan.label || wan.name;
-  if (modalWanRoutingMarkInput) modalWanRoutingMarkInput.value = wan.routingMark || `to-${wan.name}`;
+  await refreshRoutingMarksAndPopulate(wan.routingMark || `to-${wan.name}`, wan.name);
   addWanModal.style.display = 'flex';
 }
 
@@ -579,7 +646,14 @@ addWanForm.addEventListener('submit', async (e) => {
   const opt = modalInterfaceSelect.options[modalInterfaceSelect.selectedIndex];
   const gateway = opt ? opt.getAttribute('data-gw') || 'Static / Gateway' : 'Static / Gateway';
   const customLabel = modalWanLabelInput.value.trim() || selectedIfaceName;
-  const customRoutingMark = modalWanRoutingMarkInput.value.trim() || `to-${selectedIfaceName}`;
+
+  let selectedRoutingMark = modalWanRoutingMarkSelect ? modalWanRoutingMarkSelect.value : '';
+  if (selectedRoutingMark === '__custom__' && modalCustomRoutingMarkInput) {
+    selectedRoutingMark = modalCustomRoutingMarkInput.value.trim();
+  }
+  if (!selectedRoutingMark) {
+    selectedRoutingMark = `to-${selectedIfaceName}`;
+  }
 
   let updatedWanList = [];
 
@@ -589,7 +663,7 @@ addWanForm.addEventListener('submit', async (e) => {
         return {
           ...w,
           label: customLabel,
-          routingMark: customRoutingMark
+          routingMark: selectedRoutingMark
         };
       }
       return w;
@@ -604,7 +678,7 @@ addWanForm.addEventListener('submit', async (e) => {
       name: selectedIfaceName,
       label: customLabel,
       gateway: gateway,
-      routingMark: customRoutingMark
+      routingMark: selectedRoutingMark
     };
     updatedWanList = [...configuredWans, newWan];
   }
@@ -617,7 +691,7 @@ addWanForm.addEventListener('submit', async (e) => {
     submitAddWanBtn.disabled = false;
     submitAddWanBtn.innerText = 'Add & Apply Mangle Rule';
     closeModal();
-    showToast(`Updated WAN ${customLabel} (Mark: ${customRoutingMark})!`, 'success');
+    showToast(`Updated WAN ${customLabel} (Mark: ${selectedRoutingMark})!`, 'success');
   } catch (err) {
     submitAddWanBtn.disabled = false;
     submitAddWanBtn.innerText = 'Add & Apply Mangle Rule';

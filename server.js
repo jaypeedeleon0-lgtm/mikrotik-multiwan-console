@@ -352,12 +352,14 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     const { host, username, password, port, saveCredentials, targetIp } = req.body;
     const config = { host, username, password, port };
 
-    const [sysDataArr, interfaces, dhcpClients, routingTables, mangleRules] = await Promise.all([
+    const [sysDataArr, interfaces, dhcpClients, routingTables, mangleRules, ipRoutes, routingRules] = await Promise.all([
       runRosCmd(config, '/system/resource/print'),
       runRosCmd(config, '/interface/print').catch(() => []),
       runRosCmd(config, '/ip/dhcp-client/print').catch(() => []),
       runRosCmd(config, '/routing/table/print').catch(() => []),
-      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => [])
+      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []),
+      runRosCmd(config, '/ip/route/print').catch(() => []),
+      runRosCmd(config, '/routing/rule/print').catch(() => [])
     ]);
 
     const sysData = Array.isArray(sysDataArr) ? sysDataArr[0] : sysDataArr;
@@ -373,12 +375,24 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     const routingMarksSet = new Set();
     if (Array.isArray(routingTables)) {
       routingTables.forEach(t => {
-        if (t.name) routingMarksSet.add(t.name);
+        if (t.name && t.name !== 'main') routingMarksSet.add(t.name);
       });
     }
     if (Array.isArray(mangleRules)) {
       mangleRules.forEach(r => {
         if (r['new-routing-mark']) routingMarksSet.add(r['new-routing-mark']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+    if (Array.isArray(ipRoutes)) {
+      ipRoutes.forEach(r => {
+        if (r['routing-table'] && r['routing-table'] !== 'main') routingMarksSet.add(r['routing-table']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+    if (Array.isArray(routingRules)) {
+      routingRules.forEach(r => {
+        if (r['table'] && r['table'] !== 'main') routingMarksSet.add(r['table']);
         if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
       });
     }
@@ -431,6 +445,62 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Fetch Live Routing Marks from MikroTik
+app.get('/api/routing-marks', requireAuth, async (req, res) => {
+  try {
+    if (!fs.existsSync(CONFIG_FILE)) {
+      return res.json({ success: true, routingMarks: [] });
+    }
+    const configData = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+    const password = decryptText(configData.encryptedPassword);
+    const config = {
+      host: configData.host,
+      username: configData.username,
+      password: password,
+      port: configData.port || 8728
+    };
+
+    const [routingTables, mangleRules, ipRoutes, routingRules] = await Promise.all([
+      runRosCmd(config, '/routing/table/print').catch(() => []),
+      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []),
+      runRosCmd(config, '/ip/route/print').catch(() => []),
+      runRosCmd(config, '/routing/rule/print').catch(() => [])
+    ]);
+
+    const routingMarksSet = new Set();
+    if (Array.isArray(routingTables)) {
+      routingTables.forEach(t => {
+        if (t.name && t.name !== 'main') routingMarksSet.add(t.name);
+      });
+    }
+    if (Array.isArray(mangleRules)) {
+      mangleRules.forEach(r => {
+        if (r['new-routing-mark']) routingMarksSet.add(r['new-routing-mark']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+    if (Array.isArray(ipRoutes)) {
+      ipRoutes.forEach(r => {
+        if (r['routing-table'] && r['routing-table'] !== 'main') routingMarksSet.add(r['routing-table']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+    if (Array.isArray(routingRules)) {
+      routingRules.forEach(r => {
+        if (r['table'] && r['table'] !== 'main') routingMarksSet.add(r['table']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+
+    res.json({
+      success: true,
+      routingMarks: Array.from(routingMarksSet)
+    });
+  } catch (err) {
+    res.json({ success: true, routingMarks: [] });
   }
 });
 

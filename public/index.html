@@ -221,12 +221,12 @@
 
         <div class="form-group">
           <label>MikroTik Routing Mark / Table (Optional)</label>
-          <input type="text" id="modalWanRoutingMarkInput" placeholder="e.g. to-ether1-PLDT or PLDT" list="routingMarksDatalist" autocomplete="off">
-          <datalist id="routingMarksDatalist">
-            <!-- Populated dynamically with MikroTik routing marks -->
-          </datalist>
+          <select id="modalWanRoutingMarkSelect">
+            <option value="">Auto Default (to-{interface})</option>
+          </select>
+          <input type="text" id="modalCustomRoutingMarkInput" placeholder="Enter custom routing mark (e.g. to-ether1-PLDT)" style="display: none; margin-top: 8px;">
           <span style="font-size: 0.72rem; color: #64748b; margin-top: 4px; display: block;">
-            Select or enter an existing MikroTik Mangle Routing Mark (e.g. <code>to-ether1-PLDT</code>, <code>PLDT</code>, <code>RAIN101</code>). Leave blank for default (<code>to-{interface}</code>).
+            Select an existing MikroTik Mangle Routing Mark fetched directly from WinBox (e.g. <code>to-ether1-PLDT</code>, <code>PLDT</code>, <code>to-ether2-RAIN101</code>).
           </span>
         </div>
 

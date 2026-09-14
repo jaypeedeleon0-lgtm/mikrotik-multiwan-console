@@ -198,11 +198,11 @@
     </main>
   </div>
 
-  <!-- Add WAN Interface Modal Overlay -->
+  <!-- Add / Edit WAN Interface Modal Overlay -->
   <div class="modal-overlay" id="addWanModal" style="display: none;">
     <div class="modal-card">
       <div class="card-header">
-        <h3>+ Add WAN Interface</h3>
+        <h3 id="addWanModalTitle">+ Add WAN Interface</h3>
         <button type="button" class="btn btn-secondary btn-sm" id="closeAddWanModalBtn">✕</button>
       </div>
 
@@ -217,6 +217,17 @@
         <div class="form-group">
           <label>Display Label (Optional)</label>
           <input type="text" id="modalWanLabelInput" placeholder="e.g. PLDT Fiber / Globe Backup">
+        </div>
+
+        <div class="form-group">
+          <label>MikroTik Routing Mark / Table (Optional)</label>
+          <input type="text" id="modalWanRoutingMarkInput" placeholder="e.g. to-ether1-PLDT or PLDT" list="routingMarksDatalist" autocomplete="off">
+          <datalist id="routingMarksDatalist">
+            <!-- Populated dynamically with MikroTik routing marks -->
+          </datalist>
+          <span style="font-size: 0.72rem; color: #64748b; margin-top: 4px; display: block;">
+            Select or enter an existing MikroTik Mangle Routing Mark (e.g. <code>to-ether1-PLDT</code>, <code>PLDT</code>, <code>RAIN101</code>). Leave blank for default (<code>to-{interface}</code>).
+          </span>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">

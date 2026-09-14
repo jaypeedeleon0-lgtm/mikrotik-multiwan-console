@@ -352,10 +352,12 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     const { host, username, password, port, saveCredentials, targetIp } = req.body;
     const config = { host, username, password, port };
 
-    const [sysDataArr, interfaces, dhcpClients] = await Promise.all([
+    const [sysDataArr, interfaces, dhcpClients, routingTables, mangleRules] = await Promise.all([
       runRosCmd(config, '/system/resource/print'),
       runRosCmd(config, '/interface/print').catch(() => []),
-      runRosCmd(config, '/ip/dhcp-client/print').catch(() => [])
+      runRosCmd(config, '/ip/dhcp-client/print').catch(() => []),
+      runRosCmd(config, '/routing/table/print').catch(() => []),
+      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => [])
     ]);
 
     const sysData = Array.isArray(sysDataArr) ? sysDataArr[0] : sysDataArr;
@@ -366,6 +368,21 @@ app.post('/api/connect', requireAuth, async (req, res) => {
         if (c.interface) dhcpMap[c.interface] = c.gateway || 'DHCP';
       });
     }
+
+    // Extract unique Routing Marks configured in MikroTik
+    const routingMarksSet = new Set();
+    if (Array.isArray(routingTables)) {
+      routingTables.forEach(t => {
+        if (t.name) routingMarksSet.add(t.name);
+      });
+    }
+    if (Array.isArray(mangleRules)) {
+      mangleRules.forEach(r => {
+        if (r['new-routing-mark']) routingMarksSet.add(r['new-routing-mark']);
+        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
+      });
+    }
+    const routingMarks = Array.from(routingMarksSet);
 
     // Filter available interfaces for user selection
     const allInterfaces = [];
@@ -408,7 +425,8 @@ app.post('/api/connect', requireAuth, async (req, res) => {
         version: sysData['version'] || 'v7.x',
         cpuLoad: sysData['cpu-load'] || '0',
         uptime: sysData['uptime'] || 'Unknown',
-        allInterfaces: allInterfaces
+        allInterfaces: allInterfaces,
+        routingMarks: routingMarks
       }
     });
   } catch (err) {
@@ -430,7 +448,7 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
     // Step A: Ensure Routing Tables exist in ROS v7
     const existingTables = await runRosCmd(config, '/routing/table/print').catch(() => []);
     for (const wan of selectedWans) {
-      const tableName = `to-${wan.name}`;
+      const tableName = wan.routingMark || `to-${wan.name}`;
       const hasTable = Array.isArray(existingTables) && existingTables.some(t => t.name === tableName);
       if (!hasTable) {
         await runRosCmd(config, '/routing/table/add', {
@@ -464,7 +482,7 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
     }
 
     for (const wan of selectedWans) {
-      const tableName = `to-${wan.name}`;
+      const tableName = wan.routingMark || `to-${wan.name}`;
       const hasRoute = Array.isArray(existingRoutes) && existingRoutes.some(r => r['routing-table'] === tableName);
       if (!hasRoute) {
         await runRosCmd(config, '/ip/route/add', {
@@ -495,6 +513,7 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
 
     for (const wan of selectedWans) {
       const commentTag = `SPEEDTEST: PC to ${wan.name}`;
+      const targetRoutingMark = wan.routingMark || `to-${wan.name}`;
       const existingRule = Array.isArray(mangleRules) && mangleRules.find(r => r.comment === commentTag);
 
       if (!existingRule) {
@@ -503,7 +522,7 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
           'src-address': targetIp,
           'dst-address-type': '!local',
           action: 'mark-routing',
-          'new-routing-mark': `to-${wan.name}`,
+          'new-routing-mark': targetRoutingMark,
           passthrough: 'no',
           disabled: 'yes',
           comment: commentTag
@@ -512,7 +531,8 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
         await runRosCmd(config, '/ip/firewall/mangle/set', {
           '.id': existingRule['.id'],
           'src-address': targetIp,
-          'dst-address-type': '!local'
+          'dst-address-type': '!local',
+          'new-routing-mark': targetRoutingMark
         });
       }
     }

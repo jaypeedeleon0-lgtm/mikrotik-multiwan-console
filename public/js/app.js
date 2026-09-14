@@ -489,6 +489,11 @@ connectForm.addEventListener('submit', async (e) => {
 
     allFetchedInterfaces = sys.allInterfaces || [];
 
+    // Populate Routing Marks Datalist
+    if (Array.isArray(sys.routingMarks) && routingMarksDatalist) {
+      routingMarksDatalist.innerHTML = sys.routingMarks.map(rm => `<option value="${escapeHtml(rm)}"></option>`).join('');
+    }
+
     // Enable Add WAN Modal Button
     openAddWanModalBtn.disabled = false;
 
@@ -524,18 +529,42 @@ openAddWanModalBtn.addEventListener('click', () => {
     return;
   }
 
+  editingWanName = null;
+  if (addWanModalTitle) addWanModalTitle.innerText = '+ Add WAN Interface';
+
   // Populate Interface Select Dropdown
   modalInterfaceSelect.innerHTML = allFetchedInterfaces.map(iface => {
     return `<option value="${iface.name}" data-gw="${iface.gateway}">${iface.name} (${iface.gateway})</option>`;
   }).join('');
+  modalInterfaceSelect.disabled = false;
 
-  modalWanLabelInput.value = '';
+  if (modalWanLabelInput) modalWanLabelInput.value = '';
+  if (modalWanRoutingMarkInput) modalWanRoutingMarkInput.value = '';
   addWanModal.style.display = 'flex';
 });
+
+// Edit WAN Handler
+function editWan(wanName) {
+  const wan = configuredWans.find(w => w.name === wanName);
+  if (!wan) return;
+
+  editingWanName = wanName;
+  if (addWanModalTitle) addWanModalTitle.innerText = `Edit WAN (${wan.name})`;
+
+  modalInterfaceSelect.innerHTML = allFetchedInterfaces.map(iface => {
+    return `<option value="${iface.name}" data-gw="${iface.gateway}" ${iface.name === wanName ? 'selected' : ''}>${iface.name} (${iface.gateway})</option>`;
+  }).join('');
+  modalInterfaceSelect.disabled = true;
+
+  if (modalWanLabelInput) modalWanLabelInput.value = wan.label || wan.name;
+  if (modalWanRoutingMarkInput) modalWanRoutingMarkInput.value = wan.routingMark || `to-${wan.name}`;
+  addWanModal.style.display = 'flex';
+}
 
 // Close Modal Controls
 function closeModal() {
   addWanModal.style.display = 'none';
+  editingWanName = null;
 }
 closeAddWanModalBtn.addEventListener('click', closeModal);
 cancelAddWanModalBtn.addEventListener('click', closeModal);
@@ -550,29 +579,45 @@ addWanForm.addEventListener('submit', async (e) => {
   const opt = modalInterfaceSelect.options[modalInterfaceSelect.selectedIndex];
   const gateway = opt ? opt.getAttribute('data-gw') || 'Static / Gateway' : 'Static / Gateway';
   const customLabel = modalWanLabelInput.value.trim() || selectedIfaceName;
+  const customRoutingMark = modalWanRoutingMarkInput.value.trim() || `to-${selectedIfaceName}`;
 
-  if (configuredWans.some(w => w.name === selectedIfaceName)) {
-    showToast(`Interface ${selectedIfaceName} is already configured.`, 'error');
-    return;
+  let updatedWanList = [];
+
+  if (editingWanName) {
+    updatedWanList = configuredWans.map(w => {
+      if (w.name === editingWanName) {
+        return {
+          ...w,
+          label: customLabel,
+          routingMark: customRoutingMark
+        };
+      }
+      return w;
+    });
+  } else {
+    if (configuredWans.some(w => w.name === selectedIfaceName)) {
+      showToast(`Interface ${selectedIfaceName} is already configured.`, 'error');
+      return;
+    }
+
+    const newWan = {
+      name: selectedIfaceName,
+      label: customLabel,
+      gateway: gateway,
+      routingMark: customRoutingMark
+    };
+    updatedWanList = [...configuredWans, newWan];
   }
 
-  const newWan = {
-    name: selectedIfaceName,
-    label: customLabel,
-    gateway: gateway
-  };
-
-  const updatedWanList = [...configuredWans, newWan];
-
   submitAddWanBtn.disabled = true;
-  submitAddWanBtn.innerText = 'Applying Mangle...';
+  submitAddWanBtn.innerText = editingWanName ? 'Updating Routing...' : 'Applying Mangle...';
 
   try {
     await saveAndApplyWans(updatedWanList, false);
     submitAddWanBtn.disabled = false;
     submitAddWanBtn.innerText = 'Add & Apply Mangle Rule';
     closeModal();
-    showToast(`Added WAN ${customLabel} and applied Mangle rule!`, 'success');
+    showToast(`Updated WAN ${customLabel} (Mark: ${customRoutingMark})!`, 'success');
   } catch (err) {
     submitAddWanBtn.disabled = false;
     submitAddWanBtn.innerText = 'Add & Apply Mangle Rule';
@@ -645,19 +690,22 @@ function renderWanCards() {
   const cardsHtml = configuredWans.map(wan => {
     const isCurrentActive = activeWanName === wan.name;
     const cardClass = `glass-card wan-card ${isCurrentActive ? 'active-route' : ''}`;
+    const routingMarkName = wan.routingMark || `to-${wan.name}`;
 
     return `
       <div class="${cardClass}" id="wan-card-${wan.name}">
         <div class="wan-card-header">
           <div class="wan-title-group">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <h4>${wan.label || wan.name}</h4>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h4>${escapeHtml(wan.label || wan.name)}</h4>
+              <span class="routing-mark-tag" title="MikroTik Routing Mark">Mark: ${escapeHtml(routingMarkName)}</span>
             </div>
-            <span class="wan-subtitle">Interface: ${wan.name} | GW: ${wan.gateway}</span>
+            <span class="wan-subtitle">Interface: ${escapeHtml(wan.name)} | GW: ${escapeHtml(wan.gateway)}</span>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:6px;">
             ${isCurrentActive ? '<span class="active-badge">ACTIVE ROUTE</span>' : ''}
-            <button type="button" class="btn-remove-wan" title="Remove WAN" onclick="removeWan('${wan.name}')">✕</button>
+            <button type="button" class="btn-edit-wan" title="Edit Routing Mark & Label" onclick="editWan('${escapeHtml(wan.name)}')">✏️</button>
+            <button type="button" class="btn-remove-wan" title="Remove WAN" onclick="removeWan('${escapeHtml(wan.name)}')">✕</button>
           </div>
         </div>
 

@@ -295,6 +295,34 @@ body {
   justify-content: center;
 }
 
+.routing-mark-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  color: #a1a1aa;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.btn-edit-wan {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-wan:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
 /* Layout */
 .main-content {
   display: grid;

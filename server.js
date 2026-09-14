@@ -369,15 +369,12 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     const { host, username, password, port, saveCredentials, targetIp } = req.body;
     const config = { host, username, password, port };
 
-    const [sysDataArr, interfaces, dhcpClients, routingTables, mangleRules, ipRoutes, routingRules] = await Promise.all([
-      runRosCmd(config, '/system/resource/print'),
-      runRosCmd(config, '/interface/print').catch(() => []),
-      runRosCmd(config, '/ip/dhcp-client/print').catch(() => []),
-      runRosCmd(config, '/routing/table/print').catch(() => []),
-      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []),
-      runRosCmd(config, '/ip/route/print').catch(() => []),
-      runRosCmd(config, '/routing/rule/print').catch(() => [])
-    ]);
+    const sysDataArr = await runRosCmd(config, '/system/resource/print');
+    const interfaces = await runRosCmd(config, '/interface/print').catch(() => []);
+    const dhcpClients = await runRosCmd(config, '/ip/dhcp-client/print').catch(() => []);
+    const routingTables = await runRosCmd(config, '/routing/table/print').catch(() => []);
+    const mangleRules = await runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []);
+    const ipRoutes = await runRosCmd(config, '/ip/route/print').catch(() => []);
 
     const sysData = Array.isArray(sysDataArr) ? sysDataArr[0] : sysDataArr;
 
@@ -404,12 +401,6 @@ app.post('/api/connect', requireAuth, async (req, res) => {
     if (Array.isArray(ipRoutes)) {
       ipRoutes.forEach(r => {
         if (r['routing-table'] && r['routing-table'] !== 'main') routingMarksSet.add(r['routing-table']);
-        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
-      });
-    }
-    if (Array.isArray(routingRules)) {
-      routingRules.forEach(r => {
-        if (r['table'] && r['table'] !== 'main') routingMarksSet.add(r['table']);
         if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
       });
     }
@@ -480,12 +471,9 @@ app.get('/api/routing-marks', requireAuth, async (req, res) => {
       port: configData.port || 8728
     };
 
-    const [routingTables, mangleRules, ipRoutes, routingRules] = await Promise.all([
-      runRosCmd(config, '/routing/table/print').catch(() => []),
-      runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []),
-      runRosCmd(config, '/ip/route/print').catch(() => []),
-      runRosCmd(config, '/routing/rule/print').catch(() => [])
-    ]);
+    const routingTables = await runRosCmd(config, '/routing/table/print').catch(() => []);
+    const mangleRules = await runRosCmd(config, '/ip/firewall/mangle/print').catch(() => []);
+    const ipRoutes = await runRosCmd(config, '/ip/route/print').catch(() => []);
 
     const routingMarksSet = new Set();
     if (Array.isArray(routingTables)) {
@@ -502,12 +490,6 @@ app.get('/api/routing-marks', requireAuth, async (req, res) => {
     if (Array.isArray(ipRoutes)) {
       ipRoutes.forEach(r => {
         if (r['routing-table'] && r['routing-table'] !== 'main') routingMarksSet.add(r['routing-table']);
-        if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
-      });
-    }
-    if (Array.isArray(routingRules)) {
-      routingRules.forEach(r => {
-        if (r['table'] && r['table'] !== 'main') routingMarksSet.add(r['table']);
         if (r['routing-mark']) routingMarksSet.add(r['routing-mark']);
       });
     }

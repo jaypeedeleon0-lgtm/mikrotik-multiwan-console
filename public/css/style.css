@@ -300,13 +300,15 @@ body {
   animation: rotateBorderOutline 2s linear infinite;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.wan-card:hover .btn-primary {
   background: transparent !important;
   color: #ffffff !important;
   border-color: transparent !important;
 }
 
-.btn-primary:hover::before {
+.btn-primary:hover::before,
+.wan-card:hover .btn-primary::before {
   opacity: 1;
 }
 

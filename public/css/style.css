@@ -900,15 +900,11 @@ input:focus, select:focus {
   gap: 14px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
 }
 
 .wan-card:hover {
-  transform: translateY(-2px);
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+  transform: none;
 }
 
 .wan-card.active-speedtest {

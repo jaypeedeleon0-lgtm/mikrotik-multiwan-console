@@ -1200,8 +1200,10 @@ async function openSpeedtestGaugeModal(wanName) {
 
   const runServerCliBtn = document.getElementById('runServerCliBtn');
   const runServerCliBtnFinished = document.getElementById('runServerCliBtnFinished');
-  if (runServerCliBtn) runServerCliBtn.disabled = false;
-  if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = false;
+
+  // Disable GO buttons IMMEDIATELY during 5s route stabilization & server detection
+  if (runServerCliBtn) runServerCliBtn.disabled = true;
+  if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = true;
 
   if (goBtnContainer) goBtnContainer.style.display = 'flex';
   if (gaugeWrapper) gaugeWrapper.style.display = 'none';
@@ -1221,17 +1223,17 @@ async function openSpeedtestGaugeModal(wanName) {
   // 1. Enable Policy Routing Mark for this WAN on MikroTik FIRST
   await switchWan(wanName);
 
-  // 2. 2-Second Route Stabilization Cooldown Countdown (Ensures 100% accurate server detection)
-  if (cliServerText) cliServerText.innerText = 'Stabilizing WAN Route (2s)...';
+  // 2. 5-Second Route Stabilization Cooldown Countdown (GO button stays disabled)
   if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
   if (gaugeIpText) gaugeIpText.innerText = 'Routing via Gateway...';
 
-  await new Promise(res => setTimeout(res, 1000));
-  if (cliServerText) cliServerText.innerText = 'Stabilizing WAN Route (1s)...';
-  await new Promise(res => setTimeout(res, 1000));
+  for (let sec = 5; sec >= 1; sec--) {
+    if (cliServerText) cliServerText.innerText = `● Stabilizing WAN Route (${sec}s)...`;
+    await new Promise(res => setTimeout(res, 1000));
+  }
 
   // 3. Auto-Detect nearest Ookla Speedtest Server over the freshly routed WAN line
-  if (cliServerText) cliServerText.innerText = 'Detecting nearest Ookla server...';
+  if (cliServerText) cliServerText.innerText = '● Detecting Nearest Ookla Server...';
   try {
     const r = await authFetch('/api/detect-speedtest-server');
     const data = await r.json();
@@ -1257,6 +1259,10 @@ async function openSpeedtestGaugeModal(wanName) {
     if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
     if (gaugeIpText) gaugeIpText.innerText = `GW: ${wanObj.gateway || 'Active Routed Line'}`;
   }
+
+  // 5. Enable GO buttons ONCE server detection is 100% complete!
+  if (runServerCliBtn) runServerCliBtn.disabled = false;
+  if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = false;
 }
 
 // 11. Black & White Background Theme Toggle Handler

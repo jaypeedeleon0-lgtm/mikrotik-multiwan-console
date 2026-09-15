@@ -1801,6 +1801,15 @@ body.bw-mode .btn-green {
   transform: scale(0.96);
 }
 
+.ookla-go-btn-large:disabled,
+.ookla-go-btn-medium:disabled {
+  border-color: #334155 !important;
+  color: #475569 !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
 /* Speedometer Gauge Container */
 .ookla-gauge-wrapper {
   display: flex;

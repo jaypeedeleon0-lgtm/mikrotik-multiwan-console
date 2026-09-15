@@ -1180,10 +1180,16 @@ async function openSpeedtestGaugeModal(wanName) {
   const wanObj = configuredWans.find(w => w.name === wanName);
   if (!wanObj) return;
 
+  activeWanName = wanName;
+
   if (gaugeAnimTimer) clearInterval(gaugeAnimTimer);
   if (gaugeRafId) {
     cancelAnimationFrame(gaugeRafId);
     gaugeRafId = null;
+  }
+  if (currentEventSource) {
+    try { currentEventSource.close(); } catch(e){}
+    currentEventSource = null;
   }
 
   const goBtnContainer = document.getElementById('goBtnContainer');
@@ -1191,6 +1197,11 @@ async function openSpeedtestGaugeModal(wanName) {
   const resultPanelContainer = document.getElementById('resultPanelContainer');
   const cliPingDownVal = document.getElementById('cliPingDownVal');
   const cliPingUpVal = document.getElementById('cliPingUpVal');
+
+  const runServerCliBtn = document.getElementById('runServerCliBtn');
+  const runServerCliBtnFinished = document.getElementById('runServerCliBtnFinished');
+  if (runServerCliBtn) runServerCliBtn.disabled = false;
+  if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = false;
 
   if (goBtnContainer) goBtnContainer.style.display = 'flex';
   if (gaugeWrapper) gaugeWrapper.style.display = 'none';
@@ -1286,10 +1297,16 @@ if (localStorage.getItem('bwMode') === 'enabled') {
 
 // 12. Proxmox Server-Side Ookla Speedtest CLI Runner Handler (Real-Time Live Streaming)
 function triggerSpeedtest() {
-  if (!activeWanName) return;
+  if (!activeWanName && configuredWans.length > 0) {
+    activeWanName = configuredWans[0].name;
+  }
+  if (!activeWanName) {
+    showToast('No active WAN interface selected for speedtest.', 'error');
+    return;
+  }
 
   if (currentEventSource) {
-    currentEventSource.close();
+    try { currentEventSource.close(); } catch(e){}
     currentEventSource = null;
   }
 
@@ -1299,6 +1316,13 @@ function triggerSpeedtest() {
   const cliPingDownVal = document.getElementById('cliPingDownVal');
   const cliPingUpVal = document.getElementById('cliPingUpVal');
   const surveyFeedbackMsg = document.getElementById('surveyFeedbackMsg');
+  const runServerCliBtn = document.getElementById('runServerCliBtn');
+  const runServerCliBtnFinished = document.getElementById('runServerCliBtnFinished');
+
+  function resetGoButtons() {
+    if (runServerCliBtn) runServerCliBtn.disabled = false;
+    if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = false;
+  }
 
   if (surveyFeedbackMsg) surveyFeedbackMsg.style.display = 'none';
 
@@ -1310,7 +1334,9 @@ function triggerSpeedtest() {
   if (resultPanelContainer) resultPanelContainer.style.display = 'none';
   if (gaugeWrapper) gaugeWrapper.style.display = 'flex';
 
+  // Disable BOTH GO buttons during active speedtest run
   if (runServerCliBtn) runServerCliBtn.disabled = true;
+  if (runServerCliBtnFinished) runServerCliBtnFinished.disabled = true;
 
   if (cliStatusText) cliStatusText.innerText = '● Connecting to Proxmox Ookla CLI...';
   if (cliDlVal) cliDlVal.innerText = '--';
@@ -1334,8 +1360,23 @@ function triggerSpeedtest() {
 
   let finalResult = { download: 0, upload: 0, ping: 0, jitter: 0, publicIp: 'Active Routed Line', isp: activeWanName };
 
+  let evtSource;
+
+  // 40-Second Safety Timeout: Prevents UI from ever locking up if stream stalls or fails to complete
+  const safetyTimeoutId = setTimeout(() => {
+    if (!isFinished && currentEventSource === evtSource) {
+      console.warn('Speedtest safety timeout reached.');
+      if (evtSource) { try { evtSource.close(); } catch(e){} }
+      currentEventSource = null;
+      resetGoButtons();
+      if (gaugeWrapper) gaugeWrapper.style.display = 'none';
+      if (goBtnContainer) goBtnContainer.style.display = 'flex';
+      showToast('Speedtest timed out. You can click GO to test again.', 'warning');
+    }
+  }, 40000);
+
   try {
-    const evtSource = new EventSource(`/api/run-server-speedtest-stream?wanName=${encodeURIComponent(activeWanName)}`);
+    evtSource = new EventSource(`/api/run-server-speedtest-stream?wanName=${encodeURIComponent(activeWanName)}`);
     currentEventSource = evtSource;
 
     evtSource.onmessage = (event) => {
@@ -1443,6 +1484,7 @@ function triggerSpeedtest() {
     };
 
     evtSource.addEventListener('done', () => {
+      clearTimeout(safetyTimeoutId);
       isFinished = true;
       if (gaugeAnimTimer) clearInterval(gaugeAnimTimer);
       if (gaugeRafId) {
@@ -1451,7 +1493,7 @@ function triggerSpeedtest() {
       }
       evtSource.close();
       currentEventSource = null;
-      if (runServerCliBtn) runServerCliBtn.disabled = false;
+      resetGoButtons();
 
       const dlStr = finalResult.download.toFixed(2);
       const ulStr = finalResult.upload.toFixed(2);
@@ -1483,18 +1525,20 @@ function triggerSpeedtest() {
     });
 
     evtSource.onerror = (err) => {
+      clearTimeout(safetyTimeoutId);
       if (isFinished) return; // Prevent resetting view if completed
       if (gaugeAnimTimer) clearInterval(gaugeAnimTimer);
       evtSource.close();
       currentEventSource = null;
-      if (runServerCliBtn) runServerCliBtn.disabled = false;
+      resetGoButtons();
       if (gaugeWrapper) gaugeWrapper.style.display = 'none';
       if (goBtnContainer) goBtnContainer.style.display = 'flex';
     };
 
   } catch (err) {
+    clearTimeout(safetyTimeoutId);
     if (gaugeAnimTimer) clearInterval(gaugeAnimTimer);
-    if (runServerCliBtn) runServerCliBtn.disabled = false;
+    resetGoButtons();
     if (gaugeWrapper) gaugeWrapper.style.display = 'none';
     if (goBtnContainer) goBtnContainer.style.display = 'flex';
     showToast(`Server speedtest error: ${err.message}`, 'error');

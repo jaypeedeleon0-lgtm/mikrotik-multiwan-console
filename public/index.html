@@ -330,57 +330,57 @@
 
         <!-- 2. Speedometer Gauge Container (Visible while test is running) -->
         <div id="gaugeWrapper" class="ookla-gauge-wrapper" style="display: none;">
-          <div style="position: relative; width: 300px; height: 215px; margin: 0 auto;">
-            <svg viewBox="0 0 280 220" style="width: 100%; height: 100%;">
+          <div style="position: relative; width: 320px; height: 245px; margin: 0 auto;">
+            <svg viewBox="0 0 300 240" style="width: 100%; height: 100%;">
               <defs>
-                <!-- Download Arc Gradient: Cyan to Emerald -->
+                <!-- Download Arc Gradient: Cyan to Emerald Green -->
                 <linearGradient id="downloadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#00f2fe" />
-                  <stop offset="100%" stop-color="#10b981" />
+                  <stop offset="50%" stop-color="#00e5ff" />
+                  <stop offset="100%" stop-color="#00e676" />
                 </linearGradient>
                 <!-- Upload Arc Gradient: Magenta to Purple -->
                 <linearGradient id="uploadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#d946ef" />
+                  <stop offset="0%" stop-color="#ec4899" />
                   <stop offset="100%" stop-color="#a855f7" />
                 </linearGradient>
-                <!-- Needle Gradient -->
+                <!-- Tapered Wedge Needle Gradient -->
                 <linearGradient id="needleGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                  <stop offset="0%" stop-color="#ffffff" />
-                  <stop offset="100%" stop-color="#00f2fe" />
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.05)" />
+                  <stop offset="60%" stop-color="rgba(255,255,255,0.7)" />
+                  <stop offset="100%" stop-color="#ffffff" />
                 </linearGradient>
               </defs>
 
-              <!-- Track Arc -->
-              <path d="M 62.1 185 A 90 90 0 1 1 217.9 185" fill="none" stroke="#131b2e" stroke-width="14" stroke-linecap="round" />
+              <!-- Outer Track Arc (Dark Navy/Charcoal) -->
+              <path d="M 63.4 190 A 100 100 0 1 1 236.6 190" fill="none" stroke="#121826" stroke-width="22" stroke-linecap="round" />
               
               <!-- Dynamic Active Speed Arc -->
-              <path id="gaugeArcFill" d="M 62.1 185 A 90 90 0 1 1 217.9 185" fill="none" stroke="url(#downloadGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="377.0" stroke-dashoffset="377.0" style="opacity: 0; transition: stroke-dashoffset 0.4s ease, opacity 0.2s ease, stroke 0.3s ease;" />
+              <path id="gaugeArcFill" d="M 63.4 190 A 100 100 0 1 1 236.6 190" fill="none" stroke="url(#downloadGradient)" stroke-width="22" stroke-linecap="round" stroke-dasharray="418.9" stroke-dashoffset="418.9" style="opacity: 0; transition: stroke-dashoffset 0.35s ease-out, opacity 0.2s ease, stroke 0.3s ease;" />
 
-              <!-- Speed Dial Numbers (0, 5, 10, 50, 100, 250, 500, 750, 1000) placed OUTSIDE the gauge arc -->
-              <g font-size="11" font-weight="700" fill="#94a3b8" text-anchor="middle" font-family="'Inter', sans-serif">
-                <text x="41" y="201">0</text>
-                <text x="22" y="144">5</text>
-                <text x="36" y="86">10</text>
-                <text x="80" y="42">50</text>
-                <text x="140" y="24">100</text>
-                <text x="200" y="42">250</text>
-                <text x="244" y="86">500</text>
-                <text x="258" y="144">750</text>
-                <text x="239" y="201">1000</text>
+              <!-- Speed Scale Numbers INSIDE the Arc (0, 5, 10, 50, 100, 250, 500, 750, 1000) -->
+              <g font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="'Inter', sans-serif">
+                <text x="90" y="182">0</text>
+                <text x="74" y="144">5</text>
+                <text x="84" y="106">10</text>
+                <text x="112" y="78">50</text>
+                <text x="150" y="66">100</text>
+                <text x="188" y="78">250</text>
+                <text x="216" y="106">500</text>
+                <text x="226" y="144">750</text>
+                <text x="210" y="182">1000</text>
               </g>
 
               <!-- Rotating Tapered Wedge Needle -->
-              <g id="gaugeNeedle" style="transform-origin: 140px 140px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
-                <polygon points="133,140 147,140 142,58 138,58" fill="rgba(0,0,0,0.5)" />
-                <polygon points="135,140 145,140 142,60 138,60" fill="url(#needleGrad)" />
+              <g id="gaugeNeedle" style="transform-origin: 150px 140px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
+                <polygon points="144,140 156,140 151.5,56 148.5,56" fill="url(#needleGrad)" />
               </g>
-              <circle cx="140" cy="140" r="8" fill="#ffffff" stroke="#00f2fe" stroke-width="2" />
             </svg>
 
             <!-- Center Digital Readout -->
-            <div style="position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;">
-              <div id="gaugeSpeedNum" style="font-size: 2.8rem; font-weight: 300; font-family: 'Inter', sans-serif; line-height: 1;">0.00</div>
-              <div id="gaugeLabelText" style="font-size: 0.8rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
+            <div style="position: absolute; bottom: 6px; left: 0; right: 0; text-align: center;">
+              <div id="gaugeSpeedNum" style="font-size: 3.2rem; font-weight: 300; font-family: 'JetBrains Mono', 'Inter', sans-serif; line-height: 1; letter-spacing: -1.5px; color: #ffffff;">0.00</div>
+              <div id="gaugeLabelText" style="font-size: 0.85rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
             </div>
           </div>
           <div style="font-size: 0.8rem; font-weight: 700; color: #00c6ff; margin-top: 8px;" id="cliStatusText">● Testing Live Download Speed...</div>
@@ -550,6 +550,6 @@
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260915_instant_ip_before_go"></script>
+  <script src="js/app.js?v=20260915_perfect_spacious_ookla_gauge"></script>
 </body>
 </html>

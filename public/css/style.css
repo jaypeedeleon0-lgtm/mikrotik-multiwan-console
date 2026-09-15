@@ -58,7 +58,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: nowrap !important;
+  flex-wrap: nowrap;
   gap: 16px;
   padding: 16px 24px;
   background: var(--bg-card);
@@ -129,7 +129,7 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap !important;
+  flex-wrap: nowrap;
   gap: 8px;
   flex-shrink: 0;
 }
@@ -960,9 +960,10 @@ input:focus, select:focus {
 .wan-subtitle-top {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  white-space: normal;
   gap: 5px;
+  overflow: hidden;
 }
 
 .wan-sep {
@@ -2848,12 +2849,13 @@ body.bw-mode .btn-login-bw:hover {
     padding: 12px 14px;
     border-radius: 12px;
     margin-bottom: 16px;
-    flex-wrap: wrap !important;
+    flex-wrap: wrap;
   }
 
   .logo-group {
     justify-content: flex-start;
     width: 100%;
+    flex-shrink: 1;
     gap: 12px;
   }
 
@@ -2865,6 +2867,11 @@ body.bw-mode .btn-login-bw:hover {
 
   .logo-group .subtitle {
     font-size: 0.68rem;
+    white-space: normal;
+  }
+
+  /* Override nowrap subtitle in header on mobile */
+  .header .subtitle {
     white-space: normal;
   }
 

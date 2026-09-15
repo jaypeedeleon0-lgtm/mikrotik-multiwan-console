@@ -274,42 +274,21 @@ body {
   font-family: 'Montserrat', sans-serif !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.8px !important;
-  border: 1.5px solid #00E5D4 !important;
+  border: 1.5px solid #00f2fe !important;
   border-radius: 10px;
   box-shadow: none !important;
   z-index: 1;
-  transition: border-color 0.2s ease !important;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: -1.5px;
-  border-radius: 10px;
-  padding: 1.5px;
-  background: conic-gradient(from var(--border-angle), #00E5D4 0%, #00E5D4 20%, transparent 60%, #00E5D4 80%, #00E5D4 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: 2;
-  box-shadow: none !important;
-  filter: none !important;
-  animation: rotateBorderOutline 2s linear infinite;
+  transition: all 0.2s ease !important;
+  animation: none !important;
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  background: transparent !important;
+  background: rgba(0, 242, 254, 0.08) !important;
   color: #ffffff !important;
-  border-color: transparent !important;
-}
-
-.btn-primary:hover::before,
-.wan-card:hover .btn-primary::before {
-  opacity: 1;
+  border-color: #00f2fe !important;
+  transform: translateY(-1px);
+  animation: none !important;
 }
 
 .btn-primary:disabled {

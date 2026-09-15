@@ -885,18 +885,7 @@ input:focus, select:focus {
   color: var(--text-muted);
 }
 
-/* Dynamic WAN Grid (2 Cards per Row) */
-.wan-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
 
-@media (max-width: 900px) {
-  .wan-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .wan-card {
   background: var(--bg-card);

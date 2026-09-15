@@ -1082,48 +1082,51 @@ function drawWanSparkline(wanName) {
     return { x, y, bps: h.txBps || 0 };
   });
 
-  // Helper to draw clean solid stepped line graph (Square Wave style as per user drawing)
-  function drawStepLine(points, strokeColor, fillColor) {
+  // Helper to draw clean, smooth curved line graph
+  function drawSmoothLine(points, strokeColor, fillColor) {
     if (points.length === 0) return;
 
-    // Fill area below stepped line
+    // Fill area below smooth curve
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
-      ctx.lineTo(points[i + 1].x, points[i].y);
-      ctx.lineTo(points[i + 1].x, points[i + 1].y);
+      const xc = (points[i].x + points[i + 1].x) / 2;
+      const yc = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
     }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
     ctx.lineTo(points[points.length - 1].x, height - bottomPadding);
     ctx.lineTo(points[0].x, height - bottomPadding);
     ctx.closePath();
     ctx.fillStyle = fillColor;
     ctx.fill();
 
-    // Solid stepped stroke (NO GLOW)
+    // Solid smooth line stroke (NO GLOW, NO NODE DOTS)
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
-      ctx.lineTo(points[i + 1].x, points[i].y);
-      ctx.lineTo(points[i + 1].x, points[i + 1].y);
+      const xc = (points[i].x + points[i + 1].x) / 2;
+      const yc = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
     }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
     ctx.lineWidth = 2 * dpr;
     ctx.strokeStyle = strokeColor;
     ctx.stroke();
 
-    // Node dots at each step point
-    points.forEach(pt => {
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 2.5 * dpr, 0, Math.PI * 2);
-      ctx.fillStyle = strokeColor;
-      ctx.fill();
-    });
+    // Single small tip dot at the latest rightmost point
+    const last = points[points.length - 1];
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 3 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = strokeColor;
+    ctx.fill();
   }
 
   // Draw Rx (Green `#22c55e`)
-  drawStepLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.12)');
+  drawSmoothLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.12)');
 
   // Draw Tx (Cyan `#00f2fe`)
-  drawStepLine(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.12)');
+  drawSmoothLine(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.12)');
 
   ctx.restore();
 }

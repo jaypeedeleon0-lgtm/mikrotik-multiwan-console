@@ -287,8 +287,8 @@ body {
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
   background-image: linear-gradient(#0c0d12, #0c0d12), 
-                    conic-gradient(from var(--border-angle, 0deg), #00f2fe 0%, #ffffff 20%, #00f2fe 40%, rgba(0, 242, 254, 0.25) 70%, #00f2fe 100%) !important;
-  animation: slowBorderSpin 3.5s linear infinite !important;
+                    conic-gradient(from var(--border-angle, 0deg), #ffffff 0%, #00f2fe 25%, rgba(0, 242, 254, 0.1) 50%, #00f2fe 75%, #ffffff 100%) !important;
+  animation: slowBorderSpin 2s linear infinite !important;
   color: #ffffff !important;
   transform: translateY(-1px);
   box-shadow: none !important;

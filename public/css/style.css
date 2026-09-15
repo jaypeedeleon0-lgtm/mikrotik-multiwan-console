@@ -2830,6 +2830,201 @@ body.bw-mode .btn-login-bw:hover {
     width: 100%;
   }
 
+  color: #475569 !important;
+}
+
+body.bw-mode .badge.connected {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+
+/* Speedtest Modal in White Mode */
+body.bw-mode .modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.bw-mode .ookla-top-header {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.bw-mode .ookla-top-header span {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-summary-val {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-ping-row-centered {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.bw-mode .ookla-ping-val-group {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-bottom-details {
+  background: #f8fafc !important;
+  border-top: none !important;
+}
+
+body.bw-mode .ookla-detail-title {
+  color: #0f172a !important;
+}
+
+body.bw-mode .ookla-detail-icon {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.bw-mode #gaugeSpeedNum {
+  color: #0f172a !important;
+}
+
+body.bw-mode .update-version-card {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* ==========================================================================
+   MINIMALIST BLACK & WHITE ADMIN LOGIN OVERLAY STYLES
+   ========================================================================== */
+.login-modal-overlay {
+  background: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(25px) !important;
+  z-index: 99999 !important;
+}
+
+.login-card-bw {
+  max-width: 400px !important;
+  width: 100% !important;
+  background: #09090b !important;
+  border: 1px solid #27272a !important;
+  border-radius: 16px !important;
+  padding: 32px 28px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  color: #ffffff !important;
+}
+
+.login-header-bw {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-header-bw h2 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.login-header-bw p {
+  font-size: 0.78rem;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.login-error-alert {
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  color: #f43f5e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.btn-login-bw {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+  margin-top: 16px !important;
+  transition: all 0.2s ease !important;
+  letter-spacing: 0.5px;
+}
+
+.btn-login-bw:hover {
+  background: #e4e4e7 !important;
+  transform: translateY(-1px);
+}
+
+.btn-login-bw:active {
+  transform: translateY(0);
+}
+
+/* White Mode / Light Mode overrides for Login Modal */
+body.bw-mode .login-modal-overlay {
+  background: rgba(255, 255, 255, 0.94) !important;
+}
+
+body.bw-mode .login-card-bw {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.bw-mode .login-header-bw h2 {
+  color: #0f172a !important;
+}
+
+body.bw-mode .login-header-bw p {
+  color: #64748b !important;
+}
+
+body.bw-mode .btn-login-bw {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.bw-mode .btn-login-bw:hover {
+  background: #1e293b !important;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET AUTO-RESPONSIVE SYSTEM (FOR IPHONE & ANDROID SMARTPHONES)
+   ========================================================================== */
+
+/* Tablets & Small Laptops (Width <= 992px) */
+@media (max-width: 992px) {
+  .app-container {
+    padding: 14px 12px;
+    max-width: 100%;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
   .dashboard-body {
     width: 100%;
   }
@@ -2837,133 +3032,171 @@ body.bw-mode .btn-login-bw:hover {
 
 /* Smartphones & Mobile Devices (Width <= 768px - iPhone & Android) */
 @media (max-width: 768px) {
-  /* Prevent iOS Safari auto-zoom on input focus */
+  /* Prevent iOS Safari auto-zoom on input focus while keeping compact height */
   input[type="text"],
   input[type="password"],
   input[type="number"],
   select {
     font-size: 16px !important;
-    min-height: 42px !important;
+    min-height: 36px !important;
+    padding: 6px 8px !important;
   }
 
-  /* Navigation Header Mobile Layout */
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 12px 14px;
+  .form-group {
+    margin-bottom: 8px;
+    gap: 3px;
+  }
+
+  .form-group label {
+    font-size: 0.68rem;
+    margin-bottom: 1px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .glass-card,
+  .connection-card {
+    padding: 10px 12px;
     border-radius: 12px;
-    margin-bottom: 16px;
+  }
+
+  .card-header {
+    margin-bottom: 8px;
+  }
+
+  .card-header h3 {
+    font-size: 0.85rem;
+  }
+
+  /* Navigation Header Mobile Compact Layout */
+  .header {
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
   }
 
   .logo-group {
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
-    width: 100%;
-    flex-shrink: 1;
-    gap: 10px;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .logo-group h1 {
-    font-size: 0.95rem;
-    line-height: 1.2;
-    white-space: normal;
+    font-size: 0.82rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .logo-group .subtitle {
-    font-size: 0.66rem;
-    white-space: normal;
-  }
-
+  /* Hide subtitle to save vertical height */
+  .logo-group .subtitle,
   .header .subtitle {
-    white-space: normal;
+    display: none !important;
   }
 
-  /* Header actions: row with wrapping */
+  /* Header actions: row layout right-aligned */
   .header-actions {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    width: 100%;
-    gap: 8px;
-    flex-shrink: 1;
+    justify-content: flex-end;
+    gap: 5px;
+    flex: 0 0 auto;
   }
 
-  /* Target device badge: full width on top */
+  /* Target device badge: full width on 2nd row */
   .target-pc-badge {
     width: 100%;
     flex: 0 0 100%;
-    order: -1;
+    order: 10;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
+    gap: 6px;
+    padding: 4px 8px;
+    margin-top: 2px;
     box-sizing: border-box;
+    border-radius: 8px;
   }
 
   .target-pc-badge .label {
     white-space: nowrap;
     flex-shrink: 0;
+    font-size: 0.65rem;
   }
 
   .target-pc-badge input {
     flex: 1;
     width: auto;
     min-width: 0;
-    font-size: 14px !important;
-    min-height: 32px !important;
+    font-size: 13px !important;
+    min-height: 28px !important;
+    padding: 3px 6px !important;
   }
 
-  /* Clock badge: auto-flex in the actions row */
+  .target-pc-badge .btn-detect-ip {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+    min-height: 28px;
+  }
+
+  /* Clock badge: compact on actions row */
   .header-clock-badge {
-    flex: 1;
-    min-width: 0;
-    justify-content: center;
-    font-size: 0.7rem;
-    padding: 5px 8px;
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    gap: 4px;
+    height: 30px;
     flex-shrink: 1;
   }
 
-  /* Icon-only buttons: keep compact */
+  /* Icon-only buttons: compact 32px touch targets */
   .btn-icon-only {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     flex-shrink: 0;
-  }
-
-  /* Form Row Stacking */
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
   }
 
   /* Section Titles */
   .section-title-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 4px;
+    margin-top: 10px;
+    margin-bottom: 8px;
   }
 
   .section-title-bar h2 {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 
   .section-title-bar p {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   /* WAN Card Grid: single column */
   .wan-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 10px;
   }
 
   .wan-card {
-    padding: 14px 12px;
-    border-radius: 14px;
-    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    gap: 8px;
     overflow: hidden;
   }
 
@@ -2971,7 +3204,7 @@ body.bw-mode .btn-login-bw:hover {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
   }
 
   .wan-title-group {
@@ -2980,13 +3213,13 @@ body.bw-mode .btn-login-bw:hover {
   }
 
   .wan-title-group h4 {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     white-space: normal;
     word-break: break-word;
   }
 
   .wan-subtitle {
-    font-size: 0.67rem;
+    font-size: 0.65rem;
     overflow: hidden;
   }
 
@@ -2997,26 +3230,27 @@ body.bw-mode .btn-login-bw:hover {
   }
 
   .wan-canvas-container {
-    height: 115px;
+    height: 95px;
   }
 
   .winbox-legend-row {
     flex-wrap: wrap;
-    gap: 8px;
-    font-size: 0.68rem;
+    gap: 6px;
+    font-size: 0.65rem;
     justify-content: space-around;
   }
 
   .speedtest-badge-row {
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px 10px;
+    gap: 5px;
+    padding: 6px 8px;
   }
 
   /* Buttons Touch Target */
   .btn {
-    min-height: 44px;
-    font-size: 0.85rem;
+    min-height: 38px;
+    font-size: 0.82rem;
+    padding: 8px 12px;
   }
 
   /* Table Mobile Scroll */
@@ -3032,123 +3266,123 @@ body.bw-mode .btn-login-bw:hover {
 
   .history-table th,
   .history-table td {
-    padding: 8px 10px;
-    font-size: 0.72rem;
+    padding: 6px 8px;
+    font-size: 0.7rem;
   }
 
   /* Modals: bottom-sheet style */
   .modal-overlay {
-    padding: 10px !important;
+    padding: 8px !important;
     align-items: flex-end !important;
   }
 
   /* Login modal stays centered */
   .login-modal-overlay {
     align-items: center !important;
-    padding: 16px !important;
+    padding: 12px !important;
   }
 
   .modal-card {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 20px 16px !important;
-    border-radius: 20px 20px 12px 12px !important;
+    padding: 16px 12px !important;
+    border-radius: 18px 18px 10px 10px !important;
     max-height: 90vh;
     overflow-y: auto;
   }
 
   .login-card-bw {
-    width: calc(100% - 32px) !important;
-    max-width: 420px !important;
-    padding: 24px 20px !important;
-    border-radius: 16px !important;
+    width: calc(100% - 24px) !important;
+    max-width: 400px !important;
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
     max-height: 90vh;
     overflow-y: auto;
   }
 
   /* Toast: stretch full width at bottom */
   .toast-container {
-    bottom: 16px;
-    right: 12px;
-    left: 12px;
+    bottom: 12px;
+    right: 10px;
+    left: 10px;
     align-items: stretch;
   }
 
   .toast {
-    font-size: 0.8rem;
-    padding: 10px 14px;
+    font-size: 0.78rem;
+    padding: 8px 12px;
     width: 100%;
   }
 
   /* Resource grid: 2 columns on tablet */
   .resource-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   /* Ookla Speedtest Modal: full width bottom sheet */
   .ookla-modal-card {
     max-width: 100% !important;
     width: 100% !important;
-    border-radius: 20px 20px 0 0 !important;
+    border-radius: 18px 18px 0 0 !important;
     max-height: 94vh !important;
   }
 
   .ookla-top-header {
-    padding: 12px 16px;
+    padding: 10px 14px;
   }
 
   .ookla-top-summary {
-    gap: 24px;
-    padding: 16px 16px 8px 16px;
+    gap: 16px;
+    padding: 12px 14px 6px 14px;
     max-width: 100%;
   }
 
   .ookla-summary-val {
-    font-size: 2.8rem;
+    font-size: 2.4rem;
   }
 
   .ookla-ping-row-centered {
-    gap: 14px;
-    padding: 6px 16px;
-    font-size: 0.85rem;
+    gap: 10px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
     flex-wrap: wrap;
     justify-content: center;
   }
 
   .ookla-ratings-bar {
     max-width: 100%;
-    padding: 6px 8px;
+    padding: 4px 6px;
     gap: 2px;
   }
 
   .rating-icon {
-    width: 28px;
-    height: 22px;
+    width: 24px;
+    height: 18px;
   }
 
   .rating-icon svg {
-    width: 22px !important;
-    height: 18px !important;
+    width: 18px !important;
+    height: 14px !important;
   }
 
-  .rating-dots { gap: 3px; }
-  .rating-dot { width: 4px; height: 4px; }
+  .rating-dots { gap: 2px; }
+  .rating-dot { width: 3px; height: 3px; }
 
   .ookla-go-container {
-    padding: 16px 0 24px 0;
-    min-height: 180px;
+    padding: 12px 0 18px 0;
+    min-height: 160px;
   }
 
   .ookla-go-btn-large {
-    width: 120px;
-    height: 120px;
-    font-size: 2.6rem;
+    width: 105px;
+    height: 105px;
+    font-size: 2.2rem;
   }
 
   .ookla-gauge-wrapper {
-    padding: 10px 0 20px 0;
-    min-height: 200px;
+    padding: 8px 0 16px 0;
+    min-height: 180px;
   }
 
   .ookla-gauge-wrapper > div {
@@ -3157,17 +3391,17 @@ body.bw-mode .btn-login-bw:hover {
   }
 
   .ookla-bottom-details {
-    padding: 14px 16px;
+    padding: 10px 12px;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-start;
   }
 
   /* Result panel: stack vertically */
   .ookla-result-panel {
     flex-direction: column;
-    padding: 16px;
-    gap: 16px;
+    padding: 12px;
+    gap: 12px;
     min-height: auto;
     align-items: center;
   }
@@ -3175,9 +3409,9 @@ body.bw-mode .btn-login-bw:hover {
   .ookla-result-left { flex: 0 0 auto; }
 
   .ookla-go-btn-medium {
-    width: 100px;
-    height: 100px;
-    font-size: 2rem;
+    width: 88px;
+    height: 88px;
+    font-size: 1.8rem;
   }
 
   .ookla-result-right { width: 100%; }
@@ -3188,54 +3422,50 @@ body.bw-mode .btn-login-bw:hover {
   }
 
   .survey-btn {
-    padding: 6px 0;
-    font-size: 0.75rem;
+    padding: 5px 0;
+    font-size: 0.7rem;
   }
 
   .survey-title {
-    font-size: 0.72rem;
-    margin-bottom: 10px;
+    font-size: 0.68rem;
+    margin-bottom: 8px;
   }
 
   /* Misc fixes */
-  .gauge-wrapper { max-width: 250px; }
-  .gauge-num { font-size: 1.6rem; }
-  .latency-trio-row { gap: 6px; }
-  .latency-item .lbl { font-size: 0.55rem; }
-  .latency-item .val { font-size: 0.92rem; }
-  .modal-footer-actions { grid-template-columns: 1fr; gap: 8px; }
+  .gauge-wrapper { max-width: 220px; }
+  .gauge-num { font-size: 1.4rem; }
+  .latency-trio-row { gap: 4px; }
+  .latency-item .lbl { font-size: 0.52rem; }
+  .latency-item .val { font-size: 0.85rem; }
+  .modal-footer-actions { grid-template-columns: 1fr; gap: 6px; }
 }
 
 /* Small Phones (Width <= 480px - Most iPhones & Android) */
 @media (max-width: 480px) {
   .app-container {
-    padding: 8px;
+    padding: 6px;
   }
 
   .header {
-    padding: 10px 12px;
-    gap: 8px;
-    margin-bottom: 12px;
+    padding: 6px 8px;
+    gap: 4px;
+    margin-bottom: 8px;
   }
 
   .logo-group h1 {
-    font-size: 0.88rem;
-  }
-
-  /* Hide subtitle to save space */
-  .logo-group .subtitle {
-    display: none;
+    font-size: 0.78rem;
   }
 
   .header-actions {
-    gap: 6px;
+    gap: 4px;
   }
 
-  /* Collapse clock to just time, no icon, no PHT */
+  /* Collapse clock to just time text, no icon, no PHT */
   .header-clock-badge {
-    font-size: 0.68rem;
-    padding: 5px 8px;
-    gap: 4px;
+    font-size: 0.62rem;
+    padding: 3px 5px;
+    gap: 2px;
+    height: 28px;
   }
 
   .header-clock-badge svg {
@@ -3247,123 +3477,128 @@ body.bw-mode .btn-login-bw:hover {
   }
 
   .btn-icon-only {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
   }
 
   .wan-card {
-    padding: 12px 10px;
-    gap: 8px;
+    padding: 8px 10px;
+    gap: 6px;
   }
 
   .wan-canvas-container {
-    height: 105px;
+    height: 90px;
   }
 
   .speedtest-badge-row {
-    padding: 8px 10px;
+    padding: 6px 8px;
   }
 
   .resource-grid {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
   }
 
   .glass-card {
-    padding: 14px 12px;
-    border-radius: 14px;
+    padding: 10px 10px;
+    border-radius: 10px;
   }
 
   .section-title-bar h2 {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .modal-card {
-    padding: 16px 14px !important;
-    border-radius: 18px 18px 10px 10px !important;
+    padding: 14px 10px !important;
+    border-radius: 16px 16px 8px 8px !important;
     max-height: 92vh;
   }
 
   .login-card-bw {
-    border-radius: 16px !important;
+    border-radius: 12px !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 20px 16px !important;
+    padding: 16px 12px !important;
   }
 
   .ookla-go-btn-large {
-    width: 110px;
-    height: 110px;
-    font-size: 2.4rem;
+    width: 95px;
+    height: 95px;
+    font-size: 2.1rem;
   }
 
-  .ookla-summary-val { font-size: 2.4rem; }
+  .ookla-summary-val { font-size: 2.1rem; }
 
   .ookla-top-summary {
-    gap: 12px;
-    padding: 12px 12px 6px 12px;
+    gap: 10px;
+    padding: 10px 10px 4px 10px;
   }
 
   .ookla-ping-row-centered {
-    gap: 10px;
-    font-size: 0.8rem;
-    padding: 4px 12px;
+    gap: 8px;
+    font-size: 0.75rem;
+    padding: 4px 8px;
   }
 
   .ookla-go-container {
-    min-height: 160px;
-    padding: 12px 0 20px 0;
+    min-height: 140px;
+    padding: 10px 0 16px 0;
   }
 
   .survey-buttons { gap: 1px; }
 
   .survey-btn {
-    padding: 5px 0;
-    font-size: 0.68rem;
-    border-radius: 4px;
+    padding: 4px 0;
+    font-size: 0.65rem;
+    border-radius: 3px;
   }
 
-  .ookla-result-panel { padding: 12px; gap: 12px; }
+  .ookla-result-panel { padding: 10px; gap: 10px; }
 
   .ookla-go-btn-medium {
-    width: 88px;
-    height: 88px;
-    font-size: 1.8rem;
+    width: 80px;
+    height: 80px;
+    font-size: 1.6rem;
   }
 
   .toast-container {
-    bottom: 12px;
-    right: 8px;
-    left: 8px;
+    bottom: 8px;
+    right: 6px;
+    left: 6px;
   }
 
   .toast {
-    font-size: 0.78rem;
-    padding: 9px 12px;
+    font-size: 0.75rem;
+    padding: 8px 10px;
   }
 }
 
 /* Compact Smartphones (Width <= 420px - iPhone SE, Galaxy A series) */
 @media (max-width: 420px) {
   .app-container {
-    padding: 6px;
+    padding: 4px;
   }
 
   .header {
-    padding: 8px 10px;
+    padding: 6px 6px;
   }
 
   .logo-group h1 {
-    font-size: 0.82rem;
+    font-size: 0.75rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
 
   .wan-card {
-    padding: 10px;
+    padding: 8px;
   }
 
   .wan-canvas-container {
-    height: 96px;
+    height: 85px;
   }
 
   .resource-grid {
@@ -3374,27 +3609,27 @@ body.bw-mode .btn-login-bw:hover {
     grid-template-columns: 1fr;
   }
 
-  .ookla-summary-val { font-size: 2.2rem; }
+  .ookla-summary-val { font-size: 2rem; }
 
   .ookla-go-btn-large {
-    width: 100px;
-    height: 100px;
-    font-size: 2.2rem;
+    width: 90px;
+    height: 90px;
+    font-size: 2rem;
   }
 
   .ookla-go-container {
-    min-height: 150px;
-    padding: 12px 0 18px 0;
+    min-height: 130px;
+    padding: 10px 0 14px 0;
   }
 
-  .ookla-ratings-bar { padding: 4px 6px; }
+  .ookla-ratings-bar { padding: 4px 4px; }
 
-  .rating-icon { width: 24px; height: 20px; }
+  .rating-icon { width: 22px; height: 18px; }
 
   .rating-icon svg {
-    width: 20px !important;
-    height: 16px !important;
+    width: 18px !important;
+    height: 14px !important;
   }
 
-  .survey-title { font-size: 0.68rem; }
+  .survey-title { font-size: 0.65rem; }
 }

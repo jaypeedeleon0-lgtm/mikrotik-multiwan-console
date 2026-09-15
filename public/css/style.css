@@ -3458,28 +3458,245 @@ html, body {
     border-radius: 0 !important;
     border: none !important;
     margin: 0 !important;
-    padding: 14px 12px !important;
+    padding: 10px 8px !important;
     background: #000000 !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
     box-shadow: none !important;
     transform: none !important;
     animation: none !important;
     box-sizing: border-box !important;
   }
 
-  .ookla-gauge-inner {
-    max-width: 280px !important;
-    height: 200px !important;
+  .ookla-top-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 4px 2px !important;
+    box-sizing: border-box !important;
+  }
+
+  .ookla-top-summary {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 6px 2px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ookla-summary-col {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .ookla-summary-label {
+    font-size: 0.62rem !important;
+    gap: 3px !important;
+    letter-spacing: 0.5px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .ookla-summary-label .label-txt {
+    font-size: 0.62rem !important;
+  }
+
+  .ookla-summary-label .unit-txt {
+    font-size: 0.58rem !important;
   }
 
   .ookla-summary-val {
-    font-size: 2.6rem !important;
-    min-width: 90px !important;
+    font-size: 2.2rem !important;
+    min-width: 0 !important;
+    width: 100% !important;
     font-variant-numeric: tabular-nums !important;
     font-feature-settings: "tnum" 1 !important;
+    text-align: center !important;
+    line-height: 1.1 !important;
+    margin-top: 2px !important;
+  }
+
+  .ookla-ping-row-centered {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 4px 0 !important;
+    margin: 4px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ookla-ping-title {
+    font-size: 0.72rem !important;
+  }
+
+  .ookla-ping-val-group {
+    font-size: 0.8rem !important;
+    gap: 3px !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
+  }
+
+  .ookla-icon-circle {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+  }
+
+  .ookla-icon-circle svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .ookla-ratings-bar {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
+    margin: 4px auto 8px auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .rating-item {
+    padding: 1px 2px !important;
+  }
+
+  .rating-icon {
+    width: 24px !important;
+    height: 20px !important;
+  }
+
+  .rating-icon svg {
+    width: 20px !important;
+    height: 16px !important;
+  }
+
+  .rating-dots {
+    gap: 3px !important;
+  }
+
+  .rating-dot {
+    width: 4px !important;
+    height: 4px !important;
+  }
+
+  .ookla-go-container {
+    padding: 6px 0 !important;
+    min-height: 140px !important;
+  }
+
+  .ookla-go-btn-large {
+    width: 110px !important;
+    height: 110px !important;
+    font-size: 2.2rem !important;
+  }
+
+  .ookla-gauge-wrapper {
+    padding: 4px 0 !important;
+    min-height: 170px !important;
+  }
+
+  .ookla-gauge-inner {
+    max-width: 250px !important;
+    height: 175px !important;
+  }
+
+  #gaugeSpeedNum {
+    font-size: 1.8rem !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
+  }
+
+  .ookla-bottom-details {
+    padding: 8px 6px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ookla-detail-item {
+    gap: 6px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .ookla-detail-icon {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 0.8rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ookla-detail-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .ookla-detail-title {
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 90px !important;
+  }
+
+  .ookla-detail-sub {
+    font-size: 0.62rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 90px !important;
+  }
+
+  .ookla-change-server-link {
+    font-size: 0.62rem !important;
+  }
+
+  .ookla-result-panel {
+    flex-direction: column !important;
+    padding: 6px 2px !important;
+    gap: 8px !important;
+    min-height: auto !important;
+  }
+
+  .ookla-result-left {
+    flex: 0 0 auto !important;
+  }
+
+  .ookla-go-btn-medium {
+    width: 85px !important;
+    height: 85px !important;
+    font-size: 1.8rem !important;
+  }
+
+  .survey-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(11, 1fr) !important;
+    gap: 2px !important;
+  }
+
+  .survey-btn {
+    padding: 4px 0 !important;
+    font-size: 0.62rem !important;
+  }
+
+  .survey-title {
+    font-size: 0.65rem !important;
+    margin-bottom: 6px !important;
   }
 }
 

@@ -1029,9 +1029,9 @@ function drawWanSparkline(wanName) {
     maxScale = Math.ceil(peakBps / 500000000) * 500000000;
   }
 
-  const rightMargin = 75 * dpr; // reserved width for WinBox Y-Axis right side speed labels
-  const topPadding = 12 * dpr;
-  const bottomPadding = 12 * dpr;
+  const rightMargin = 70 * dpr; // reserved width for WinBox Y-Axis right side speed labels
+  const topPadding = 8 * dpr;
+  const bottomPadding = 8 * dpr;
   const graphWidth = Math.max(10, width - rightMargin);
   const usableHeight = height - topPadding - bottomPadding;
 

@@ -1302,11 +1302,14 @@ function renderSpeedtestHistory() {
     return;
   }
 
+  const cyanArrowSvg = `<span class="ookla-icon-circle cyan" style="margin-right: 5px; display: inline-flex;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>`;
+  const purpleArrowSvg = `<span class="ookla-icon-circle purple" style="margin-right: 5px; display: inline-flex;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d946ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>`;
+
   speedtestHistoryBody.innerHTML = speedtestHistory.map(item => `
     <tr>
       <td><span class="badge-wan">${escapeHtml(item.wanLabel || item.wanName)}</span></td>
-      <td><strong style="color:#ffffff; font-size:0.78rem;">${escapeHtml(item.download)} Mbps</strong></td>
-      <td><strong style="color:#e4e4e7; font-size:0.78rem;">${escapeHtml(item.upload || '0.00')} Mbps</strong></td>
+      <td><div style="display:inline-flex; align-items:center;">${cyanArrowSvg} <strong style="color:#ffffff; font-size:0.78rem;">${escapeHtml(item.download)} Mbps</strong></div></td>
+      <td><div style="display:inline-flex; align-items:center;">${purpleArrowSvg} <strong style="color:#ffffff; font-size:0.78rem;">${escapeHtml(item.upload || '0.00')} Mbps</strong></div></td>
       <td>
         <span style="color:#a1a1aa; font-family:var(--font-mono); font-size:0.75rem;">${escapeHtml(item.unloadedMs || '--')} ms / ${escapeHtml(item.loadedMs || '--')} ms</span>
       </td>

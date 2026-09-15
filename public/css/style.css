@@ -263,16 +263,17 @@ body {
   border-radius: 10px;
   box-shadow: none !important;
   z-index: 1;
-  transition: all 0.2s ease !important;
+  transition: none !important;
   animation: none !important;
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  background: rgba(0, 242, 254, 0.08) !important;
+  background: transparent !important;
   color: #ffffff !important;
   border-color: #00f2fe !important;
-  transform: translateY(-1px);
+  transform: none !important;
+  transition: none !important;
   animation: none !important;
 }
 

@@ -768,6 +768,9 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
           statusText = `Gateway Packet Loss (${lossPercent}%)`;
         }
 
+        const rxByte = ifaceObj ? parseInt(ifaceObj['rx-byte'] || ifaceObj['rx-bytes'] || '0', 10) : 0;
+        const txByte = ifaceObj ? parseInt(ifaceObj['tx-byte'] || ifaceObj['tx-bytes'] || '0', 10) : 0;
+
         results.push({
           wanName: wan.name,
           pingMs: avgPingMs,
@@ -775,7 +778,9 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
           status: status,
           statusText: statusText,
           isDisabled: false,
-          isLinkDown: false
+          isLinkDown: false,
+          rxByte: rxByte,
+          txByte: txByte
         });
       } catch (pingErr) {
         results.push({
@@ -786,6 +791,8 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
           statusText: 'Check Failed',
           isDisabled: false,
           isLinkDown: false,
+          rxByte: 0,
+          txByte: 0,
           error: pingErr.message
         });
       }

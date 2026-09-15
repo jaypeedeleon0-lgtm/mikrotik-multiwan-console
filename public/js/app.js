@@ -791,14 +791,15 @@ function renderWanCards() {
           </div>
         </div>
 
-        <div class="ping-stats-row">
-          <div class="stat-box">
-            <span class="stat-lbl">Modem Gateway Ping</span>
-            <span class="stat-val good" id="ping-val-${wan.name}">-- ms</span>
+        <div class="wan-graph-card-section">
+          <div class="wan-graph-header">
+            <span class="wan-graph-title">
+              <span class="live-pulse-dot"></span> LIVE LATENCY GRAPH
+            </span>
+            <span class="wan-graph-ping-text" id="wan-ping-display-${wan.name}">-- ms</span>
           </div>
-          <div class="stat-box">
-            <span class="stat-lbl">Speedtest Ping</span>
-            <span class="stat-val good" id="speed-ping-val-${wan.name}">-- ms</span>
+          <div class="wan-canvas-container">
+            <canvas id="wan-graph-${wan.name}" class="wan-graph-canvas"></canvas>
           </div>
         </div>
 
@@ -818,7 +819,10 @@ function renderWanCards() {
 
   wanGrid.innerHTML = cardsHtml;
   setTimeout(() => {
-    configuredWans.forEach(wan => restoreSavedWanSpeedtestStats(wan.name));
+    configuredWans.forEach(wan => {
+      restoreSavedWanSpeedtestStats(wan.name);
+      drawWanSparkline(wan.name);
+    });
   }, 0);
 }
 
@@ -852,6 +856,8 @@ function restoreSavedWanSpeedtestStats(wanName) {
   } catch(e) {}
 }
 
+const wanGraphHistory = {};
+
 // 6. Fetch Live Ping & Interface Health Stats
 async function fetchPingStats() {
   if (!routerConfig || configuredWans.length === 0) return;
@@ -871,19 +877,20 @@ async function fetchPingStats() {
     if (!result.success) return;
 
     result.pingResults.forEach(item => {
-      const pingVal = document.getElementById(`ping-val-${item.wanName}`);
+      const pingDisplay = document.getElementById(`wan-ping-display-${item.wanName}`);
       const statusBadge = document.getElementById(`wan-status-${item.wanName}`);
 
-      if (pingVal) {
+      if (pingDisplay) {
         if (item.status === 'disabled') {
-          pingVal.innerText = 'DISABLED';
+          pingDisplay.innerText = 'DISABLED';
+          pingDisplay.className = 'wan-graph-ping-text disabled';
         } else if (item.status === 'down') {
-          pingVal.innerText = item.isLinkDown ? 'LINK DOWN' : 'OFFLINE';
+          pingDisplay.innerText = item.isLinkDown ? 'LINK DOWN' : 'OFFLINE';
+          pingDisplay.className = 'wan-graph-ping-text down';
         } else {
-          pingVal.innerText = `${item.pingMs} ms`;
+          pingDisplay.innerText = `${item.pingMs} ms`;
+          pingDisplay.className = 'wan-graph-ping-text';
         }
-
-        pingVal.className = `stat-val ${item.status}`;
       }
 
       if (statusBadge) {
@@ -898,11 +905,145 @@ async function fetchPingStats() {
           statusBadge.className = 'wan-status-badge active';
         }
       }
+
+      // Record graph history (rolling 15 points)
+      if (!wanGraphHistory[item.wanName]) {
+        wanGraphHistory[item.wanName] = [];
+      }
+      const history = wanGraphHistory[item.wanName];
+      history.push({
+        time: Date.now(),
+        pingMs: item.pingMs || 0,
+        status: item.status,
+        isLinkDown: item.isLinkDown
+      });
+      if (history.length > 15) {
+        history.shift();
+      }
+
+      drawWanSparkline(item.wanName);
     });
   } catch (err) {
     console.error('Ping poll error:', err);
   }
 }
+
+function drawWanSparkline(wanName) {
+  const canvas = document.getElementById(`wan-graph-${wanName}`);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    if (canvas.width !== Math.floor(rect.width * dpr) || canvas.height !== Math.floor(rect.height * dpr)) {
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+    }
+  }
+
+  const width = canvas.width;
+  const height = canvas.height;
+  if (width === 0 || height === 0) return;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const history = wanGraphHistory[wanName] || [];
+  if (history.length < 2) {
+    // Render initial flat dashed baseline while collecting data
+    ctx.strokeStyle = 'rgba(0, 229, 212, 0.4)';
+    ctx.lineWidth = 1.5 * dpr;
+    ctx.setLineDash([4 * dpr, 4 * dpr]);
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+    return;
+  }
+
+  let maxPing = Math.max(...history.map(h => h.pingMs || 0), 25);
+  let minPing = Math.min(...history.map(h => h.pingMs || 0), 0);
+  if (maxPing === minPing) maxPing = minPing + 10;
+
+  const topPadding = 10 * dpr;
+  const bottomPadding = 8 * dpr;
+  const usableHeight = height - topPadding - bottomPadding;
+
+  const points = history.map((h, i) => {
+    const x = (i / (history.length - 1)) * width;
+    const norm = (h.pingMs - minPing) / (maxPing - minPing);
+    const y = height - bottomPadding - (norm * usableHeight);
+    return { x, y, pingMs: h.pingMs, status: h.status };
+  });
+
+  // Background subtle horizontal gridlines
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+  ctx.lineWidth = 1 * dpr;
+  ctx.setLineDash([]);
+  for (let i = 1; i <= 2; i++) {
+    const gy = topPadding + (usableHeight * (i / 3));
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(width, gy);
+    ctx.stroke();
+  }
+
+  const latestStatus = history[history.length - 1].status;
+  const isDown = latestStatus === 'down' || latestStatus === 'disabled';
+  
+  const strokeColor = isDown ? '#ef4444' : '#00E5D4';
+  const fillGradient = ctx.createLinearGradient(0, topPadding, 0, height);
+  fillGradient.addColorStop(0, isDown ? 'rgba(239, 68, 68, 0.35)' : 'rgba(0, 229, 212, 0.35)');
+  fillGradient.addColorStop(1, isDown ? 'rgba(239, 68, 68, 0.0)' : 'rgba(0, 229, 212, 0.0)');
+
+  // Smooth curve quadratic path
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 0; i < points.length - 1; i++) {
+    const xc = (points[i].x + points[i + 1].x) / 2;
+    const yc = (points[i].y + points[i + 1].y) / 2;
+    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+  }
+  ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+
+  // Fill gradient area below curve
+  ctx.lineTo(points[points.length - 1].x, height);
+  ctx.lineTo(points[0].x, height);
+  ctx.closePath();
+  ctx.fillStyle = fillGradient;
+  ctx.fill();
+
+  // Draw stroke curve
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 0; i < points.length - 1; i++) {
+    const xc = (points[i].x + points[i + 1].x) / 2;
+    const yc = (points[i].y + points[i + 1].y) / 2;
+    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+  }
+  ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+  ctx.lineWidth = 2 * dpr;
+  ctx.strokeStyle = strokeColor;
+  ctx.shadowColor = strokeColor;
+  ctx.shadowBlur = 6 * dpr;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Pulse dot at the latest point
+  const lastPoint = points[points.length - 1];
+  ctx.beginPath();
+  ctx.arc(lastPoint.x - (2 * dpr), lastPoint.y, 3.5 * dpr, 0, Math.PI * 2);
+  ctx.fillStyle = strokeColor;
+  ctx.shadowColor = strokeColor;
+  ctx.shadowBlur = 8 * dpr;
+  ctx.fill();
+}
+
+window.addEventListener('resize', () => {
+  if (typeof configuredWans !== 'undefined' && Array.isArray(configuredWans)) {
+    configuredWans.forEach(wan => drawWanSparkline(wan.name));
+  }
+});
 
 // 7. Start Live Polling Interval (Every 5 Seconds)
 function startLivePolling() {

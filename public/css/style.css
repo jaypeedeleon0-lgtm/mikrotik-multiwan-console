@@ -110,6 +110,11 @@ body {
 .subtitle {
   font-size: 0.72rem;
   color: var(--text-muted);
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.header .subtitle {
   white-space: nowrap;
 }
 
@@ -239,10 +244,10 @@ body {
 }
 
 .btn-primary {
-  background: #10b981 !important;
+  background: #ffffff !important;
   color: #000000 !important;
   font-weight: 800 !important;
-  border: 1px solid #10b981 !important;
+  border: 1px solid #ffffff !important;
   transition: none !important;
   animation: none !important;
   transform: none !important;
@@ -250,9 +255,9 @@ body {
 }
 
 .btn-primary:hover {
-  background: #059669 !important;
+  background: #e4e4e7 !important;
   color: #000000 !important;
-  border-color: #059669 !important;
+  border-color: #e4e4e7 !important;
   transition: none !important;
   animation: none !important;
   transform: none !important;
@@ -260,7 +265,7 @@ body {
 }
 
 .btn-primary:active {
-  background: #047857 !important;
+  background: #d4d4d8 !important;
   transition: none !important;
   transform: none !important;
 }

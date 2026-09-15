@@ -1049,7 +1049,11 @@ input:focus, select:focus {
   color: #10b981;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .stat-box {

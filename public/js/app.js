@@ -807,7 +807,7 @@ function renderWanCards() {
             </div>
             <div class="wan-subtitle">
               <div class="wan-subtitle-top">
-                <span>Interface: ${escapeHtml(wan.name)}</span>
+                <span>${escapeHtml(wan.name)}</span>
                 <span class="wan-sep">|</span>
                 <span class="wan-subtitle-status">Status: <span class="wan-status-badge active" id="wan-status-${wan.name}">ACTIVE</span></span>
               </div>

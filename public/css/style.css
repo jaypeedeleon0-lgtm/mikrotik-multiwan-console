@@ -3096,60 +3096,59 @@ html, body {
     align-items: stretch;
     gap: 6px;
     padding: 8px 10px;
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 10px;
     max-width: 100%;
     box-sizing: border-box;
     overflow: hidden;
   }
 
+  /* Row 1: Logo Title + Orb */
   .logo-group {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 6px;
+    justify-content: flex-start;
+    gap: 8px;
     width: 100%;
     min-width: 0;
   }
 
-  .logo-group > div:nth-child(2) {
-    min-width: 0;
+  .logo-group h1 {
+    font-size: 0.82rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
     flex: 1;
   }
 
-  .logo-group h1 {
-    font-size: 0.78rem;
-    line-height: 1.15;
-    white-space: normal;
-    word-break: break-word;
-    margin: 0;
-  }
-
-  /* Hide subtitle to save vertical height */
+  /* Hide subtitle on mobile to save vertical space */
   .logo-group .subtitle,
   .header .subtitle {
     display: none !important;
   }
 
-  /* Header actions: row layout inline with logo or right aligned */
+  /* Header actions container */
   .header-actions {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 5px;
+    gap: 6px;
     width: 100%;
   }
 
-  /* Target device badge: full width on 2nd row */
+  /* Row 2: Target device IP badge (full width) */
   .target-pc-badge {
+    order: 1;
     width: 100%;
     flex: 0 0 100%;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 6px;
+    gap: 6px;
+    padding: 4px 8px;
     box-sizing: border-box;
     border-radius: 8px;
     min-width: 0;
@@ -3158,7 +3157,8 @@ html, body {
   .target-pc-badge .label {
     white-space: nowrap;
     flex-shrink: 0;
-    font-size: 0.62rem;
+    font-size: 0.65rem;
+    font-weight: 700;
   }
 
   .target-pc-badge input {
@@ -3167,32 +3167,47 @@ html, body {
     min-width: 0;
     font-size: 13px !important;
     min-height: 28px !important;
-    padding: 3px 5px !important;
+    padding: 3px 6px !important;
   }
 
   .target-pc-badge .btn-detect-ip {
-    padding: 3px 6px;
-    font-size: 0.62rem;
+    padding: 3px 8px;
+    font-size: 0.65rem;
     min-height: 28px;
     flex-shrink: 0;
   }
 
-  /* Clock badge: compact on actions row */
+  /* Row 3: Manila Clock Badge (left) */
   .header-clock-badge {
-    font-size: 0.62rem;
-    padding: 3px 6px;
+    order: 2;
+    font-size: 0.64rem;
+    padding: 3px 8px;
     gap: 4px;
-    height: 28px;
-    flex: 1;
-    min-width: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
-  /* Icon-only buttons: compact touch targets */
+  /* Row 3: Quick Icon buttons & Admin Logout (right) */
+  #systemUpdateBtn,
+  #bwToggleBtn,
+  #userAuthBadge {
+    order: 3;
+  }
+
+  .user-auth-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px !important;
+  }
+
+  /* Icon-only buttons: compact 32px touch targets */
   .btn-icon-only {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     flex-shrink: 0;
   }
 

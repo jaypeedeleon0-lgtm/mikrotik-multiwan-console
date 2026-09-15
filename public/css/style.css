@@ -1086,35 +1086,12 @@ input:focus, select:focus {
   border-color: #ffffff;
 }
 
-/* Configured WAN Cards Scrollable Box Container */
+/* Configured WAN Cards Grid */
 .wan-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  max-height: calc(100vh - 200px);
-  min-height: 350px;
-  overflow-y: auto;
-  padding-right: 6px;
+  gap: 16px;
   margin-bottom: 20px;
-  scroll-behavior: smooth;
-}
-
-.wan-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.wan-grid::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 4px;
-}
-
-.wan-grid::-webkit-scrollbar-thumb {
-  background: rgba(0, 242, 254, 0.3);
-  border-radius: 4px;
-}
-
-.wan-grid::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 242, 254, 0.6);
 }
 
 @media (max-width: 900px) {

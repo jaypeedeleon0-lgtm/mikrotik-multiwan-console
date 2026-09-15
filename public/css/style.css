@@ -257,69 +257,36 @@ body {
   inherits: false;
 }
 
-@keyframes spinBorderLine {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
+@keyframes spinBorderAngle {
+  to {
+    --border-angle: 360deg;
   }
 }
 
 .btn-primary {
   position: relative;
-  background: transparent !important;
+  background: #0f1015 !important;
   color: #ffffff !important;
   font-weight: 500 !important;
   font-family: 'Montserrat', sans-serif !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.8px !important;
-  border: 1.5px solid #00f2fe !important;
+  border: 1.5px solid transparent !important;
   border-radius: 10px;
+  background-image: linear-gradient(#0f1015, #0f1015), 
+                    linear-gradient(#00f2fe, #00f2fe) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
   box-shadow: none !important;
   z-index: 1;
   transition: all 0.2s ease !important;
-  overflow: hidden;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
-  background: conic-gradient(transparent 65%, #00f2fe 88%, #ffffff 98%, transparent 100%);
-  animation: spinBorderLine 2s linear infinite;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 1.5px;
-  background: #0f1015;
-  border-radius: 8.5px;
-  z-index: -1;
-  transition: background 0.2s ease;
-}
-
-.btn-primary:hover::before,
-.wan-card:hover .btn-primary::before {
-  opacity: 1;
-}
-
-.btn-primary:hover::after,
-.wan-card:hover .btn-primary::after {
-  background: rgba(0, 242, 254, 0.08);
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  border-color: transparent !important;
+  background-image: linear-gradient(rgba(0, 242, 254, 0.08), rgba(0, 242, 254, 0.08)), 
+                    conic-gradient(from var(--border-angle, 0deg), #00f2fe 0%, #ffffff 20%, #00f2fe 40%, rgba(0, 242, 254, 0.15) 75%, #00f2fe 100%) !important;
+  animation: spinBorderAngle 2s linear infinite !important;
   color: #ffffff !important;
   transform: translateY(-1px);
 }
@@ -1482,13 +1449,15 @@ input:focus, select:focus {
   font-size: 0.76rem !important;
   font-weight: 700 !important;
   font-family: var(--font-mono) !important;
-  background: rgba(0, 242, 254, 0.08) !important;
+  background: transparent !important;
   border: 1.5px solid #00f2fe !important;
   color: #ffffff !important;
   padding: 3px 9px !important;
   border-radius: 6px !important;
   white-space: nowrap !important;
   box-shadow: none !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 .time-cell {

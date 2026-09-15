@@ -1762,42 +1762,26 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes 1: Idle State - Breathing Ring Loop */
+/* Keyframes: Idle State - Single Outer Ring Slow Breathing Pulse Loop */
 @keyframes ooklaBreathingPulse {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.45;
+    opacity: 0.4;
   }
   50% {
-    transform: scale(1.12);
-    opacity: 0.85;
+    transform: scale(1.08);
+    opacity: 0.95;
   }
 }
 
-/* Keyframes 2: Idle State - Radiating Pulse Wave Ring */
-@keyframes ooklaPulseWave {
-  0% {
-    transform: scale(0.96);
-    opacity: 0.75;
-  }
-  45% {
-    transform: scale(1.26);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.26);
-    opacity: 0;
-  }
-}
-
-/* Keyframes 3: Trigger Click Burst Wave */
+/* Keyframes: Trigger Click Burst Wave */
 @keyframes fastClickBurst {
   0% {
-    transform: scale(0.9);
+    transform: scale(0.95);
     opacity: 0.9;
   }
   100% {
-    transform: scale(1.4);
+    transform: scale(1.35);
     opacity: 0;
   }
 }
@@ -1835,30 +1819,24 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Static Outer Concentric Ring with Breathing Pulse Effect */
+/* Strictly ONE Single Outer Concentric Ring with Slow Breathing Pulse Effect (4s Cycle) */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 242, 254, 0.45);
+  border: 1.5px solid #00f2fe;    /* Single Outer Ring */
   pointer-events: none;
   box-sizing: border-box;
-  animation: ooklaBreathingPulse 3s ease-in-out infinite;
-  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+  animation: ooklaBreathingPulse 4s ease-in-out infinite; /* Slow 4-second breathing cycle */
+  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, opacity 0.3s ease;
 }
 
-/* Radiating Outer Ripple Wave Ring */
-.ookla-go-btn-large::after {
-  content: '';
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  border: 2px solid #00f2fe;
-  opacity: 0;
-  pointer-events: none;
-  box-sizing: border-box;
-  animation: ooklaPulseWave 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+/* Remove second outer ring element entirely */
+.ookla-go-btn-large::after,
+.ookla-go-btn-medium::after {
+  display: none !important;
+  content: none !important;
 }
 
 .ookla-go-btn-large:hover {
@@ -1867,9 +1845,10 @@ body.bw-mode .btn-green {
 }
 
 .ookla-go-btn-large:hover::before {
-  inset: -20px;
-  border-color: rgba(0, 242, 254, 0.85);
-  animation: none; /* Solid ring on hover */
+  inset: -19px;
+  opacity: 1;
+  border-color: #00f2fe;
+  animation: none; /* Solid single ring on hover */
 }
 
 .ookla-go-btn-large:active,
@@ -1879,10 +1858,6 @@ body.bw-mode .btn-green {
 
 .ookla-go-btn-large.clicked {
   opacity: 0.4;
-}
-
-.ookla-go-btn-large.clicked::after {
-  animation: fastClickBurst 0.35s ease-out forwards;
 }
 
 .ookla-go-btn-large:disabled,
@@ -1896,9 +1871,7 @@ body.bw-mode .btn-green {
 }
 
 .ookla-go-btn-large:disabled::before,
-.ookla-go-btn-medium:disabled::before,
-.ookla-go-btn-large:disabled::after,
-.ookla-go-btn-medium:disabled::after {
+.ookla-go-btn-medium:disabled::before {
   display: none !important;
   animation: none !important;
 }
@@ -2005,23 +1978,11 @@ body.bw-mode .btn-green {
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 242, 254, 0.45);
+  border: 1.5px solid #00f2fe;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ooklaBreathingPulse 3s ease-in-out infinite;
+  animation: ooklaBreathingPulse 4s ease-in-out infinite; /* Slow 4s cycle */
   transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
-}
-
-.ookla-go-btn-medium::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border-radius: 50%;
-  border: 2px solid #00f2fe;
-  opacity: 0;
-  pointer-events: none;
-  box-sizing: border-box;
-  animation: ooklaPulseWave 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
 .ookla-go-btn-medium:hover {
@@ -2030,8 +1991,10 @@ body.bw-mode .btn-green {
 }
 
 .ookla-go-btn-medium:hover::before {
-  inset: -17px;
-  border-color: rgba(0, 242, 254, 0.75);
+  inset: -16px;
+  opacity: 1;
+  border-color: #00f2fe;
+  animation: none;
 }
 
 .ookla-result-right {

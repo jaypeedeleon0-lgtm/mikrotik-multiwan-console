@@ -251,7 +251,23 @@ body {
   white-space: nowrap;
 }
 
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorderOutline {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
 .btn-primary {
+  position: relative;
   background: transparent !important;
   color: #ffffff !important;
   font-weight: 700 !important;
@@ -259,19 +275,48 @@ body {
   font-size: 0.82rem !important;
   letter-spacing: 0.6px !important;
   border: 1.5px solid #00E5D4 !important;
-  transition: none !important;
+  border-radius: 10px;
   box-shadow: none !important;
+  z-index: 1;
+  overflow: hidden;
+  transition: border-color 0.3s ease !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from var(--border-angle), #00E5D4 0%, rgba(0, 229, 212, 0.25) 30%, transparent 60%, #00E5D4 85%, #00E5D4 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+  animation: rotateBorderOutline 2s linear infinite;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: #09090b;
+  border-radius: 8.5px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: #00E5D4 !important;
-  box-shadow: none !important;
-  transform: none !important;
-  transition: none !important;
+  border-color: transparent !important;
+}
+
+.btn-primary:hover::before,
+.btn-primary:hover::after {
+  opacity: 1;
 }
 
 .btn-primary:disabled {
@@ -1780,35 +1825,36 @@ body.bw-mode .btn-green {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 500;
   font-family: 'Montserrat', sans-serif;
   color: #94a3b8;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .ookla-summary-label .arrow-dl {
   color: #00f2fe;
-  font-size: 0.95rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .ookla-summary-label .arrow-ul {
   color: #d946ef;
-  font-size: 0.95rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .ookla-summary-label .label-txt {
   color: #94a3b8;
   font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
 }
 
 .ookla-summary-label .unit-txt {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #94a3b8;
-  font-weight: 600;
+  font-weight: 400;
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -1835,18 +1881,18 @@ body.bw-mode .btn-green {
 }
 
 .ookla-ping-title {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 500;
   font-family: 'Montserrat', sans-serif;
   color: #94a3b8;
-  letter-spacing: 0.8px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
 .ookla-ping-val-group {
   font-family: 'Roboto Condensed', sans-serif;
   font-size: 1.05rem;
-  font-weight: 400;
+  font-weight: 300;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
@@ -1975,8 +2021,8 @@ body.bw-mode .btn-green {
   border: 2px solid #00f2fe;     /* Solid Inner Cyan Circle */
   color: #ffffff;                /* Solid Pure White GO Text */
   font-size: 3.2rem;
-  font-weight: 800;
-  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
   letter-spacing: 2px;
   cursor: pointer;
   box-shadow: none !important;
@@ -2089,16 +2135,18 @@ body.bw-mode .btn-green {
 }
 
 .ookla-detail-title {
-  font-weight: 800;
-  font-size: 0.98rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.92rem;
   color: #ffffff;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
 
 .ookla-detail-sub {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
   color: #00f2fe;
-  font-family: var(--font-mono);
   margin-top: 2px;
 }
 

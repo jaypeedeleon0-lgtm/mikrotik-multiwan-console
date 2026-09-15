@@ -772,7 +772,6 @@ function renderWanCards() {
           <div class="wan-title-group">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
               <h4>${escapeHtml(wan.label || wan.name)}</h4>
-              <span class="routing-mark-tag" title="MikroTik Routing Mark">${escapeHtml(routingMarkName)}</span>
             </div>
             <div class="wan-subtitle">
               <div class="wan-subtitle-top">

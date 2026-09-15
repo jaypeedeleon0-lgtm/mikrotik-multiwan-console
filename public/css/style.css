@@ -1,9 +1,9 @@
 :root {
   --bg-dark: #000000;
-  --bg-card: #1c1c1c;
-  --bg-card-hover: #262626;
-  --border-glass: rgba(255, 255, 255, 0.14);
-  --border-glow: rgba(255, 255, 255, 0.4);
+  --bg-card: #111111;
+  --bg-card-hover: #1a1a1a;
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --border-glow: rgba(255, 255, 255, 0.3);
   
   --primary-white: #ffffff;
   --primary-light: #e4e4e7;
@@ -27,6 +27,14 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 body {
@@ -962,7 +970,7 @@ input:focus, select:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  background: #0c0c0c;
+  background: #060606;
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -972,7 +980,7 @@ input:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #0c0c0c;
+  background: #060606;
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 7px 12px;
   border-radius: 10px;

@@ -774,7 +774,14 @@ function renderWanCards() {
               <h4>${escapeHtml(wan.label || wan.name)}</h4>
               <span class="routing-mark-tag" title="MikroTik Routing Mark">${escapeHtml(routingMarkName)}</span>
             </div>
-            <span class="wan-subtitle">Interface: ${escapeHtml(wan.name)} | Status: <span class="wan-status-badge active" id="wan-status-${wan.name}">ACTIVE</span> | GW: ${escapeHtml(wan.gateway)}</span>
+            <div class="wan-subtitle">
+              <div class="wan-subtitle-top">
+                <span>Interface: ${escapeHtml(wan.name)}</span>
+                <span class="wan-sep">|</span>
+                <span class="wan-subtitle-status">Status: <span class="wan-status-badge active" id="wan-status-${wan.name}">ACTIVE</span></span>
+              </div>
+              <div class="wan-subtitle-gw">GW: ${escapeHtml(wan.gateway)}</div>
+            </div>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             ${isCurrentActive ? '<span class="active-badge">ACTIVE ROUTE</span>' : ''}
@@ -841,7 +848,7 @@ function restoreSavedWanSpeedtestStats(wanName) {
     if (speedValEl && data.dl !== undefined && data.ul !== undefined) {
       const cyanArrowSvg = `<span class="ookla-icon-circle cyan"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>`;
       const purpleArrowSvg = `<span class="ookla-icon-circle purple"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d946ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>`;
-      speedValEl.innerHTML = `<span style="color: #00f2fe; font-weight: 700;">${data.dl}</span> ${cyanArrowSvg} / <span style="color: #d946ef; font-weight: 700;">${data.ul}</span> ${purpleArrowSvg} <span style="color: #10b981; font-weight: 700;">Mbps</span>`;
+      speedValEl.innerHTML = `<span style="color: #ffffff; font-weight: 700;">${data.dl}</span> ${cyanArrowSvg} / <span style="color: #ffffff; font-weight: 700;">${data.ul}</span> ${purpleArrowSvg} <span style="color: #ffffff; font-weight: 700;">Mbps</span>`;
     }
   } catch(e) {}
 }

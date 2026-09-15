@@ -1011,11 +1011,16 @@ function drawWanSparkline(wanName) {
   const ctx = canvas.getContext('2d');
 
   const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  if (rect.width > 0 && rect.height > 0) {
-    if (canvas.width !== Math.floor(rect.width * dpr) || canvas.height !== Math.floor(rect.height * dpr)) {
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
+  const container = canvas.parentElement;
+  const containerWidth = container ? container.clientWidth : 0;
+  const containerHeight = container ? container.clientHeight : 0;
+
+  if (containerWidth > 0 && containerHeight > 0) {
+    const targetWidth = Math.floor(containerWidth * dpr);
+    const targetHeight = Math.floor(containerHeight * dpr);
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
     }
   }
 

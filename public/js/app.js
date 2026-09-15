@@ -1007,13 +1007,13 @@ function renderSpeedtestHistory() {
   speedtestHistoryBody.innerHTML = speedtestHistory.map(item => `
     <tr>
       <td><span class="badge-wan">${escapeHtml(item.wanLabel || item.wanName)}</span></td>
-      <td><strong style="color:#ffffff; font-size:0.92rem;">${escapeHtml(item.download)} Mbps</strong></td>
-      <td><strong style="color:#e4e4e7; font-size:0.92rem;">${escapeHtml(item.upload || '0.00')} Mbps</strong></td>
+      <td><strong style="color:#ffffff; font-size:0.78rem;">${escapeHtml(item.download)} Mbps</strong></td>
+      <td><strong style="color:#e4e4e7; font-size:0.78rem;">${escapeHtml(item.upload || '0.00')} Mbps</strong></td>
       <td>
-        <span style="color:#a1a1aa; font-family:var(--font-mono); font-size:0.82rem;">${escapeHtml(item.unloadedMs || '--')} ms / ${escapeHtml(item.loadedMs || '--')} ms</span>
+        <span style="color:#a1a1aa; font-family:var(--font-mono); font-size:0.75rem;">${escapeHtml(item.unloadedMs || '--')} ms / ${escapeHtml(item.loadedMs || '--')} ms</span>
       </td>
-      <td><strong>${escapeHtml(item.publicIp || 'Active Routed Line')}</strong> <span style="color:var(--text-muted); font-size:0.8rem;">(${escapeHtml(item.isp || 'Egress WAN Gateway')})</span></td>
-      <td class="time-cell">${escapeHtml(item.timestamp)}</td>
+      <td><strong style="font-size:0.78rem; color:#ffffff;">${escapeHtml(item.publicIp || 'Active Routed Line')}</strong> <span style="color:var(--text-muted); font-size:0.72rem;">(${escapeHtml(item.isp || 'Egress WAN Gateway')})</span></td>
+      <td class="time-cell" style="font-size:0.74rem; white-space:nowrap;">${escapeHtml(item.timestamp)}</td>
     </tr>
   `).join('');
 }

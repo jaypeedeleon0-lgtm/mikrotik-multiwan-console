@@ -257,27 +257,12 @@ body {
   inherits: false;
 }
 
-@keyframes rotateBorderOutline {
+@keyframes spinBorderLine {
   0% {
-    --border-angle: 0deg;
+    transform: rotate(0deg);
   }
   100% {
-    --border-angle: 360deg;
-  }
-}
-
-@keyframes borderRotatePulse {
-  0% {
-    box-shadow: 0 0 6px rgba(0, 242, 254, 0.4), inset 0 0 4px rgba(0, 242, 254, 0.2);
-    border-color: #00f2fe;
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(0, 242, 254, 0.9), inset 0 0 8px rgba(0, 242, 254, 0.4);
-    border-color: #38bdf8;
-  }
-  100% {
-    box-shadow: 0 0 6px rgba(0, 242, 254, 0.4), inset 0 0 4px rgba(0, 242, 254, 0.2);
-    border-color: #00f2fe;
+    transform: rotate(360deg);
   }
 }
 
@@ -291,18 +276,52 @@ body {
   letter-spacing: 0.8px !important;
   border: 1.5px solid #00f2fe !important;
   border-radius: 10px;
-  box-shadow: none;
+  box-shadow: none !important;
   z-index: 1;
-  transition: all 0.25s ease !important;
+  transition: all 0.2s ease !important;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: conic-gradient(transparent 65%, #00f2fe 88%, #ffffff 98%, transparent 100%);
+  animation: spinBorderLine 2s linear infinite;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: #0f1015;
+  border-radius: 8.5px;
+  z-index: -1;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover::before,
+.wan-card:hover .btn-primary::before {
+  opacity: 1;
+}
+
+.btn-primary:hover::after,
+.wan-card:hover .btn-primary::after {
+  background: rgba(0, 242, 254, 0.08);
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  background: rgba(0, 242, 254, 0.12) !important;
+  border-color: transparent !important;
   color: #ffffff !important;
-  border-color: #00f2fe !important;
   transform: translateY(-1px);
-  animation: borderRotatePulse 1.8s ease-in-out infinite !important;
 }
 
 .btn-primary:disabled {
@@ -1463,13 +1482,13 @@ input:focus, select:focus {
   font-size: 0.76rem !important;
   font-weight: 700 !important;
   font-family: var(--font-mono) !important;
-  background: rgba(0, 242, 254, 0.1) !important;
+  background: rgba(0, 242, 254, 0.08) !important;
   border: 1.5px solid #00f2fe !important;
   color: #ffffff !important;
   padding: 3px 9px !important;
   border-radius: 6px !important;
   white-space: nowrap !important;
-  box-shadow: 0 0 8px rgba(0, 242, 254, 0.25) !important;
+  box-shadow: none !important;
 }
 
 .time-cell {

@@ -828,12 +828,14 @@ function cleanIspName(raw) {
   if (!raw) return 'ISP Connection';
   let str = String(raw).trim();
   str = str.replace(/^AS\d+\s*/i, '');
+  str = str.replace(/^ether\d+[-_]?/i, '');
   if (/pldt/i.test(str)) return 'PLDT';
   if (/globe/i.test(str)) return 'Globe Telecom';
   if (/smart/i.test(str)) return 'Smart Communications';
   if (/converge/i.test(str)) return 'Converge ICT';
   if (/dito/i.test(str)) return 'DITO Telecommunity';
   if (/starlink/i.test(str)) return 'Starlink';
+  if (/rain/i.test(str)) return 'Rain';
   if (/rise/i.test(str)) return 'RISE';
   if (/radius/i.test(str)) return 'Radius Telecoms';
   if (/eastern/i.test(str)) return 'Eastern Communications';

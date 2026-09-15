@@ -1176,6 +1176,20 @@ function updateExperienceRatings(dlMbps, ulMbps, pingMs) {
   if (itemC) itemC.setAttribute('title', `Video & Voice Calls: ${scoreLabels[cScore]}${cScore > 0 ? ` (${cScore}/5)` : ''}`);
 }
 
+function formatIspDisplayName(raw) {
+  if (!raw) return 'ISP Connection';
+  let str = String(raw).trim();
+  str = str.replace(/^ether\d+[-_]?/i, '');
+  if (/pldt/i.test(str)) return 'PLDT';
+  if (/globe/i.test(str)) return 'Globe Telecom';
+  if (/smart/i.test(str)) return 'Smart Communications';
+  if (/converge/i.test(str)) return 'Converge ICT';
+  if (/dito/i.test(str)) return 'DITO Telecommunity';
+  if (/starlink/i.test(str)) return 'Starlink';
+  if (/rain/i.test(str)) return 'Rain';
+  return str;
+}
+
 async function openSpeedtestGaugeModal(wanName) {
   const wanObj = configuredWans.find(w => w.name === wanName);
   if (!wanObj) return;
@@ -1226,8 +1240,8 @@ async function openSpeedtestGaugeModal(wanName) {
   await switchWan(wanName);
 
   // Initial display state while route stabilizes
-  if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-  if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || 'Detecting Public IP...';
+  if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+  if (gaugeIpText) gaugeIpText.innerText = 'Detecting IP...';
 
   // Helper to fetch IP and update UI
   const fetchAndSetPublicIp = async () => {
@@ -1235,7 +1249,7 @@ async function openSpeedtestGaugeModal(wanName) {
       const res = await authFetch('/api/public-ip');
       const data = await res.json();
       if (data.success && data.ip && data.ip !== 'Detecting IP...' && data.ip !== 'Active Routed Line') {
-        if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
+        if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(data.isp || wanObj.label || wanObj.name);
         if (gaugeIpText) gaugeIpText.innerText = data.ip;
         return true;
       }
@@ -1271,8 +1285,12 @@ async function openSpeedtestGaugeModal(wanName) {
 
   // 4. Fetch final Egress Public IP details for Modal header over the stabilized WAN line
   const ipFound = await fetchAndSetPublicIp();
-  if (!ipFound && gaugeIpText && (gaugeIpText.innerText === 'Detecting Public IP...' || gaugeIpText.innerText === 'Active Routed Line')) {
-    if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || wanObj.name || 'Active Egress Route';
+  if (!ipFound && gaugeIpText && gaugeIpText.innerText === 'Detecting IP...') {
+    if (wanObj.ip) {
+      gaugeIpText.innerText = wanObj.ip;
+    } else {
+      gaugeIpText.innerText = 'Detecting IP...';
+    }
   }
 
   // 5. Enable GO buttons ONCE server detection is 100% complete!

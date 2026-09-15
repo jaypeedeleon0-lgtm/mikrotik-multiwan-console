@@ -1762,8 +1762,8 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes for Ookla GO Button 3-Second Flat Rotating Gradient Pointer */
-@keyframes goRingSpin {
+/* Keyframes for Authentic Ookla Outer Concentric Ring 3-Second Rotating Arc */
+@keyframes goOuterRingSpin {
   0% {
     transform: rotate(0deg);
   }
@@ -1772,29 +1772,30 @@ body.bw-mode .btn-green {
   }
 }
 
-/* Crisp Clean GO Button Container (Zero Glow Halo) */
+/* Crisp Clean GO Button Container */
 .ookla-go-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 0 32px 0;
+  padding: 24px 0 36px 0;
   min-height: 220px;
 }
 
+/* Inner Solid Cyan Circle with 'GO' Text */
 .ookla-go-btn-large {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: #000000;
-  border: 2px solid rgba(0, 198, 255, 0.25);
-  color: #ffffff;            /* Solid pure white GO text */
+  border: 2px solid #00f2fe;     /* Solid Inner Cyan Circle */
+  color: #ffffff;                /* Solid Pure White GO Text */
   font-size: 3.2rem;
   font-weight: 800;
   font-family: 'Inter', sans-serif;
   letter-spacing: 2px;
   cursor: pointer;
-  box-shadow: none !important; /* Flat design, NO glowing halo or blur */
+  box-shadow: none !important;
   transition: transform 0.2s ease, border-color 0.2s ease;
   display: flex;
   align-items: center;
@@ -1803,34 +1804,43 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Crisp Flat 3-Second Rotating Gradient Ring Pointer (No Blur / Glow) */
+/* Outer Concentric Ring Track (14px Gap from Inner Circle) */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
-  inset: -3.5px;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 242, 254, 0.25); /* Static Dim Outer Ring Track */
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Outer Rotating Gradient Arc Pointer (Rotates every 3 seconds) */
+.ookla-go-btn-large::after {
+  content: '';
+  position: absolute;
+  inset: -15px;
   border-radius: 50%;
   padding: 2.5px;
   background: conic-gradient(
     from 0deg,
     #00f2fe 0deg,
-    #00c6ff 90deg,
-    rgba(0, 198, 255, 0.05) 180deg,
-    #00c6ff 270deg,
+    #00c6ff 60deg,
+    rgba(0, 242, 254, 0.05) 140deg,
+    rgba(0, 242, 254, 0) 280deg,
     #00f2fe 360deg
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
-  animation: goRingSpin 3s linear infinite;
+  animation: goOuterRingSpin 3s linear infinite;
   pointer-events: none;
-  filter: none !important; /* Zero drop-shadow or blur */
+  filter: none !important;
 }
 
 .ookla-go-btn-large:hover {
   transform: scale(1.04);
-  color: #ffffff;
   border-color: #00f2fe;
-  box-shadow: none !important; /* Flat - NO glow on hover */
 }
 
 .ookla-go-btn-large:active {
@@ -1848,7 +1858,9 @@ body.bw-mode .btn-green {
 }
 
 .ookla-go-btn-large:disabled::before,
-.ookla-go-btn-medium:disabled::before {
+.ookla-go-btn-medium:disabled::before,
+.ookla-go-btn-large:disabled::after,
+.ookla-go-btn-medium:disabled::after {
   display: none !important;
   animation: none !important;
 }
@@ -1919,13 +1931,13 @@ body.bw-mode .btn-green {
 
 .ookla-go-btn-medium {
   position: relative;
-  width: 135px;
-  height: 135px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: #000000;
-  border: 2px solid rgba(0, 198, 255, 0.25);
+  border: 2px solid #00f2fe;
   color: #ffffff;
-  font-size: 2.7rem;
+  font-size: 2.5rem;
   font-weight: 800;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
@@ -1941,21 +1953,31 @@ body.bw-mode .btn-green {
 .ookla-go-btn-medium::before {
   content: '';
   position: absolute;
-  inset: -3.5px;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 242, 254, 0.25);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.ookla-go-btn-medium::after {
+  content: '';
+  position: absolute;
+  inset: -13px;
   border-radius: 50%;
   padding: 2.5px;
   background: conic-gradient(
     from 0deg,
     #00f2fe 0deg,
-    #00c6ff 90deg,
-    rgba(0, 198, 255, 0.05) 180deg,
-    #00c6ff 270deg,
+    #00c6ff 60deg,
+    rgba(0, 242, 254, 0.05) 140deg,
+    rgba(0, 242, 254, 0) 280deg,
     #00f2fe 360deg
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
-  animation: goRingSpin 3s linear infinite;
+  animation: goOuterRingSpin 3s linear infinite;
   pointer-events: none;
   filter: none !important;
 }

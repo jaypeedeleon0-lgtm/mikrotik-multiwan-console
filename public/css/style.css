@@ -1762,25 +1762,25 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes: Idle State - 3s Initial Wait Delay + 0.5x Slow-mo Wave Ring Expansion */
+/* Keyframes: Idle State - 3s Initial Wait Delay + Slow-motion Circle Ring Expansion */
 @keyframes ookla3sPulseWave {
-  0%, 37.5% {
-    inset: 0px;
+  0%, 42.8% {
+    transform: scale(1);
     opacity: 0;
     border-color: #00f2fe;
   }
-  37.6% {
-    inset: 0px;
-    opacity: 0.95;
+  42.9% {
+    transform: scale(1);
+    opacity: 0.85;
     border-color: #00f2fe;
   }
-  65% {
-    inset: -40px;
+  85.7% {
+    transform: scale(1.32);
     opacity: 0;
     border-color: #00f2fe;
   }
-  65.1%, 100% {
-    inset: 0px;
+  85.8%, 100% {
+    transform: scale(1);
     opacity: 0;
   }
 }
@@ -1818,7 +1818,6 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Periodic Slow-mo Ring Burst (Waits 3s first after load, then expands 0.5x slow-mo, disappears, waits for cycle) */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
@@ -1828,7 +1827,8 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 8s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
+  animation: ookla3sPulseWave 7s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
+  transform-origin: center center;
 }
 
 /* Disable second outer element */
@@ -1897,7 +1897,7 @@ body.bw-mode .btn-green {
   align-items: center;
   padding: 16px 26px;
   background: #020408;
-  border-top: 1px solid #111827;
+  border-top: none !important;
 }
 
 .ookla-detail-item {
@@ -1992,7 +1992,8 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 8s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
+  animation: ookla3sPulseWave 7s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
+  transform-origin: center center;
 }
 
 .ookla-go-btn-medium:hover {
@@ -2345,7 +2346,7 @@ body.bw-mode .ookla-ping-val-group {
 
 body.bw-mode .ookla-bottom-details {
   background: #f8fafc !important;
-  border-top-color: #e2e8f0 !important;
+  border-top: none !important;
 }
 
 body.bw-mode .ookla-detail-title {

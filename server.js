@@ -840,50 +840,89 @@ function cleanIspName(raw) {
   return str.split(' ')[0] || str;
 }
 
+// Helper: Fetch with strict AbortController timeout to prevent hanging requests
+async function fetchWithTimeout(url, timeoutMs = 2000) {
+  const { default: fetch } = await import('node-fetch');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    });
+    clearTimeout(timer);
+    return res;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
 // 5. Detect Egress Public IP & ISP Provider Details
 app.get('/api/public-ip', async (req, res) => {
   try {
-    const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-    
-    // Tier 1: Try ip-api.com for instant IP + ISP in 1 call
+    // Tier 1: Try ip-api.com for instant IP + ISP
     try {
-      const response = await fetch('http://ip-api.com/json/?fields=status,query,isp,org,as', { timeout: 3500 });
+      const response = await fetchWithTimeout('http://ip-api.com/json/?fields=status,query,isp,org,as', 2000);
       const ipJson = await response.json();
-      if (ipJson.status === 'success' && ipJson.query) {
-        const ispName = cleanIspName(ipJson.isp || ipJson.org || ipJson.as);
+      if (ipJson && ipJson.status === 'success' && ipJson.query) {
         return res.json({
           success: true,
           ip: ipJson.query,
-          isp: ispName
+          isp: cleanIspName(ipJson.isp || ipJson.org || ipJson.as)
         });
       }
     } catch (e1) {}
 
-    // Tier 2: Try ipify.org fallback
-    const response = await fetch('https://api.ipify.org?format=json', { timeout: 3500 });
-    const data = await response.json();
-    
-    let ispName = 'ISP Gateway';
-    if (data.ip) {
-      try {
-        const ipDetails = await fetch(`https://ipapi.co/${data.ip}/json/`, { timeout: 3000 });
-        const ipJson = await ipDetails.json();
-        if (ipJson.org || ipJson.asn) {
-          ispName = cleanIspName(ipJson.org || ipJson.asn);
-        }
-      } catch(e2) {}
-    }
+    // Tier 2: Try api.ipify.org
+    try {
+      const response = await fetchWithTimeout('https://api.ipify.org?format=json', 2000);
+      const data = await response.json();
+      if (data && data.ip) {
+        return res.json({
+          success: true,
+          ip: data.ip,
+          isp: 'ISP Egress'
+        });
+      }
+    } catch (e2) {}
+
+    // Tier 3: Try ipinfo.io
+    try {
+      const response = await fetchWithTimeout('https://ipinfo.io/json', 2000);
+      const data = await response.json();
+      if (data && data.ip) {
+        return res.json({
+          success: true,
+          ip: data.ip,
+          isp: cleanIspName(data.org || 'ISP Egress')
+        });
+      }
+    } catch (e3) {}
+
+    // Tier 4: Try icanhazip.com
+    try {
+      const response = await fetchWithTimeout('https://icanhazip.com', 2000);
+      const textIp = (await response.text()).trim();
+      if (textIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(textIp)) {
+        return res.json({
+          success: true,
+          ip: textIp,
+          isp: 'ISP Egress'
+        });
+      }
+    } catch (e4) {}
 
     res.json({
       success: true,
-      ip: data.ip || 'Detecting IP...',
-      isp: ispName
+      ip: 'Active Routed Line',
+      isp: 'WAN Interface'
     });
   } catch (err) {
     res.json({
       success: true,
-      ip: 'Detecting IP...',
-      isp: 'WAN Gateway'
+      ip: 'Active Routed Line',
+      isp: 'WAN Interface'
     });
   }
 });

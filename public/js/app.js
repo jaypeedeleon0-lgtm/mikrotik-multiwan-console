@@ -1227,18 +1227,24 @@ async function openSpeedtestGaugeModal(wanName) {
 
   // Initial display state while route stabilizes
   if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-  if (gaugeIpText) gaugeIpText.innerText = 'Detecting Public IP...';
+  if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || 'Detecting Public IP...';
 
-  // Fetch Public IP in parallel while route is stabilizing
-  authFetch('/api/public-ip')
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.ip && data.ip !== 'Detecting IP...') {
+  // Helper to fetch IP and update UI
+  const fetchAndSetPublicIp = async () => {
+    try {
+      const res = await authFetch('/api/public-ip');
+      const data = await res.json();
+      if (data.success && data.ip && data.ip !== 'Detecting IP...' && data.ip !== 'Active Routed Line') {
         if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
         if (gaugeIpText) gaugeIpText.innerText = data.ip;
+        return true;
       }
-    })
-    .catch(() => {});
+    } catch (e) {}
+    return false;
+  };
+
+  // Fetch Public IP in parallel while route is stabilizing
+  fetchAndSetPublicIp();
 
   // 2. 5-Second Route Stabilization Cooldown Countdown (GO button stays disabled)
   for (let sec = 5; sec >= 1; sec--) {
@@ -1267,14 +1273,10 @@ async function openSpeedtestGaugeModal(wanName) {
   }
 
   // 4. Fetch final Egress Public IP details for Modal header over the stabilized WAN line
-  try {
-    const res = await authFetch('/api/public-ip');
-    const data = await res.json();
-    if (data.success && data.ip && data.ip !== 'Detecting IP...') {
-      if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
-      if (gaugeIpText) gaugeIpText.innerText = data.ip;
-    }
-  } catch (e) {}
+  const ipFound = await fetchAndSetPublicIp();
+  if (!ipFound && gaugeIpText && (gaugeIpText.innerText === 'Detecting Public IP...' || gaugeIpText.innerText === 'Active Routed Line')) {
+    if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || wanObj.name || 'Active Egress Route';
+  }
 
   // 5. Enable GO buttons ONCE server detection is 100% complete!
   if (runServerCliBtn) runServerCliBtn.disabled = false;

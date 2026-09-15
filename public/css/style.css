@@ -1075,15 +1075,16 @@ input:focus, select:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.62rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-remove-wan:hover {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background: rgba(239, 68, 68, 0.22);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
 }
 
 /* Configured WAN Cards Grid */

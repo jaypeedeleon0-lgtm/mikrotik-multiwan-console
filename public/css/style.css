@@ -3016,9 +3016,26 @@ body.bw-mode .btn-login-bw:hover {
 
 /* Prevent horizontal overflow globally */
 html, body {
-  max-width: 100vw;
+  max-width: 100vw !important;
+  width: 100% !important;
   overflow-x: hidden !important;
-  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-container,
+.main-content,
+.sidebar,
+.dashboard-body,
+.glass-card,
+.connection-card,
+.wan-card,
+.wan-grid,
+.header {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
 }
 
 /* Tablets & Small Laptops (Width <= 992px) */
@@ -3026,18 +3043,17 @@ html, body {
   .app-container {
     padding: 12px 10px;
     max-width: 100%;
-    overflow-x: hidden;
   }
 
   .main-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 14px;
   }
 
   .sidebar,
   .dashboard-body {
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
@@ -3051,15 +3067,17 @@ html, body {
     font-size: 16px !important;
     min-height: 36px !important;
     padding: 6px 8px !important;
-    max-width: 100%;
-    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .form-group {
     margin-bottom: 8px;
     gap: 3px;
-    width: 100%;
-    min-width: 0;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 
   .form-group label {
@@ -3071,19 +3089,20 @@ html, body {
   }
 
   .form-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    width: 100%;
-    min-width: 0;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 
   .glass-card,
   .connection-card {
-    padding: 10px 10px;
-    border-radius: 12px;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
+    padding: 10px 10px !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .card-header {
@@ -3096,16 +3115,16 @@ html, body {
 
   /* Navigation Header Mobile Compact Layout */
   .header {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    padding: 8px 10px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Row 1: Logo Title + Orb */
@@ -3148,8 +3167,8 @@ html, body {
   /* Row 2: Target device IP badge (full width) */
   .target-pc-badge {
     order: 1;
-    width: 100%;
-    flex: 0 0 100%;
+    width: 100% !important;
+    flex: 0 0 100% !important;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -3235,18 +3254,18 @@ html, body {
 
   /* WAN Card Grid: single column */
   .wan-grid {
-    grid-template-columns: 1fr;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 10px;
-    width: 100%;
+    width: 100% !important;
   }
 
   .wan-card {
-    padding: 10px 10px;
-    border-radius: 12px;
+    padding: 10px 10px !important;
+    border-radius: 12px !important;
     gap: 6px;
-    overflow: hidden;
-    width: 100%;
-    box-sizing: border-box;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .wan-card-header {
@@ -3280,7 +3299,7 @@ html, body {
 
   .wan-canvas-container {
     height: 85px;
-    width: 100%;
+    width: 100% !important;
   }
 
   .winbox-legend-row {
@@ -3301,6 +3320,8 @@ html, body {
     min-height: 36px;
     font-size: 0.8rem;
     padding: 6px 10px;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Table Mobile Scroll */
@@ -3308,7 +3329,7 @@ html, body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 8px;
-    width: 100%;
+    width: 100% !important;
   }
 
   .history-table {
@@ -3369,7 +3390,7 @@ html, body {
 
   /* Resource grid: 2 columns on tablet */
   .resource-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 6px;
   }
 }
@@ -3377,14 +3398,19 @@ html, body {
 /* Small Phones (Width <= 480px - iPhone SE, 12/13/14/15 Mini & Android) */
 @media (max-width: 480px) {
   .app-container {
-    padding: 4px;
-    overflow-x: hidden;
+    padding: 4px !important;
+  }
+
+  .form-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 4px !important;
   }
 
   .header {
-    padding: 6px 6px;
-    gap: 4px;
-    margin-bottom: 6px;
+    padding: 6px 6px !important;
+    gap: 4px !important;
+    margin-bottom: 6px !important;
   }
 
   .logo-group h1 {
@@ -3437,7 +3463,7 @@ html, body {
   }
 
   .wan-card {
-    padding: 8px;
+    padding: 8px !important;
     gap: 4px;
   }
 
@@ -3450,35 +3476,29 @@ html, body {
   }
 
   .resource-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 4px;
   }
 
   .glass-card {
-    padding: 8px;
-    border-radius: 8px;
+    padding: 8px !important;
+    border-radius: 8px !important;
   }
 
   .section-title-bar h2 {
     font-size: 0.8rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
   }
 }
 
 /* Compact Smartphones (Width <= 420px - iPhone SE & budget Android) */
 @media (max-width: 420px) {
   .app-container {
-    padding: 2px;
-    overflow-x: hidden;
+    padding: 2px !important;
   }
 
   .header {
-    padding: 4px;
-    gap: 3px;
+    padding: 4px !important;
+    gap: 3px !important;
   }
 
   .logo-group h1 {
@@ -3486,7 +3506,7 @@ html, body {
   }
 
   .wan-card {
-    padding: 6px;
+    padding: 6px !important;
   }
 
   .wan-canvas-container {
@@ -3494,10 +3514,10 @@ html, body {
   }
 
   .resource-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .latency-trio-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }

@@ -810,7 +810,7 @@ function renderWanCards() {
         <button class="btn btn-primary btn-full" 
           style="margin-top: 10px;"
           onclick="openSpeedtestGaugeModal('${wan.name}')">
-          Speedtest
+          Speed Test
         </button>
       </div>
     `;

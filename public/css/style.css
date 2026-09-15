@@ -254,8 +254,11 @@ body {
 .btn-primary {
   background: transparent !important;
   color: #ffffff !important;
-  font-weight: 800 !important;
-  border: 1.5px solid #10b981 !important;
+  font-weight: 700 !important;
+  font-family: 'Montserrat', 'Inter', sans-serif !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.6px !important;
+  border: 1.5px solid #00E5D4 !important;
   transition: none !important;
   box-shadow: none !important;
 }
@@ -265,7 +268,7 @@ body {
 .btn-primary:active {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: #10b981 !important;
+  border-color: #00E5D4 !important;
   box-shadow: none !important;
   transform: none !important;
   transition: none !important;
@@ -1777,8 +1780,9 @@ body.bw-mode .btn-green {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
   color: #94a3b8;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -1798,21 +1802,24 @@ body.bw-mode .btn-green {
 
 .ookla-summary-label .label-txt {
   color: #94a3b8;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .ookla-summary-label .unit-txt {
-  font-size: 0.68rem;
-  color: #64748b;
-  font-weight: 700;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .ookla-summary-val {
-  font-size: 3.4rem;
+  font-size: 3.6rem;
   font-weight: 300;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto Condensed', 'Barlow Condensed', sans-serif;
   color: #ffffff;
   line-height: 1;
   margin-top: 6px;
+  letter-spacing: 0.5px;
 }
 
 /* Centered Ping Row below Download & Upload */
@@ -1829,16 +1836,17 @@ body.bw-mode .btn-green {
 
 .ookla-ping-title {
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
   color: #94a3b8;
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .ookla-ping-val-group {
-  font-family: var(--font-mono);
-  font-size: 0.92rem;
-  font-weight: 700;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
   color: #ffffff;
   display: inline-flex;
   align-items: center;

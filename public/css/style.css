@@ -1579,8 +1579,8 @@ body.bw-mode .btn-green {
 .ookla-top-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 18px 24px 8px 24px;
+  gap: 24px;
+  padding: 22px 28px 12px 28px;
 }
 
 .ookla-summary-col {
@@ -1609,18 +1609,18 @@ body.bw-mode .btn-green {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 18px;
+  gap: 28px;
   font-size: 0.92rem;
   color: #94a3b8;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding: 12px 24px;
+  margin: 4px 0 8px 0;
 }
 
 .ookla-ping-title {
   font-size: 0.85rem;
   font-weight: 800;
   color: #94a3b8;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
@@ -1631,12 +1631,12 @@ body.bw-mode .btn-green {
   color: #ffffff;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .ookla-icon-circle {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -1662,22 +1662,22 @@ body.bw-mode .btn-green {
 .ookla-ratings-bar {
   display: flex;
   justify-content: center;
-  gap: 28px;
-  margin-top: 6px;
-  padding-top: 6px;
+  gap: 52px;
+  margin: 10px 0 14px 0;
+  padding: 12px 24px;
 }
 
 .rating-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
   cursor: pointer;
 }
 
 .rating-icon {
-  width: 32px;
-  height: 24px;
+  width: 36px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1693,12 +1693,12 @@ body.bw-mode .btn-green {
 
 .rating-dots {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .rating-dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #334155;
   transition: all 0.3s ease;
@@ -1714,8 +1714,8 @@ body.bw-mode .btn-green {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 28px 0 32px 0;
-  min-height: 240px;
+  padding: 32px 0 36px 0;
+  min-height: 250px;
 }
 
 .ookla-go-btn-large {
@@ -1755,15 +1755,15 @@ body.bw-mode .btn-green {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 0 24px 0;
-  min-height: 240px;
+  padding: 16px 0 28px 0;
+  min-height: 250px;
 }
 
 .ookla-bottom-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 22px;
+  padding: 16px 26px;
   background: #020408;
   border-top: 1px solid #111827;
 }
@@ -1771,7 +1771,7 @@ body.bw-mode .btn-green {
 .ookla-detail-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .ookla-detail-icon {

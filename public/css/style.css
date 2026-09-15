@@ -1986,6 +1986,10 @@ body.bw-mode .btn-green {
   line-height: 1;
   margin-top: 6px;
   letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1 !important;
+  min-width: 120px;
+  text-align: center;
 }
 
 /* Centered Ping Row below Download & Upload */
@@ -1998,6 +2002,8 @@ body.bw-mode .btn-green {
   color: #94a3b8;
   padding: 8px 24px;
   margin: 12px 0 12px 0;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1 !important;
 }
 
 .ookla-ping-title {
@@ -2007,6 +2013,28 @@ body.bw-mode .btn-green {
   color: #ffffff;
   letter-spacing: 0.5px;
   text-transform: none;
+}
+
+/* Responsive Gauge Inner Container */
+.ookla-gauge-inner {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 245px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 3. Speedometer Gauge Container (Morphing Active Testing View) */
+.ookla-gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0 28px 0;
+  min-height: 250px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ookla-ping-val-group {
@@ -3392,6 +3420,30 @@ html, body {
   .resource-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 6px;
+  }
+
+  /* Ookla Speedtest Modal Mobile Anti-Jitter Rules */
+  .ookla-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    max-height: 94vh !important;
+    min-height: 480px !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .ookla-gauge-inner {
+    max-width: 280px !important;
+    height: 200px !important;
+  }
+
+  .ookla-summary-val {
+    font-size: 2.6rem !important;
+    min-width: 90px !important;
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
   }
 }
 

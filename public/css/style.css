@@ -364,11 +364,11 @@ body {
 
 .routing-mark-tag {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 700;
   font-family: var(--font-mono);
-  background: #10b981;
-  border: 1px solid #10b981;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  color: #e4e4e7;
   padding: 2px 7px;
   border-radius: 6px;
   white-space: nowrap;

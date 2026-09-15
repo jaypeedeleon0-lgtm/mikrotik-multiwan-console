@@ -1762,26 +1762,20 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes: Idle State - Single Outer Ring Slow Breathing Pulse Loop */
-@keyframes ooklaBreathingPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 0.95;
-  }
-}
-
-/* Keyframes: Trigger Click Burst Wave */
-@keyframes fastClickBurst {
+/* Keyframes: Idle State - 3-Second Periodic Ring Wave (Expands from circle, disappears, waits 3 seconds) */
+@keyframes ookla3sPulseWave {
   0% {
-    transform: scale(0.95);
-    opacity: 0.9;
+    inset: 0px;
+    opacity: 0.95;
+    border-color: #00f2fe;
   }
-  100% {
-    transform: scale(1.35);
+  22% {
+    inset: -24px;
+    opacity: 0;
+    border-color: #00f2fe;
+  }
+  23%, 100% {
+    inset: 0px;
     opacity: 0;
   }
 }
@@ -1819,20 +1813,20 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Strictly ONE Single Outer Concentric Ring with Slow Breathing Pulse Effect (4s Cycle) */
+/* Periodic 3-Second Ring Burst (Starts at circle, expands outward, disappears, waits 3s) */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
-  inset: -14px;
+  inset: 0;
   border-radius: 50%;
-  border: 1.5px solid #00f2fe;    /* Single Outer Ring */
+  border: 2px solid #00f2fe;
+  opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ooklaBreathingPulse 4s ease-in-out infinite; /* Slow 4-second breathing cycle */
-  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, opacity 0.3s ease;
+  animation: ookla3sPulseWave 3s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
 }
 
-/* Remove second outer ring element entirely */
+/* Disable second outer element */
 .ookla-go-btn-large::after,
 .ookla-go-btn-medium::after {
   display: none !important;
@@ -1845,10 +1839,10 @@ body.bw-mode .btn-green {
 }
 
 .ookla-go-btn-large:hover::before {
-  inset: -19px;
+  inset: -16px;
   opacity: 1;
-  border-color: #00f2fe;
-  animation: none; /* Solid single ring on hover */
+  border: 1.5px solid #00f2fe;
+  animation: none; /* Solid ring on hover */
 }
 
 .ookla-go-btn-large:active,
@@ -1917,7 +1911,7 @@ body.bw-mode .btn-green {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  border: 1px solid #1e293b;
+  border: 1.5px solid #1e293b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1976,13 +1970,25 @@ body.bw-mode .btn-green {
 .ookla-go-btn-medium::before {
   content: '';
   position: absolute;
-  inset: -12px;
+  inset: 0;
   border-radius: 50%;
-  border: 1.5px solid #00f2fe;
+  border: 2px solid #00f2fe;
+  opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ooklaBreathingPulse 4s ease-in-out infinite; /* Slow 4s cycle */
-  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+  animation: ookla3sPulseWave 3s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
+}
+
+.ookla-go-btn-medium:hover {
+  transform: scale(1.05);
+  border-color: #00f2fe;
+}
+
+.ookla-go-btn-medium:hover::before {
+  inset: -14px;
+  opacity: 1;
+  border: 1.5px solid #00f2fe;
+  animation: none;
 }
 
 .ookla-go-btn-medium:hover {

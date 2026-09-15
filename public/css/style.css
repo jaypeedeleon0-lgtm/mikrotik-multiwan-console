@@ -3373,6 +3373,7 @@ html, body {
 @media (max-width: 480px) {
   .app-container {
     padding: 4px;
+    overflow-x: hidden;
   }
 
   .header {
@@ -3389,12 +3390,34 @@ html, body {
     gap: 3px;
   }
 
-  /* Collapse clock to just time text, no icon, no PHT */
+  .target-pc-badge {
+    padding: 3px 5px;
+    gap: 3px;
+  }
+
+  .target-pc-badge .label {
+    font-size: 0.58rem;
+    letter-spacing: 0;
+  }
+
+  .target-pc-badge input {
+    font-size: 11px !important;
+    min-height: 24px !important;
+    padding: 2px 4px !important;
+  }
+
+  .target-pc-badge .btn-detect-ip {
+    font-size: 0.58rem;
+    padding: 2px 5px;
+    min-height: 24px;
+  }
+
+  /* Collapse clock to compact text badge */
   .header-clock-badge {
-    font-size: 0.6rem;
-    padding: 2px 4px;
+    font-size: 0.58rem;
+    padding: 2px 5px;
     gap: 2px;
-    height: 26px;
+    height: 24px;
   }
 
   .header-clock-badge svg,
@@ -3403,9 +3426,9 @@ html, body {
   }
 
   .btn-icon-only {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
   }
 
   .wan-card {
@@ -3445,14 +3468,16 @@ html, body {
 @media (max-width: 420px) {
   .app-container {
     padding: 2px;
+    overflow-x: hidden;
   }
 
   .header {
-    padding: 5px;
+    padding: 4px;
+    gap: 3px;
   }
 
   .logo-group h1 {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .wan-card {

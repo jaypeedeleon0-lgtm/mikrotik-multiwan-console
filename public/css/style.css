@@ -251,7 +251,23 @@ body {
   white-space: nowrap;
 }
 
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorderOutline {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
 .btn-primary {
+  position: relative;
   background: transparent !important;
   color: #ffffff !important;
   font-weight: 500 !important;
@@ -261,18 +277,37 @@ body {
   border: 1.5px solid #00E5D4 !important;
   border-radius: 10px;
   box-shadow: none !important;
+  z-index: 1;
   transition: border-color 0.2s ease !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 10px;
+  padding: 1.5px;
+  background: conic-gradient(from var(--border-angle), #00E5D4 0%, #00E5D4 20%, transparent 60%, #00E5D4 80%, #00E5D4 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: none !important;
+  filter: none !important;
+  animation: rotateBorderOutline 2s linear infinite;
+}
+
+.btn-primary:hover {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: #00E5D4 !important;
-  box-shadow: none !important;
-  transform: none !important;
-  transition: none !important;
+  border-color: transparent !important;
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
 }
 
 .btn-primary:disabled {
@@ -1921,16 +1956,17 @@ body.bw-mode .btn-green {
 }
 
 .rating-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #334155;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .rating-dot.active {
-  background: #00f2fe;
-  box-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
+  background: #ffffff !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 /* Crisp Clean GO Button Container */

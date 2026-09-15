@@ -251,12 +251,6 @@ body {
   white-space: nowrap;
 }
 
-@keyframes borderBeamSpin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .btn-primary {
   position: relative;
   background: transparent !important;
@@ -270,30 +264,7 @@ body {
   box-shadow: none !important;
   z-index: 1;
   transition: all 0.2s ease !important;
-  overflow: hidden;
-}
-
-/* Strict border mask overlay: ONLY the 1.5px outline border line gets animated */
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: -1.5px;
-  border-radius: 10px;
-  padding: 1.5px;
-  background: conic-gradient(from 0deg, #00f2fe 0%, #ffffff 18%, #00f2fe 36%, transparent 70%, #00f2fe 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-  animation: borderBeamSpin 2s linear infinite;
-  z-index: 2;
-}
-
-.btn-primary:hover::before,
-.wan-card:hover .btn-primary::before {
-  opacity: 1;
+  animation: none !important;
 }
 
 .btn-primary:hover,
@@ -302,6 +273,7 @@ body {
   color: #ffffff !important;
   border-color: #00f2fe !important;
   transform: translateY(-1px);
+  animation: none !important;
 }
 
 .btn-primary:disabled {

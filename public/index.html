@@ -330,8 +330,8 @@
 
         <!-- 2. Speedometer Gauge Container (Visible while test is running) -->
         <div id="gaugeWrapper" class="ookla-gauge-wrapper" style="display: none;">
-          <div style="position: relative; width: 380px; height: 280px; margin: 0 auto;">
-            <svg viewBox="0 0 360 270" style="width: 100%; height: 100%;">
+          <div style="position: relative; width: 340px; height: 245px; margin: 0 auto;">
+            <svg viewBox="0 0 340 245" style="width: 100%; height: 100%;">
               <defs>
                 <!-- Download Arc Gradient: Cyan to Emerald Green -->
                 <linearGradient id="downloadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -353,34 +353,34 @@
               </defs>
 
               <!-- Outer Track Arc (Dark Navy/Charcoal) -->
-              <path d="M 76.1 220 A 120 120 0 1 1 283.9 220" fill="none" stroke="#121826" stroke-width="26" stroke-linecap="round" />
+              <path d="M 74.7 200 A 110 110 0 1 1 265.3 200" fill="none" stroke="#121826" stroke-width="24" stroke-linecap="round" />
               
               <!-- Dynamic Active Speed Arc -->
-              <path id="gaugeArcFill" d="M 76.1 220 A 120 120 0 1 1 283.9 220" fill="none" stroke="url(#downloadGradient)" stroke-width="26" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="502.7" style="opacity: 0; transition: stroke-dashoffset 0.35s ease-out, opacity 0.2s ease, stroke 0.3s ease;" />
+              <path id="gaugeArcFill" d="M 74.7 200 A 110 110 0 1 1 265.3 200" fill="none" stroke="url(#downloadGradient)" stroke-width="24" stroke-linecap="round" stroke-dasharray="460.8" stroke-dashoffset="460.8" style="opacity: 0; transition: stroke-dashoffset 0.35s ease-out, opacity 0.2s ease, stroke 0.3s ease;" />
 
               <!-- Speed Scale Numbers INSIDE the Arc (0, 5, 10, 50, 100, 250, 500, 750, 1000) -->
-              <g font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="'Inter', sans-serif">
-                <text x="105" y="210">0</text>
-                <text x="86" y="164">5</text>
-                <text x="98" y="118">10</text>
-                <text x="134" y="84">50</text>
-                <text x="180" y="70">100</text>
-                <text x="226" y="84">250</text>
-                <text x="262" y="118">500</text>
-                <text x="274" y="164">750</text>
-                <text x="255" y="210">1000</text>
+              <g font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="'Inter', sans-serif">
+                <text x="99" y="190">0</text>
+                <text x="83" y="149">5</text>
+                <text x="95" y="108">10</text>
+                <text x="128" y="76">50</text>
+                <text x="170" y="63">100</text>
+                <text x="212" y="76">250</text>
+                <text x="245" y="108">500</text>
+                <text x="257" y="149">750</text>
+                <text x="241" y="190">1000</text>
               </g>
 
               <!-- Rotating Tapered Wedge Needle -->
-              <g id="gaugeNeedle" style="transform-origin: 180px 160px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
-                <polygon points="173,160 187,160 181.5,58 178.5,58" fill="url(#needleGrad)" />
+              <g id="gaugeNeedle" style="transform-origin: 170px 145px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
+                <polygon points="163.5,145 176.5,145 171.5,52 168.5,52" fill="url(#needleGrad)" />
               </g>
             </svg>
 
             <!-- Center Digital Readout -->
-            <div style="position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;">
-              <div id="gaugeSpeedNum" style="font-size: 3.2rem; font-weight: 300; font-family: 'JetBrains Mono', 'Inter', sans-serif; line-height: 1; letter-spacing: -1.5px; color: #ffffff;">0.00</div>
-              <div id="gaugeLabelText" style="font-size: 0.9rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
+            <div style="position: absolute; bottom: 6px; left: 0; right: 0; text-align: center;">
+              <div id="gaugeSpeedNum" style="font-size: 2.8rem; font-weight: 300; font-family: 'JetBrains Mono', 'Inter', sans-serif; line-height: 1; letter-spacing: -1px; color: #ffffff;">0.00</div>
+              <div id="gaugeLabelText" style="font-size: 0.85rem; font-weight: 800; color: #00f2fe; margin-top: 3px;">↓ Mbps</div>
             </div>
           </div>
         </div>
@@ -549,6 +549,6 @@
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260915_enlarged_authentic_ookla_gauge"></script>
+  <script src="js/app.js?v=20260915_perfect_modal_sticky_close_buttons"></script>
 </body>
 </html>

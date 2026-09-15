@@ -1,8 +1,8 @@
 :root {
   --bg-dark: #050505;
-  --bg-card: rgba(18, 18, 18, 0.85);
-  --bg-card-hover: rgba(28, 28, 28, 0.95);
-  --border-glass: rgba(255, 255, 255, 0.12);
+  --bg-card: #161a22;
+  --bg-card-hover: #1c222d;
+  --border-glass: rgba(255, 255, 255, 0.14);
   --border-glow: rgba(255, 255, 255, 0.4);
   
   --primary-white: #ffffff;
@@ -462,6 +462,8 @@ input:focus, select:focus {
   justify-content: center;
   z-index: 2000;
   animation: fadeIn 0.2s ease;
+  overflow-y: auto !important;
+  padding: 16px 0 !important;
 }
 
 .modal-card {
@@ -781,7 +783,7 @@ input:focus, select:focus {
 .wan-card {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-glass);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
   padding: 18px;
   display: flex;
@@ -791,11 +793,13 @@ input:focus, select:focus {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .wan-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.28);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
@@ -898,19 +902,19 @@ input:focus, select:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  background: #000000;
-  padding: 10px;
+  background: #0b0e14;
+  padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid var(--border-glass);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .speedtest-badge-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-glass);
-  padding: 7px 10px;
+  background: #0b0e14;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 7px 12px;
   border-radius: 10px;
   font-size: 0.7rem;
   margin-top: 4px;
@@ -1550,17 +1554,22 @@ body.bw-mode .btn-green {
 .ookla-modal-card {
   background: #06090e !important;
   border: 1px solid #1e293b !important;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.96) !important; /* Flat dark shadow, NO cyan glow */
-  max-width: 680px !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.96) !important;
+  max-width: 650px !important;
   width: 95% !important;
   border-radius: 20px !important;
   color: #ffffff;
-  overflow: hidden !important;
-  max-height: none !important;
+  overflow-y: auto !important;
+  max-height: 92vh !important;
   padding: 0 !important;
+  position: relative !important;
 }
 
 .ookla-top-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: #06090e !important;
   display: flex;
   justify-content: space-between;
   align-items: center;

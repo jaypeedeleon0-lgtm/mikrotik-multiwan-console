@@ -735,15 +735,47 @@ async function saveAndApplyWans(wansToApply, isAutoLoad = false) {
   }
 }
 
-// Remove WAN Handler
-async function removeWan(wanName) {
-  const updatedList = configuredWans.filter(w => w.name !== wanName);
-  try {
-    await saveAndApplyWans(updatedList, false);
-    showToast(`WAN ${wanName} removed.`, 'success');
-  } catch (err) {
-    showToast(`Failed to remove WAN: ${err.message}`, 'error');
-  }
+// Remove WAN Confirmation Modal Handlers
+let pendingRemoveWanName = null;
+const confirmRemoveWanModal = document.getElementById('confirmRemoveWanModal');
+const confirmRemoveWanNameLabel = document.getElementById('confirmRemoveWanNameLabel');
+const closeConfirmRemoveWanModalBtn = document.getElementById('closeConfirmRemoveWanModalBtn');
+const cancelRemoveWanBtn = document.getElementById('cancelRemoveWanBtn');
+const confirmRemoveWanBtn = document.getElementById('confirmRemoveWanBtn');
+
+function closeConfirmRemoveWanModal() {
+  if (confirmRemoveWanModal) confirmRemoveWanModal.style.display = 'none';
+  pendingRemoveWanName = null;
+}
+
+if (closeConfirmRemoveWanModalBtn) closeConfirmRemoveWanModalBtn.addEventListener('click', closeConfirmRemoveWanModal);
+if (cancelRemoveWanBtn) cancelRemoveWanBtn.addEventListener('click', closeConfirmRemoveWanModal);
+if (confirmRemoveWanModal) {
+  confirmRemoveWanModal.addEventListener('click', (e) => {
+    if (e.target === confirmRemoveWanModal) closeConfirmRemoveWanModal();
+  });
+}
+
+function removeWan(wanName) {
+  pendingRemoveWanName = wanName;
+  if (confirmRemoveWanNameLabel) confirmRemoveWanNameLabel.innerText = wanName;
+  if (confirmRemoveWanModal) confirmRemoveWanModal.style.display = 'flex';
+}
+
+if (confirmRemoveWanBtn) {
+  confirmRemoveWanBtn.addEventListener('click', async () => {
+    if (!pendingRemoveWanName) return;
+    const targetName = pendingRemoveWanName;
+    closeConfirmRemoveWanModal();
+
+    const updatedList = configuredWans.filter(w => w.name !== targetName);
+    try {
+      await saveAndApplyWans(updatedList, false);
+      showToast(`WAN ${targetName} removed successfully.`, 'success');
+    } catch (err) {
+      showToast(`Failed to remove WAN: ${err.message}`, 'error');
+    }
+  });
 }
 
 // 5. Render Configured WAN Speedtest Cards (Clean Monochrome)

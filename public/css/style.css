@@ -1762,19 +1762,24 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes: Idle State - Periodic Slow Ring Wave (Expands larger & smoother from circle, disappears, waits for next cycle) */
+/* Keyframes: Idle State - 3s Initial Wait Delay + 0.5x Slow-mo Wave Ring Expansion */
 @keyframes ookla3sPulseWave {
-  0% {
+  0%, 37.5% {
+    inset: 0px;
+    opacity: 0;
+    border-color: #00f2fe;
+  }
+  37.6% {
     inset: 0px;
     opacity: 0.95;
     border-color: #00f2fe;
   }
-  30% {
-    inset: -38px;
+  65% {
+    inset: -40px;
     opacity: 0;
     border-color: #00f2fe;
   }
-  31%, 100% {
+  65.1%, 100% {
     inset: 0px;
     opacity: 0;
   }
@@ -1813,7 +1818,7 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Periodic Slow Ring Burst (Starts at circle, expands larger outward smoothly, disappears, waits for cycle) */
+/* Periodic Slow-mo Ring Burst (Waits 3s first after load, then expands 0.5x slow-mo, disappears, waits for cycle) */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
@@ -1823,7 +1828,7 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 6s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
+  animation: ookla3sPulseWave 8s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
 }
 
 /* Disable second outer element */
@@ -1987,7 +1992,7 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 6s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
+  animation: ookla3sPulseWave 8s cubic-bezier(0.1, 0.75, 0.2, 1) infinite;
 }
 
 .ookla-go-btn-medium:hover {

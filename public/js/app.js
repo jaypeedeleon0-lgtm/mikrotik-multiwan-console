@@ -808,7 +808,7 @@ function renderWanCards() {
 
         <button class="btn btn-primary btn-full" 
           id="btn-speedtest-${wan.name}"
-          style="margin-top: 10px;"
+          style="margin-top: 6px;"
           onclick="openSpeedtestGaugeModal('${wan.name}')">
           Speed Test
         </button>

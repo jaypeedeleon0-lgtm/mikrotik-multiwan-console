@@ -1274,6 +1274,8 @@ async function openSpeedtestGaugeModal(wanName) {
     if (data.success && data.server) {
       if (cliServerText) cliServerText.innerText = data.server.name || 'Ookla Speedtest Server';
       if (cliServerSubText) cliServerSubText.innerText = data.server.location || 'Optimal Server';
+      if (data.ip && gaugeIpText) gaugeIpText.innerText = data.ip;
+      if (data.isp && gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(data.isp);
     } else {
       if (cliServerText) cliServerText.innerText = 'Ookla Speedtest Server';
       if (cliServerSubText) cliServerSubText.innerText = 'Optimal Server';

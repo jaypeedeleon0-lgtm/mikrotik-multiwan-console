@@ -842,22 +842,38 @@ function cleanIspName(raw) {
   return str.split(' ')[0] || str;
 }
 
-// Helper: Fetch with strict AbortController timeout to prevent hanging requests
-async function fetchWithTimeout(url, timeoutMs = 2000) {
-  const { default: fetch } = await import('node-fetch');
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-    });
-    clearTimeout(timer);
-    return res;
-  } catch (err) {
-    clearTimeout(timer);
-    throw err;
-  }
+// Helper: Native Node http/https fetcher with timeout (zero ESM import dependencies)
+function httpGet(urlStr, timeoutMs = 2500) {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = new URL(urlStr);
+      const lib = url.protocol === 'https:' ? require('https') : require('http');
+      const req = lib.get(urlStr, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        },
+        timeout: timeoutMs
+      }, (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', chunk => { body += chunk; });
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 400) {
+            resolve(body);
+          } else {
+            reject(new Error(`HTTP ${res.statusCode}`));
+          }
+        });
+      });
+      req.on('error', err => reject(err));
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Timeout'));
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
 
 // 5. Detect Egress Public IP & ISP Provider Details
@@ -865,8 +881,8 @@ app.get('/api/public-ip', async (req, res) => {
   try {
     // Tier 1: Try ip-api.com for instant IP + ISP
     try {
-      const response = await fetchWithTimeout('http://ip-api.com/json/?fields=status,query,isp,org,as', 2000);
-      const ipJson = await response.json();
+      const raw = await httpGet('http://ip-api.com/json/?fields=status,query,isp,org,as', 2000);
+      const ipJson = JSON.parse(raw);
       if (ipJson && ipJson.status === 'success' && ipJson.query) {
         return res.json({
           success: true,
@@ -878,8 +894,8 @@ app.get('/api/public-ip', async (req, res) => {
 
     // Tier 2: Try api.ipify.org
     try {
-      const response = await fetchWithTimeout('https://api.ipify.org?format=json', 2000);
-      const data = await response.json();
+      const raw = await httpGet('https://api.ipify.org?format=json', 2000);
+      const data = JSON.parse(raw);
       if (data && data.ip) {
         return res.json({
           success: true,
@@ -891,8 +907,8 @@ app.get('/api/public-ip', async (req, res) => {
 
     // Tier 3: Try ipinfo.io
     try {
-      const response = await fetchWithTimeout('https://ipinfo.io/json', 2000);
-      const data = await response.json();
+      const raw = await httpGet('https://ipinfo.io/json', 2000);
+      const data = JSON.parse(raw);
       if (data && data.ip) {
         return res.json({
           success: true,
@@ -904,8 +920,8 @@ app.get('/api/public-ip', async (req, res) => {
 
     // Tier 4: Try icanhazip.com
     try {
-      const response = await fetchWithTimeout('https://icanhazip.com', 2000);
-      const textIp = (await response.text()).trim();
+      const raw = await httpGet('https://icanhazip.com', 2000);
+      const textIp = raw.trim();
       if (textIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(textIp)) {
         return res.json({
           success: true,
@@ -915,10 +931,21 @@ app.get('/api/public-ip', async (req, res) => {
       }
     } catch (e4) {}
 
-    res.json({
-      success: true,
-      ip: 'Active Routed Line',
-      isp: 'WAN Interface'
+    // Tier 5: Try curl execution fallback
+    exec('curl -s --max-time 3 https://api.ipify.org', (err, stdout) => {
+      const curlIp = (stdout || '').trim();
+      if (!err && curlIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(curlIp)) {
+        return res.json({
+          success: true,
+          ip: curlIp,
+          isp: 'ISP Egress'
+        });
+      }
+      res.json({
+        success: true,
+        ip: 'Active Routed Line',
+        isp: 'WAN Interface'
+      });
     });
   } catch (err) {
     res.json({
@@ -1145,10 +1172,14 @@ app.get('/api/detect-speedtest-server', (req, res) => {
     if (!error && stdout) {
       try {
         const json = JSON.parse(stdout);
+        const externalIp = json.interface ? json.interface.externalIp : null;
+        const ispName = json.interface ? cleanIspName(json.interface.isp) : null;
         if (json.servers && json.servers.length > 0) {
           const s = json.servers[0];
           return res.json({
             success: true,
+            ip: externalIp,
+            isp: ispName,
             server: {
               id: s.id,
               name: s.name,

@@ -359,28 +359,28 @@
               <path id="gaugeArcFill" d="M 63.4 190 A 100 100 0 1 1 236.6 190" fill="none" stroke="url(#downloadGradient)" stroke-width="22" stroke-linecap="round" stroke-dasharray="418.9" stroke-dashoffset="418.9" style="opacity: 0; transition: stroke-dashoffset 0.35s ease-out, opacity 0.2s ease, stroke 0.3s ease;" />
 
               <!-- Speed Scale Numbers INSIDE the Arc (0, 5, 10, 50, 100, 250, 500, 750, 1000) -->
-              <g font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="'Inter', sans-serif">
-                <text x="90" y="182">0</text>
-                <text x="74" y="144">5</text>
-                <text x="84" y="106">10</text>
-                <text x="112" y="78">50</text>
-                <text x="150" y="66">100</text>
-                <text x="188" y="78">250</text>
-                <text x="216" y="106">500</text>
-                <text x="226" y="144">750</text>
-                <text x="210" y="182">1000</text>
+              <g font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="'Inter', sans-serif">
+                <text x="94" y="174">0</text>
+                <text x="76" y="136">5</text>
+                <text x="86" y="98">10</text>
+                <text x="114" y="70">50</text>
+                <text x="150" y="58">100</text>
+                <text x="186" y="70">250</text>
+                <text x="214" y="98">500</text>
+                <text x="224" y="136">750</text>
+                <text x="206" y="174">1000</text>
               </g>
 
               <!-- Rotating Tapered Wedge Needle -->
               <g id="gaugeNeedle" style="transform-origin: 150px 140px; transform: rotate(-120deg); transition: transform 0.15s ease-out;">
-                <polygon points="144,140 156,140 151.5,56 148.5,56" fill="url(#needleGrad)" />
+                <polygon points="144,140 156,140 151.5,52 148.5,52" fill="url(#needleGrad)" />
               </g>
             </svg>
 
             <!-- Center Digital Readout -->
-            <div style="position: absolute; bottom: 6px; left: 0; right: 0; text-align: center;">
-              <div id="gaugeSpeedNum" style="font-size: 3.2rem; font-weight: 300; font-family: 'JetBrains Mono', 'Inter', sans-serif; line-height: 1; letter-spacing: -1.5px; color: #ffffff;">0.00</div>
-              <div id="gaugeLabelText" style="font-size: 0.85rem; font-weight: 800; color: #00f2fe; margin-top: 4px;">↓ Mbps</div>
+            <div style="position: absolute; bottom: -2px; left: 0; right: 0; text-align: center;">
+              <div id="gaugeSpeedNum" style="font-size: 2.1rem; font-weight: 300; font-family: 'JetBrains Mono', 'Inter', sans-serif; line-height: 1; letter-spacing: -0.5px; color: #ffffff;">0.00</div>
+              <div id="gaugeLabelText" style="font-size: 0.8rem; font-weight: 800; color: #00f2fe; margin-top: 2px;">↓ Mbps</div>
             </div>
           </div>
           <div style="font-size: 0.8rem; font-weight: 700; color: #00c6ff; margin-top: 8px;" id="cliStatusText">● Testing Live Download Speed...</div>
@@ -550,6 +550,6 @@
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260915_sync_isp_and_server_reveal"></script>
+  <script src="js/app.js?v=20260915_fit_live_mbps_number_size"></script>
 </body>
 </html>

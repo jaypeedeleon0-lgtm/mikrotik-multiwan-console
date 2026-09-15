@@ -876,82 +876,112 @@ function httpGet(urlStr, timeoutMs = 2500) {
   });
 }
 
+// Helper: Lookup ISP details for an IP address
+async function lookupIspForIp(ip) {
+  if (!ip) return null;
+  try {
+    const raw = await httpGet(`http://ip-api.com/json/${ip}?fields=status,isp,org,as`, 1500);
+    const json = JSON.parse(raw);
+    if (json && json.status === 'success') {
+      const name = cleanIspName(json.isp || json.org || json.as);
+      if (name && name !== 'ISP Connection') return name;
+    }
+  } catch (e) {}
+  try {
+    const raw = await httpGet(`https://ipinfo.io/${ip}/json`, 1500);
+    const json = JSON.parse(raw);
+    if (json && json.org) {
+      const name = cleanIspName(json.org);
+      if (name && name !== 'ISP Connection') return name;
+    }
+  } catch (e) {}
+  return null;
+}
+
 // 5. Detect Egress Public IP & ISP Provider Details
 app.get('/api/public-ip', async (req, res) => {
   try {
+    let foundIp = null;
+    let foundIsp = null;
+
     // Tier 1: Try ip-api.com for instant IP + ISP
     try {
       const raw = await httpGet('http://ip-api.com/json/?fields=status,query,isp,org,as', 2000);
       const ipJson = JSON.parse(raw);
       if (ipJson && ipJson.status === 'success' && ipJson.query) {
-        return res.json({
-          success: true,
-          ip: ipJson.query,
-          isp: cleanIspName(ipJson.isp || ipJson.org || ipJson.as)
-        });
+        foundIp = ipJson.query;
+        foundIsp = cleanIspName(ipJson.isp || ipJson.org || ipJson.as);
       }
     } catch (e1) {}
 
     // Tier 2: Try api.ipify.org
-    try {
-      const raw = await httpGet('https://api.ipify.org?format=json', 2000);
-      const data = JSON.parse(raw);
-      if (data && data.ip) {
-        return res.json({
-          success: true,
-          ip: data.ip,
-          isp: 'ISP Egress'
-        });
-      }
-    } catch (e2) {}
+    if (!foundIp) {
+      try {
+        const raw = await httpGet('https://api.ipify.org?format=json', 2000);
+        const data = JSON.parse(raw);
+        if (data && data.ip) {
+          foundIp = data.ip;
+        }
+      } catch (e2) {}
+    }
 
     // Tier 3: Try ipinfo.io
-    try {
-      const raw = await httpGet('https://ipinfo.io/json', 2000);
-      const data = JSON.parse(raw);
-      if (data && data.ip) {
-        return res.json({
-          success: true,
-          ip: data.ip,
-          isp: cleanIspName(data.org || 'ISP Egress')
-        });
-      }
-    } catch (e3) {}
+    if (!foundIp) {
+      try {
+        const raw = await httpGet('https://ipinfo.io/json', 2000);
+        const data = JSON.parse(raw);
+        if (data && data.ip) {
+          foundIp = data.ip;
+          if (data.org) foundIsp = cleanIspName(data.org);
+        }
+      } catch (e3) {}
+    }
 
     // Tier 4: Try icanhazip.com
-    try {
-      const raw = await httpGet('https://icanhazip.com', 2000);
-      const textIp = raw.trim();
-      if (textIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(textIp)) {
-        return res.json({
-          success: true,
-          ip: textIp,
-          isp: 'ISP Egress'
-        });
-      }
-    } catch (e4) {}
+    if (!foundIp) {
+      try {
+        const raw = await httpGet('https://icanhazip.com', 2000);
+        const textIp = raw.trim();
+        if (textIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(textIp)) {
+          foundIp = textIp;
+        }
+      } catch (e4) {}
+    }
 
     // Tier 5: Try curl execution fallback
-    exec('curl -s --max-time 3 https://api.ipify.org', (err, stdout) => {
-      const curlIp = (stdout || '').trim();
-      if (!err && curlIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(curlIp)) {
-        return res.json({
-          success: true,
-          ip: curlIp,
-          isp: 'ISP Egress'
+    if (!foundIp) {
+      await new Promise((resolve) => {
+        exec('curl -s --max-time 3 https://api.ipify.org', (err, stdout) => {
+          const curlIp = (stdout || '').trim();
+          if (!err && curlIp && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(curlIp)) {
+            foundIp = curlIp;
+          }
+          resolve();
         });
-      }
-      res.json({
-        success: true,
-        ip: 'Active Routed Line',
-        isp: 'WAN Interface'
       });
+    }
+
+    if (foundIp) {
+      if (!foundIsp) {
+        foundIsp = await lookupIspForIp(foundIp);
+      }
+      return res.json({
+        success: true,
+        ip: foundIp,
+        isp: foundIsp || null
+      });
+    }
+
+    res.json({
+      success: true,
+      ip: 'Active Routed Line',
+      isp: null
     });
   } catch (err) {
     res.json({
       success: true,
       ip: 'Active Routed Line',
-      isp: 'WAN Interface'
+      isp: null
     });
   }
 });

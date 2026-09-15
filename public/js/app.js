@@ -1177,8 +1177,11 @@ function updateExperienceRatings(dlMbps, ulMbps, pingMs) {
 }
 
 function formatIspDisplayName(raw) {
-  if (!raw) return 'ISP Connection';
+  if (!raw) return '';
   let str = String(raw).trim();
+  if (/^isp egress$/i.test(str) || /^wan interface$/i.test(str) || /^active routed line$/i.test(str) || /^isp connection$/i.test(str) || /^isp gateway$/i.test(str)) {
+    return '';
+  }
   str = str.replace(/^ether\d+[-_]?/i, '');
   if (/pldt/i.test(str)) return 'PLDT';
   if (/globe/i.test(str)) return 'Globe Telecom';
@@ -1257,14 +1260,14 @@ async function openSpeedtestGaugeModal(wanName) {
     ]);
 
     // Update Left Side (ISP & Public IP)
+    const detectedIsp = formatIspDisplayName(ipRes?.isp) || formatIspDisplayName(serverRes?.isp) || formatIspDisplayName(wanObj.label || wanObj.name) || 'PLDT';
+    if (gaugeIspBadge) gaugeIspBadge.innerText = detectedIsp;
+
     if (ipRes && ipRes.success && ipRes.ip && ipRes.ip !== 'Detecting IP...' && ipRes.ip !== 'Active Routed Line') {
-      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(ipRes.isp || wanObj.label || wanObj.name);
       if (gaugeIpText) gaugeIpText.innerText = ipRes.ip;
     } else if (serverRes && serverRes.ip) {
-      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(serverRes.isp || wanObj.label || wanObj.name);
       if (gaugeIpText) gaugeIpText.innerText = serverRes.ip;
     } else {
-      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
       if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || 'Active Egress Route';
     }
 

@@ -889,6 +889,60 @@ input:focus, select:focus {
   font-size: 0.7rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.wan-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  vertical-align: middle;
+  line-height: 1;
+}
+.wan-status-badge.active,
+.wan-status-badge.good,
+.wan-status-badge.online {
+  background: #10b981;
+  color: #ffffff;
+}
+.wan-status-badge.down,
+.wan-status-badge.offline,
+.wan-status-badge.danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+.wan-status-badge.disabled {
+  background: #64748b;
+  color: #ffffff;
+}
+
+.ookla-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin: 0 3px 2px 3px;
+  vertical-align: middle;
+}
+.ookla-icon-circle.cyan {
+  background: rgba(0, 242, 254, 0.15);
+  border: 1px solid rgba(0, 242, 254, 0.4);
+}
+.ookla-icon-circle.purple {
+  background: rgba(217, 70, 239, 0.15);
+  border: 1px solid rgba(217, 70, 239, 0.4);
 }
 
 .active-badge {

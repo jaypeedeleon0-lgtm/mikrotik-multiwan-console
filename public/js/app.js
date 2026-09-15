@@ -774,7 +774,7 @@ function renderWanCards() {
               <h4>${escapeHtml(wan.label || wan.name)}</h4>
               <span class="routing-mark-tag" title="MikroTik Routing Mark">${escapeHtml(routingMarkName)}</span>
             </div>
-            <span class="wan-subtitle">Interface: ${escapeHtml(wan.name)} | GW: ${escapeHtml(wan.gateway)}</span>
+            <span class="wan-subtitle">Interface: ${escapeHtml(wan.name)} | Status: <span class="wan-status-badge active" id="wan-status-${wan.name}">ACTIVE</span> | GW: ${escapeHtml(wan.gateway)}</span>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             ${isCurrentActive ? '<span class="active-badge">ACTIVE ROUTE</span>' : ''}
@@ -839,7 +839,9 @@ function restoreSavedWanSpeedtestStats(wanName) {
       speedPingEl.className = 'stat-val good';
     }
     if (speedValEl && data.dl !== undefined && data.ul !== undefined) {
-      speedValEl.innerText = `${data.dl} ↓ / ${data.ul} ↑ Mbps`;
+      const cyanArrowSvg = `<span class="ookla-icon-circle cyan"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>`;
+      const purpleArrowSvg = `<span class="ookla-icon-circle purple"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d946ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7 7 7-7"/></svg></span>`;
+      speedValEl.innerHTML = `<span style="color: #00f2fe; font-weight: 700;">${data.dl}</span> ${cyanArrowSvg} / <span style="color: #d946ef; font-weight: 700;">${data.ul}</span> ${purpleArrowSvg} <span style="color: #10b981; font-weight: 700;">Mbps</span>`;
     }
   } catch(e) {}
 }
@@ -864,6 +866,7 @@ async function fetchPingStats() {
 
     result.pingResults.forEach(item => {
       const pingVal = document.getElementById(`ping-val-${item.wanName}`);
+      const statusBadge = document.getElementById(`wan-status-${item.wanName}`);
 
       if (pingVal) {
         if (item.status === 'disabled') {
@@ -875,6 +878,19 @@ async function fetchPingStats() {
         }
 
         pingVal.className = `stat-val ${item.status}`;
+      }
+
+      if (statusBadge) {
+        if (item.status === 'disabled') {
+          statusBadge.innerText = 'DISABLED';
+          statusBadge.className = 'wan-status-badge disabled';
+        } else if (item.status === 'down') {
+          statusBadge.innerText = item.isLinkDown ? 'LINK DOWN' : 'OFFLINE';
+          statusBadge.className = 'wan-status-badge down';
+        } else {
+          statusBadge.innerText = 'ACTIVE';
+          statusBadge.className = 'wan-status-badge active';
+        }
       }
     });
   } catch (err) {

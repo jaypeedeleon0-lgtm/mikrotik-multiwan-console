@@ -1065,26 +1065,35 @@ function drawWanSparkline(wanName) {
 
   // Render 4 horizontal gridlines & WinBox Right Y-Axis Speed Labels
   const gridSteps = 4;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+  const vertGridSteps = 10;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.055)';
   ctx.lineWidth = 1 * dpr;
   ctx.font = `${Math.floor(9 * dpr)}px "Roboto Condensed", sans-serif`;
   ctx.fillStyle = '#94a3b8';
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
 
+  // Horizontal Grid Lines
   for (let i = 0; i <= gridSteps; i++) {
     const gy = topPadding + (usableHeight * (i / gridSteps));
     const stepVal = maxScale * (1 - (i / gridSteps));
 
-    // Gridline
     ctx.beginPath();
     ctx.moveTo(0, gy);
     ctx.lineTo(graphWidth, gy);
     ctx.stroke();
 
-    // Right Y-Axis speed label text
     const labelText = formatBpsWinbox(stepVal);
     ctx.fillText(labelText, width - (4 * dpr), gy);
+  }
+
+  // Vertical Grid Lines (Matrix Grid Pattern like screenshot)
+  for (let j = 1; j < vertGridSteps; j++) {
+    const gx = (j / vertGridSteps) * graphWidth;
+    ctx.beginPath();
+    ctx.moveTo(gx, topPadding);
+    ctx.lineTo(gx, height - bottomPadding);
+    ctx.stroke();
   }
 
   if (history.length < 2) {
@@ -1096,7 +1105,7 @@ function drawWanSparkline(wanName) {
     ctx.lineTo(graphWidth, height - bottomPadding);
     ctx.stroke();
 
-    ctx.strokeStyle = 'rgba(0, 242, 254, 0.3)'; // Tx cyan tint
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)'; // Tx blue tint
     ctx.beginPath();
     ctx.moveTo(0, height - bottomPadding - (2 * dpr));
     ctx.lineTo(graphWidth, height - bottomPadding - (2 * dpr));
@@ -1123,11 +1132,17 @@ function drawWanSparkline(wanName) {
     return { x, y, bps: h.txBps || 0 };
   });
 
-  // Helper to draw clean, thin, smooth curved line graph with light translucent fill
-  function drawSmoothLine(points, strokeColor, fillColor) {
+  // Helper to draw clean, thin, smooth curved line graph with subtle gradient fill
+  function drawSmoothLine(points, strokeColor, topColorRgba) {
     if (points.length === 0) return;
 
-    // Fill area below smooth curve (light translucent wash)
+    // Linear gradient for area fill underneath the curve
+    const areaGradient = ctx.createLinearGradient(0, topPadding, 0, height - bottomPadding);
+    areaGradient.addColorStop(0, topColorRgba);
+    areaGradient.addColorStop(0.7, topColorRgba.replace(/[\d\.]+\)$/, '0.04)'));
+    areaGradient.addColorStop(1, topColorRgba.replace(/[\d\.]+\)$/, '0.00)'));
+
+    // Fill area below smooth curve
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
@@ -1139,10 +1154,10 @@ function drawWanSparkline(wanName) {
     ctx.lineTo(points[points.length - 1].x, height - bottomPadding);
     ctx.lineTo(points[0].x, height - bottomPadding);
     ctx.closePath();
-    ctx.fillStyle = fillColor;
+    ctx.fillStyle = areaGradient;
     ctx.fill();
 
-    // Solid thin smooth line stroke (1.2px crisp thin line, NO GLOW, NO NODE DOTS)
+    // Solid thin smooth line stroke (1.5px crisp line, NO GLOW)
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
@@ -1151,7 +1166,7 @@ function drawWanSparkline(wanName) {
       ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
     }
     ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-    ctx.lineWidth = 1.2 * dpr;
+    ctx.lineWidth = 1.5 * dpr;
     ctx.strokeStyle = strokeColor;
     ctx.stroke();
 
@@ -1163,11 +1178,11 @@ function drawWanSparkline(wanName) {
     ctx.fill();
   }
 
-  // Draw Rx (Green `#22c55e` with light translucent wash)
-  drawSmoothLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.05)');
+  // Draw Rx (Emerald Green `#22c55e` with gradient fill)
+  drawSmoothLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.18)');
 
-  // Draw Tx (Cyan `#00f2fe` with light translucent wash)
-  drawSmoothLine(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.05)');
+  // Draw Tx (Electric Blue `#3b82f6` with gradient fill matching screenshot)
+  drawSmoothLine(txPoints, '#3b82f6', 'rgba(59, 130, 246, 0.18)');
 
   ctx.restore();
 }

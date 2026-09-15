@@ -1125,7 +1125,7 @@ input:focus, select:focus {
 
 .wan-canvas-container {
   width: 100%;
-  height: 165px;
+  height: 130px;
   position: relative;
 }
 
@@ -1161,7 +1161,7 @@ input:focus, select:focus {
 }
 
 .winbox-legend-row .legend-dot.tx {
-  background: #00f2fe;
+  background: #3b82f6;
 }
 
 .winbox-legend-row .legend-dot.rx {

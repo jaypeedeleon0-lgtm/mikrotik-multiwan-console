@@ -771,6 +771,14 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
         const rxByte = ifaceObj ? parseInt(ifaceObj['rx-byte'] || ifaceObj['rx-bytes'] || '0', 10) : 0;
         const txByte = ifaceObj ? parseInt(ifaceObj['tx-byte'] || ifaceObj['tx-bytes'] || '0', 10) : 0;
 
+        let rxBps = 0;
+        let txBps = 0;
+        const monRes = await runRosCmd(config, '/interface/monitor-traffic', { interface: wan.name, once: 'true' }).catch(() => null);
+        if (Array.isArray(monRes) && monRes.length > 0 && monRes[0]['rx-bits-per-second'] !== undefined) {
+          rxBps = parseInt(monRes[0]['rx-bits-per-second'] || '0', 10);
+          txBps = parseInt(monRes[0]['tx-bits-per-second'] || '0', 10);
+        }
+
         results.push({
           wanName: wan.name,
           pingMs: avgPingMs,
@@ -780,7 +788,9 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
           isDisabled: false,
           isLinkDown: false,
           rxByte: rxByte,
-          txByte: txByte
+          txByte: txByte,
+          rxBps: rxBps,
+          txBps: txBps
         });
       } catch (pingErr) {
         results.push({
@@ -793,6 +803,8 @@ app.post('/api/ping-all', requireAuth, async (req, res) => {
           isLinkDown: false,
           rxByte: 0,
           txByte: 0,
+          rxBps: 0,
+          txBps: 0,
           error: pingErr.message
         });
       }

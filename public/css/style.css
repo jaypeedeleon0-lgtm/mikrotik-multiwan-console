@@ -1152,7 +1152,7 @@ input:focus, select:focus {
 
 .wan-canvas-container {
   width: 100%;
-  height: 55px;
+  height: 75px;
   position: relative;
 }
 
@@ -1160,6 +1160,50 @@ input:focus, select:focus {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.winbox-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.winbox-legend-row .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.winbox-legend-row .legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.winbox-legend-row .legend-dot.tx {
+  background: #00f2fe;
+}
+
+.winbox-legend-row .legend-dot.rx {
+  background: #22c55e;
+}
+
+.winbox-legend-row .lbl {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.winbox-legend-row .val {
+  color: #ffffff;
+  font-weight: 500;
+  font-family: 'Roboto Condensed', monospace;
 }
 
 .speedtest-badge-row {

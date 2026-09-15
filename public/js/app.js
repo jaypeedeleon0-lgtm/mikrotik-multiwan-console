@@ -794,12 +794,16 @@ function renderWanCards() {
         <div class="wan-graph-card-section">
           <div class="wan-graph-header">
             <span class="wan-graph-title">
-              <span class="live-pulse-dot"></span> LIVE LATENCY GRAPH
+              <span class="live-pulse-dot"></span> BYTE GRAPH
             </span>
             <span class="wan-graph-ping-text" id="wan-ping-display-${wan.name}">-- ms</span>
           </div>
           <div class="wan-canvas-container">
             <canvas id="wan-graph-${wan.name}" class="wan-graph-canvas"></canvas>
+          </div>
+          <div class="winbox-legend-row">
+            <span class="legend-item tx"><span class="legend-dot tx"></span> <span class="lbl">Tx:</span> <span class="val" id="wan-tx-val-${wan.name}">0 bps</span></span>
+            <span class="legend-item rx"><span class="legend-dot rx"></span> <span class="lbl">Rx:</span> <span class="val" id="wan-rx-val-${wan.name}">0 bps</span></span>
           </div>
         </div>
 
@@ -856,6 +860,14 @@ function restoreSavedWanSpeedtestStats(wanName) {
   } catch(e) {}
 }
 
+function formatBpsWinbox(bps) {
+  if (!bps || bps <= 0 || isNaN(bps)) return '0 bps';
+  if (bps < 1000) return `${Math.round(bps)} bps`;
+  if (bps < 1000000) return `${(bps / 1000).toFixed(1)} Kbps`;
+  if (bps < 1000000000) return `${(bps / 1000000).toFixed(1)} Mbps`;
+  return `${(bps / 1000000000).toFixed(1)} Gbps`;
+}
+
 const wanGraphHistory = {};
 
 // 6. Fetch Live Ping & Interface Health Stats
@@ -879,6 +891,8 @@ async function fetchPingStats() {
     result.pingResults.forEach(item => {
       const pingDisplay = document.getElementById(`wan-ping-display-${item.wanName}`);
       const statusBadge = document.getElementById(`wan-status-${item.wanName}`);
+      const rxValEl = document.getElementById(`wan-rx-val-${item.wanName}`);
+      const txValEl = document.getElementById(`wan-tx-val-${item.wanName}`);
 
       if (pingDisplay) {
         if (item.status === 'disabled') {
@@ -906,17 +920,39 @@ async function fetchPingStats() {
         }
       }
 
-      // Record graph history (rolling 15 points)
       if (!wanGraphHistory[item.wanName]) {
         wanGraphHistory[item.wanName] = [];
       }
       const history = wanGraphHistory[item.wanName];
+      const prevSample = history.length > 0 ? history[history.length - 1] : null;
+
+      let rxBps = item.rxBps || 0;
+      let txBps = item.txBps || 0;
+
+      // Fallback byte delta calculation if monitor-traffic bps is 0
+      if (rxBps === 0 && txBps === 0 && prevSample && item.rxByte && item.txByte) {
+        const timeDiffSec = (Date.now() - prevSample.time) / 1000;
+        if (timeDiffSec > 0) {
+          const rxDelta = item.rxByte - (prevSample.rxByte || item.rxByte);
+          const txDelta = item.txByte - (prevSample.txByte || item.txByte);
+          if (rxDelta >= 0) rxBps = Math.round((rxDelta * 8) / timeDiffSec);
+          if (txDelta >= 0) txBps = Math.round((txDelta * 8) / timeDiffSec);
+        }
+      }
+
+      if (rxValEl) rxValEl.innerText = formatBpsWinbox(rxBps);
+      if (txValEl) txValEl.innerText = formatBpsWinbox(txBps);
+
       history.push({
         time: Date.now(),
         pingMs: item.pingMs || 0,
         status: item.status,
-        isLinkDown: item.isLinkDown
+        rxBps: rxBps,
+        txBps: txBps,
+        rxByte: item.rxByte || 0,
+        txByte: item.txByte || 0
       });
+
       if (history.length > 15) {
         history.shift();
       }
@@ -946,97 +982,153 @@ function drawWanSparkline(wanName) {
   const height = canvas.height;
   if (width === 0 || height === 0) return;
 
+  ctx.save();
   ctx.clearRect(0, 0, width, height);
 
+  // EXPLICIT REQUIREMENT: NO GLOWING EFFECT AT ALL
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = 'transparent';
+
   const history = wanGraphHistory[wanName] || [];
+
+  // Determine dynamic max scale up to 1000 Mbps (1 Gbps)
+  let peakBps = 0;
+  history.forEach(h => {
+    if ((h.rxBps || 0) > peakBps) peakBps = h.rxBps;
+    if ((h.txBps || 0) > peakBps) peakBps = h.txBps;
+  });
+
+  // Calculate clean WinBox Y-axis ceiling up to 1000 Mbps
+  let maxScale = 10000000; // default 10 Mbps floor
+  if (peakBps > 500000000) {
+    maxScale = 1000000000; // 1000 Mbps (1 Gbps)
+  } else if (peakBps > 250000000) {
+    maxScale = 500000000; // 500 Mbps
+  } else if (peakBps > 100000000) {
+    maxScale = 250000000; // 250 Mbps
+  } else if (peakBps > 40000000) {
+    maxScale = 100000000; // 100 Mbps
+  } else if (peakBps > 20000000) {
+    maxScale = 50000000; // 50 Mbps
+  } else if (peakBps > 10000000) {
+    maxScale = 20000000; // 20 Mbps
+  } else if (peakBps > 1000000000) {
+    maxScale = Math.ceil(peakBps / 500000000) * 500000000;
+  }
+
+  const rightMargin = 75 * dpr; // reserved width for WinBox Y-Axis right side speed labels
+  const topPadding = 12 * dpr;
+  const bottomPadding = 12 * dpr;
+  const graphWidth = Math.max(10, width - rightMargin);
+  const usableHeight = height - topPadding - bottomPadding;
+
+  // Render 4 horizontal gridlines & WinBox Right Y-Axis Speed Labels
+  const gridSteps = 4;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+  ctx.lineWidth = 1 * dpr;
+  ctx.font = `${Math.floor(9 * dpr)}px "Roboto Condensed", sans-serif`;
+  ctx.fillStyle = '#94a3b8';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+
+  for (let i = 0; i <= gridSteps; i++) {
+    const gy = topPadding + (usableHeight * (i / gridSteps));
+    const stepVal = maxScale * (1 - (i / gridSteps));
+
+    // Gridline
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(graphWidth, gy);
+    ctx.stroke();
+
+    // Right Y-Axis speed label text
+    const labelText = formatBpsWinbox(stepVal);
+    ctx.fillText(labelText, width - (4 * dpr), gy);
+  }
+
   if (history.length < 2) {
-    // Render initial flat dashed baseline while collecting data
-    ctx.strokeStyle = 'rgba(0, 229, 212, 0.4)';
-    ctx.lineWidth = 1.5 * dpr;
+    // Initial flat dashed lines
+    ctx.strokeStyle = 'rgba(34, 197, 94, 0.3)'; // Rx green tint
     ctx.setLineDash([4 * dpr, 4 * dpr]);
     ctx.beginPath();
-    ctx.moveTo(0, height / 2);
-    ctx.lineTo(width, height / 2);
+    ctx.moveTo(0, height - bottomPadding);
+    ctx.lineTo(graphWidth, height - bottomPadding);
     ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(0, 242, 254, 0.3)'; // Tx cyan tint
+    ctx.beginPath();
+    ctx.moveTo(0, height - bottomPadding - (2 * dpr));
+    ctx.lineTo(graphWidth, height - bottomPadding - (2 * dpr));
+    ctx.stroke();
+
+    ctx.restore();
     return;
   }
 
-  let maxPing = Math.max(...history.map(h => h.pingMs || 0), 25);
-  let minPing = Math.min(...history.map(h => h.pingMs || 0), 0);
-  if (maxPing === minPing) maxPing = minPing + 10;
+  ctx.setLineDash([]);
 
-  const topPadding = 10 * dpr;
-  const bottomPadding = 8 * dpr;
-  const usableHeight = height - topPadding - bottomPadding;
-
-  const points = history.map((h, i) => {
-    const x = (i / (history.length - 1)) * width;
-    const norm = (h.pingMs - minPing) / (maxPing - minPing);
+  // Map Rx & Tx points
+  const rxPoints = history.map((h, i) => {
+    const x = (i / (history.length - 1)) * graphWidth;
+    const norm = Math.min(1, Math.max(0, (h.rxBps || 0) / maxScale));
     const y = height - bottomPadding - (norm * usableHeight);
-    return { x, y, pingMs: h.pingMs, status: h.status };
+    return { x, y, bps: h.rxBps || 0 };
   });
 
-  // Background subtle horizontal gridlines
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-  ctx.lineWidth = 1 * dpr;
-  ctx.setLineDash([]);
-  for (let i = 1; i <= 2; i++) {
-    const gy = topPadding + (usableHeight * (i / 3));
+  const txPoints = history.map((h, i) => {
+    const x = (i / (history.length - 1)) * graphWidth;
+    const norm = Math.min(1, Math.max(0, (h.txBps || 0) / maxScale));
+    const y = height - bottomPadding - (norm * usableHeight);
+    return { x, y, bps: h.txBps || 0 };
+  });
+
+  // Helper to draw clean solid curve without glow
+  function drawCurve(points, strokeColor, fillColor) {
+    if (points.length === 0) return;
+
+    // Fill area below curve
     ctx.beginPath();
-    ctx.moveTo(0, gy);
-    ctx.lineTo(width, gy);
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 0; i < points.length - 1; i++) {
+      const xc = (points[i].x + points[i + 1].x) / 2;
+      const yc = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+    }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+    ctx.lineTo(points[points.length - 1].x, height - bottomPadding);
+    ctx.lineTo(points[0].x, height - bottomPadding);
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+
+    // Solid line stroke (NO GLOW)
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 0; i < points.length - 1; i++) {
+      const xc = (points[i].x + points[i + 1].x) / 2;
+      const yc = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+    }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+    ctx.lineWidth = 2 * dpr;
+    ctx.strokeStyle = strokeColor;
     ctx.stroke();
+
+    // End dot
+    const last = points[points.length - 1];
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 3 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = strokeColor;
+    ctx.fill();
   }
 
-  const latestStatus = history[history.length - 1].status;
-  const isDown = latestStatus === 'down' || latestStatus === 'disabled';
-  
-  const strokeColor = isDown ? '#ef4444' : '#00E5D4';
-  const fillGradient = ctx.createLinearGradient(0, topPadding, 0, height);
-  fillGradient.addColorStop(0, isDown ? 'rgba(239, 68, 68, 0.35)' : 'rgba(0, 229, 212, 0.35)');
-  fillGradient.addColorStop(1, isDown ? 'rgba(239, 68, 68, 0.0)' : 'rgba(0, 229, 212, 0.0)');
+  // Draw Rx (Green `#22c55e`)
+  drawCurve(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.12)');
 
-  // Smooth curve quadratic path
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 0; i < points.length - 1; i++) {
-    const xc = (points[i].x + points[i + 1].x) / 2;
-    const yc = (points[i].y + points[i + 1].y) / 2;
-    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-  }
-  ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+  // Draw Tx (Cyan `#00f2fe`)
+  drawCurve(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.12)');
 
-  // Fill gradient area below curve
-  ctx.lineTo(points[points.length - 1].x, height);
-  ctx.lineTo(points[0].x, height);
-  ctx.closePath();
-  ctx.fillStyle = fillGradient;
-  ctx.fill();
-
-  // Draw stroke curve
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 0; i < points.length - 1; i++) {
-    const xc = (points[i].x + points[i + 1].x) / 2;
-    const yc = (points[i].y + points[i + 1].y) / 2;
-    ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-  }
-  ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-  ctx.lineWidth = 2 * dpr;
-  ctx.strokeStyle = strokeColor;
-  ctx.shadowColor = strokeColor;
-  ctx.shadowBlur = 6 * dpr;
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-
-  // Pulse dot at the latest point
-  const lastPoint = points[points.length - 1];
-  ctx.beginPath();
-  ctx.arc(lastPoint.x - (2 * dpr), lastPoint.y, 3.5 * dpr, 0, Math.PI * 2);
-  ctx.fillStyle = strokeColor;
-  ctx.shadowColor = strokeColor;
-  ctx.shadowBlur = 8 * dpr;
-  ctx.fill();
+  ctx.restore();
 }
 
 window.addEventListener('resize', () => {

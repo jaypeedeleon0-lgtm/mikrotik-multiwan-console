@@ -1246,30 +1246,27 @@ async function openSpeedtestGaugeModal(wanName) {
   // Fetch Public IP in parallel while route is stabilizing
   fetchAndSetPublicIp();
 
-  // 2. 5-Second Route Stabilization Cooldown Countdown (GO button stays disabled)
-  for (let sec = 5; sec >= 1; sec--) {
-    if (cliServerText) cliServerText.innerText = `● Stabilizing Route (${sec}s)...`;
-    if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
-    await new Promise(res => setTimeout(res, 1000));
-  }
+  // Initial server detection display state
+  if (cliServerText) cliServerText.innerText = 'Finding optimal server...';
+  if (cliServerSubText) cliServerSubText.innerText = 'Finding nearest...';
+
+  // 2. 5-Second Route Stabilization & Route Setup (GO button stays disabled)
+  await new Promise(res => setTimeout(res, 5000));
 
   // 3. Auto-Detect nearest Ookla Speedtest Server over the freshly routed WAN line
-  if (cliServerText) cliServerText.innerText = '● Detecting Server...';
-  if (cliServerSubText) cliServerSubText.innerText = 'Finding Nearest...';
-
   try {
     const r = await authFetch('/api/detect-speedtest-server');
     const data = await r.json();
     if (data.success && data.server) {
-      if (cliServerText) cliServerText.innerText = data.server.name || 'Ookla Server';
+      if (cliServerText) cliServerText.innerText = data.server.name || 'Ookla Speedtest Server';
       if (cliServerSubText) cliServerSubText.innerText = data.server.location || 'Optimal Server';
     } else {
-      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name}`;
-      if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
+      if (cliServerText) cliServerText.innerText = 'Ookla Speedtest Server';
+      if (cliServerSubText) cliServerSubText.innerText = 'Optimal Server';
     }
   } catch (e) {
-    if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name}`;
-    if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
+    if (cliServerText) cliServerText.innerText = 'Ookla Speedtest Server';
+    if (cliServerSubText) cliServerSubText.innerText = 'Optimal Server';
   }
 
   // 4. Fetch final Egress Public IP details for Modal header over the stabilized WAN line

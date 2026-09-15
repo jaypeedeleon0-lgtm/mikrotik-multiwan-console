@@ -1239,60 +1239,48 @@ async function openSpeedtestGaugeModal(wanName) {
   // 1. Enable Policy Routing Mark for this WAN on MikroTik FIRST
   await switchWan(wanName);
 
-  // Initial display state while route stabilizes
-  if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+  // Initial synchronized pending display state on BOTH left and right
+  if (gaugeIspBadge) gaugeIspBadge.innerText = 'Detecting ISP...';
   if (gaugeIpText) gaugeIpText.innerText = 'Detecting IP...';
 
-  // Helper to fetch IP and update UI
-  const fetchAndSetPublicIp = async () => {
-    try {
-      const res = await authFetch('/api/public-ip');
-      const data = await res.json();
-      if (data.success && data.ip && data.ip !== 'Detecting IP...' && data.ip !== 'Active Routed Line') {
-        if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(data.isp || wanObj.label || wanObj.name);
-        if (gaugeIpText) gaugeIpText.innerText = data.ip;
-        return true;
-      }
-    } catch (e) {}
-    return false;
-  };
-
-  // Fetch Public IP in parallel while route is stabilizing
-  fetchAndSetPublicIp();
-
-  // Initial server detection display state
   if (cliServerText) cliServerText.innerText = 'Finding optimal server...';
   if (cliServerSubText) cliServerSubText.innerText = 'Finding nearest...';
 
   // 2. 5-Second Route Stabilization & Route Setup (GO button stays disabled)
   await new Promise(res => setTimeout(res, 5000));
 
-  // 3. Auto-Detect nearest Ookla Speedtest Server over the freshly routed WAN line
+  // 3. Detect Public IP & Ookla Server simultaneously over the freshly stabilized routed line
   try {
-    const r = await authFetch('/api/detect-speedtest-server');
-    const data = await r.json();
-    if (data.success && data.server) {
-      if (cliServerText) cliServerText.innerText = data.server.name || 'Ookla Speedtest Server';
-      if (cliServerSubText) cliServerSubText.innerText = data.server.location || 'Optimal Server';
-      if (data.ip && gaugeIpText) gaugeIpText.innerText = data.ip;
-      if (data.isp && gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(data.isp);
+    const [ipRes, serverRes] = await Promise.all([
+      authFetch('/api/public-ip').then(r => r.json()).catch(() => null),
+      authFetch('/api/detect-speedtest-server').then(r => r.json()).catch(() => null)
+    ]);
+
+    // Update Left Side (ISP & Public IP)
+    if (ipRes && ipRes.success && ipRes.ip && ipRes.ip !== 'Detecting IP...' && ipRes.ip !== 'Active Routed Line') {
+      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(ipRes.isp || wanObj.label || wanObj.name);
+      if (gaugeIpText) gaugeIpText.innerText = ipRes.ip;
+    } else if (serverRes && serverRes.ip) {
+      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(serverRes.isp || wanObj.label || wanObj.name);
+      if (gaugeIpText) gaugeIpText.innerText = serverRes.ip;
     } else {
-      if (cliServerText) cliServerText.innerText = 'Ookla Speedtest Server';
-      if (cliServerSubText) cliServerSubText.innerText = 'Optimal Server';
+      if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+      if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || 'Active Egress Route';
+    }
+
+    // Update Right Side (Server Name & Location)
+    if (serverRes && serverRes.success && serverRes.server) {
+      if (cliServerText) cliServerText.innerText = serverRes.server.name || 'Ookla Speedtest Server';
+      if (cliServerSubText) cliServerSubText.innerText = serverRes.server.location || 'Optimal Server';
+    } else {
+      if (cliServerText) cliServerText.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+      if (cliServerSubText) cliServerSubText.innerText = 'Ookla Speedtest Server';
     }
   } catch (e) {
-    if (cliServerText) cliServerText.innerText = 'Ookla Speedtest Server';
-    if (cliServerSubText) cliServerSubText.innerText = 'Optimal Server';
-  }
-
-  // 4. Fetch final Egress Public IP details for Modal header over the stabilized WAN line
-  const ipFound = await fetchAndSetPublicIp();
-  if (!ipFound && gaugeIpText && gaugeIpText.innerText === 'Detecting IP...') {
-    if (wanObj.ip) {
-      gaugeIpText.innerText = wanObj.ip;
-    } else {
-      gaugeIpText.innerText = 'Detecting IP...';
-    }
+    if (gaugeIspBadge) gaugeIspBadge.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+    if (gaugeIpText) gaugeIpText.innerText = wanObj.ip || 'Active Egress Route';
+    if (cliServerText) cliServerText.innerText = formatIspDisplayName(wanObj.label || wanObj.name);
+    if (cliServerSubText) cliServerSubText.innerText = 'Ookla Speedtest Server';
   }
 
   // 5. Enable GO buttons ONCE server detection is 100% complete!

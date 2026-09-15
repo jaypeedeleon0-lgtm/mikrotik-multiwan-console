@@ -1,7 +1,7 @@
 :root {
-  --bg-dark: #050505;
-  --bg-card: #161a22;
-  --bg-card-hover: #1c222d;
+  --bg-dark: #000000;
+  --bg-card: #1c1c1c;
+  --bg-card-hover: #262626;
   --border-glass: rgba(255, 255, 255, 0.14);
   --border-glow: rgba(255, 255, 255, 0.4);
   
@@ -30,10 +30,8 @@
 }
 
 body {
-  background-color: var(--bg-dark);
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+  background-color: #000000;
+  background-image: none;
   color: var(--text-main);
   font-family: var(--font-sans);
   min-height: 100vh;
@@ -793,14 +791,14 @@ input:focus, select:focus {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
 }
 
 .wan-card:hover {
   transform: translateY(-2px);
   background: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
 }
 
 .wan-card.active-speedtest {
@@ -902,7 +900,7 @@ input:focus, select:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  background: #0b0e14;
+  background: #0c0c0c;
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -912,7 +910,7 @@ input:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #0b0e14;
+  background: #0c0c0c;
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 7px 12px;
   border-radius: 10px;
@@ -1552,9 +1550,9 @@ body.bw-mode .btn-green {
 
 /* Authentic Flat Ookla Speedtest Styles - No Glowing Effects (Enlarged Premium Scale) */
 .ookla-modal-card {
-  background: #06090e !important;
-  border: 1px solid #1e293b !important;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.96) !important;
+  background: #0c0c0c !important;
+  border: 1px solid #242424 !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.98) !important;
   max-width: 650px !important;
   width: 95% !important;
   border-radius: 20px !important;
@@ -1569,12 +1567,12 @@ body.bw-mode .btn-green {
   position: sticky !important;
   top: 0 !important;
   z-index: 100 !important;
-  background: #06090e !important;
+  background: #0c0c0c !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 22px;
-  border-bottom: 1px solid #111827;
+  border-bottom: 1px solid #1c1c1c;
 }
 
 #closeGaugeModalBtn {

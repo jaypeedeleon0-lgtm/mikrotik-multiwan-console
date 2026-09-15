@@ -266,7 +266,6 @@ body {
   }
 }
 
-.btn-primary {
 @keyframes borderRotatePulse {
   0% {
     box-shadow: 0 0 6px rgba(0, 242, 254, 0.4), inset 0 0 4px rgba(0, 242, 254, 0.2);
@@ -429,6 +428,28 @@ body {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-remove-wan {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #f87171 !important;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-wan:hover {
+  color: #ffffff !important;
+  background: rgba(239, 68, 68, 0.45) !important;
+  border-color: rgba(239, 68, 68, 0.75) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
 }
 
 /* Layout */

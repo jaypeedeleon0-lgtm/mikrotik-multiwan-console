@@ -813,6 +813,7 @@ function renderWanCards() {
         </div>
 
         <button class="btn btn-primary btn-full" 
+          id="btn-speedtest-${wan.name}"
           style="margin-top: 10px;"
           onclick="openSpeedtestGaugeModal('${wan.name}')">
           Speed Test
@@ -894,6 +895,8 @@ async function fetchPingStats() {
       const rxValEl = document.getElementById(`wan-rx-val-${item.wanName}`);
       const txValEl = document.getElementById(`wan-tx-val-${item.wanName}`);
 
+      const speedBtn = document.getElementById(`btn-speedtest-${item.wanName}`);
+
       if (pingDisplay) {
         if (item.status === 'disabled') {
           pingDisplay.innerText = 'DISABLED';
@@ -917,6 +920,16 @@ async function fetchPingStats() {
         } else {
           statusBadge.innerText = 'ACTIVE';
           statusBadge.className = 'wan-status-badge active';
+        }
+      }
+
+      if (speedBtn) {
+        if (item.status === 'disabled' || item.status === 'down') {
+          speedBtn.disabled = true;
+          speedBtn.title = `Speed test unavailable: WAN interface is ${item.status === 'disabled' ? 'DISABLED' : 'OFFLINE'}`;
+        } else {
+          speedBtn.disabled = false;
+          speedBtn.title = '';
         }
       }
 
@@ -1082,11 +1095,11 @@ function drawWanSparkline(wanName) {
     return { x, y, bps: h.txBps || 0 };
   });
 
-  // Helper to draw clean, smooth curved line graph
+  // Helper to draw clean, thin, smooth curved line graph with light translucent fill
   function drawSmoothLine(points, strokeColor, fillColor) {
     if (points.length === 0) return;
 
-    // Fill area below smooth curve
+    // Fill area below smooth curve (light translucent wash)
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
@@ -1101,7 +1114,7 @@ function drawWanSparkline(wanName) {
     ctx.fillStyle = fillColor;
     ctx.fill();
 
-    // Solid smooth line stroke (NO GLOW, NO NODE DOTS)
+    // Solid thin smooth line stroke (1.2px crisp thin line, NO GLOW, NO NODE DOTS)
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 0; i < points.length - 1; i++) {
@@ -1110,23 +1123,23 @@ function drawWanSparkline(wanName) {
       ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
     }
     ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-    ctx.lineWidth = 2 * dpr;
+    ctx.lineWidth = 1.2 * dpr;
     ctx.strokeStyle = strokeColor;
     ctx.stroke();
 
     // Single small tip dot at the latest rightmost point
     const last = points[points.length - 1];
     ctx.beginPath();
-    ctx.arc(last.x, last.y, 3 * dpr, 0, Math.PI * 2);
+    ctx.arc(last.x, last.y, 2.5 * dpr, 0, Math.PI * 2);
     ctx.fillStyle = strokeColor;
     ctx.fill();
   }
 
-  // Draw Rx (Green `#22c55e`)
-  drawSmoothLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.12)');
+  // Draw Rx (Green `#22c55e` with light translucent wash)
+  drawSmoothLine(rxPoints, '#22c55e', 'rgba(34, 197, 94, 0.05)');
 
-  // Draw Tx (Cyan `#00f2fe`)
-  drawSmoothLine(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.12)');
+  // Draw Tx (Cyan `#00f2fe` with light translucent wash)
+  drawSmoothLine(txPoints, '#00f2fe', 'rgba(0, 242, 254, 0.05)');
 
   ctx.restore();
 }
@@ -1453,6 +1466,13 @@ function formatIspDisplayName(raw) {
 async function openSpeedtestGaugeModal(wanName) {
   const wanObj = configuredWans.find(w => w.name === wanName);
   if (!wanObj) return;
+
+  const history = wanGraphHistory[wanName];
+  const lastSample = (history && history.length > 0) ? history[history.length - 1] : null;
+  if (lastSample && (lastSample.status === 'disabled' || lastSample.status === 'down')) {
+    alert(`Cannot run Speed Test: WAN interface ${wanName} is currently ${lastSample.status === 'disabled' ? 'DISABLED' : 'OFFLINE'}.`);
+    return;
+  }
 
   activeWanName = wanName;
 

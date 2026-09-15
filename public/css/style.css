@@ -1580,19 +1580,51 @@ body.bw-mode .btn-green {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  padding: 24px 32px 8px 32px;
+  max-width: 460px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 22px 16px 8px 16px;
 }
 
 .ookla-summary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
 .ookla-summary-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-size: 0.8rem;
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.9px;
   text-transform: uppercase;
+}
+
+.ookla-summary-label .arrow-dl {
+  color: #00f2fe;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.ookla-summary-label .arrow-ul {
+  color: #d946ef;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.ookla-summary-label .label-txt {
+  color: #94a3b8;
+}
+
+.ookla-summary-label .unit-txt {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 700;
 }
 
 .ookla-summary-val {
@@ -1601,7 +1633,7 @@ body.bw-mode .btn-green {
   font-family: 'Inter', sans-serif;
   color: #ffffff;
   line-height: 1;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* Centered Ping Row below Download & Upload */

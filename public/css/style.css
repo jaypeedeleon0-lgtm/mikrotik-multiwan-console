@@ -1097,6 +1097,15 @@ input:focus, select:focus {
   border-color: #ffffff;
 }
 
+.wan-graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+
 /* Live WAN Sparkline Graph Section (WinBox Byte Graph Style) */
 .wan-graph-card-section {
   display: flex;
@@ -1106,14 +1115,7 @@ input:focus, select:focus {
   padding: 16px 18px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  margin-top: 10px;
   margin-bottom: 12px;
-}
-
-.wan-graph-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .wan-graph-title {

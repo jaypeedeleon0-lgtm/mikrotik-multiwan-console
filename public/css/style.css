@@ -251,72 +251,28 @@ body {
   white-space: nowrap;
 }
 
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotateBorderOutline {
-  0% {
-    --border-angle: 0deg;
-  }
-  100% {
-    --border-angle: 360deg;
-  }
-}
-
 .btn-primary {
-  position: relative;
   background: transparent !important;
   color: #ffffff !important;
-  font-weight: 700 !important;
-  font-family: 'Montserrat', 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  font-family: 'Montserrat', sans-serif !important;
   font-size: 0.82rem !important;
-  letter-spacing: 0.6px !important;
+  letter-spacing: 0.8px !important;
   border: 1.5px solid #00E5D4 !important;
   border-radius: 10px;
   box-shadow: none !important;
-  z-index: 1;
-  overflow: hidden;
-  transition: border-color 0.3s ease !important;
+  transition: border-color 0.2s ease !important;
 }
 
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from var(--border-angle), #00E5D4 0%, rgba(0, 229, 212, 0.25) 30%, transparent 60%, #00E5D4 85%, #00E5D4 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: -1;
-  animation: rotateBorderOutline 2s linear infinite;
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 1.5px;
-  background: #09090b;
-  border-radius: 8.5px;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: transparent !important;
-}
-
-.btn-primary:hover::before,
-.btn-primary:hover::after {
-  opacity: 1;
+  border-color: #00E5D4 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
 }
 
 .btn-primary:disabled {
@@ -1881,12 +1837,12 @@ body.bw-mode .btn-green {
 }
 
 .ookla-ping-title {
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 300;
   font-family: 'Montserrat', sans-serif;
-  color: #94a3b8;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-transform: none;
 }
 
 .ookla-ping-val-group {

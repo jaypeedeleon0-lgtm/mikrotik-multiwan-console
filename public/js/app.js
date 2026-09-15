@@ -1087,15 +1087,6 @@ function drawWanSparkline(wanName) {
     ctx.fillText(labelText, width - (4 * dpr), gy);
   }
 
-  // Vertical Grid Lines (Matrix Grid Pattern like screenshot)
-  for (let j = 1; j < vertGridSteps; j++) {
-    const gx = (j / vertGridSteps) * graphWidth;
-    ctx.beginPath();
-    ctx.moveTo(gx, topPadding);
-    ctx.lineTo(gx, height - bottomPadding);
-    ctx.stroke();
-  }
-
   if (history.length < 2) {
     // Initial flat dashed lines
     ctx.strokeStyle = 'rgba(34, 197, 94, 0.3)'; // Rx green tint

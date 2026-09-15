@@ -1097,6 +1097,43 @@ input:focus, select:focus {
   border-color: #ffffff;
 }
 
+/* Configured WAN Cards Scrollable Box Container */
+.wan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-height: calc(100vh - 240px);
+  min-height: 380px;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-bottom: 20px;
+  scroll-behavior: smooth;
+}
+
+.wan-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wan-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.wan-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 242, 254, 0.3);
+  border-radius: 4px;
+}
+
+.wan-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 242, 254, 0.6);
+}
+
+@media (min-width: 1600px) {
+  .wan-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 /* Live WAN Sparkline Graph Section (WinBox Byte Graph Style) */
 .wan-graph-card-section {
   display: flex;

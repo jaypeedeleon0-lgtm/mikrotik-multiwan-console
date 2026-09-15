@@ -1579,8 +1579,8 @@ body.bw-mode .btn-green {
 .ookla-top-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding: 22px 28px 12px 28px;
+  gap: 32px;
+  padding: 24px 32px 8px 32px;
 }
 
 .ookla-summary-col {
@@ -1588,7 +1588,7 @@ body.bw-mode .btn-green {
 }
 
 .ookla-summary-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.9px;
@@ -1596,12 +1596,12 @@ body.bw-mode .btn-green {
 }
 
 .ookla-summary-val {
-  font-size: 3.4rem;
+  font-size: 3.2rem;
   font-weight: 300;
   font-family: 'Inter', sans-serif;
   color: #ffffff;
   line-height: 1;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 /* Centered Ping Row below Download & Upload */
@@ -1609,15 +1609,15 @@ body.bw-mode .btn-green {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 28px;
-  font-size: 0.92rem;
+  gap: 36px;
+  font-size: 0.9rem;
   color: #94a3b8;
-  padding: 12px 24px;
-  margin: 4px 0 8px 0;
+  padding: 10px 24px;
+  margin: 16px 0 16px 0;
 }
 
 .ookla-ping-title {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.8px;
@@ -1626,7 +1626,7 @@ body.bw-mode .btn-green {
 
 .ookla-ping-val-group {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #ffffff;
   display: inline-flex;
@@ -1658,25 +1658,28 @@ body.bw-mode .btn-green {
   border: 1px solid rgba(217, 70, 239, 0.35);
 }
 
-/* 4 Rating Icons Row */
+/* 4 Rating Icons Row - Spread across 460px container */
 .ookla-ratings-bar {
   display: flex;
-  justify-content: center;
-  gap: 52px;
-  margin: 10px 0 14px 0;
-  padding: 12px 24px;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 460px;
+  margin: 8px auto 22px auto;
+  padding: 8px 16px;
+  width: 100%;
 }
 
 .rating-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
+  padding: 4px 8px;
 }
 
 .rating-icon {
-  width: 36px;
+  width: 34px;
   height: 26px;
   display: flex;
   align-items: center;
@@ -1709,23 +1712,23 @@ body.bw-mode .btn-green {
   box-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
 }
 
-/* Crisp Clean GO Button (No Glow) */
+/* Crisp Clean GO Button Container */
 .ookla-go-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 32px 0 36px 0;
-  min-height: 250px;
+  padding: 20px 0 32px 0;
+  min-height: 220px;
 }
 
 .ookla-go-btn-large {
-  width: 185px;
-  height: 185px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   background: #000000;
   border: 2.5px solid #00c6ff; /* Clean thin cyan border, NO glow */
   color: #ffffff;            /* Solid pure white GO text */
-  font-size: 3.8rem;
+  font-size: 3.2rem;
   font-weight: 800;
   font-family: 'Inter', sans-serif;
   letter-spacing: 2px;

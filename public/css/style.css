@@ -267,6 +267,22 @@ body {
 }
 
 .btn-primary {
+@keyframes borderRotatePulse {
+  0% {
+    box-shadow: 0 0 6px rgba(0, 242, 254, 0.4), inset 0 0 4px rgba(0, 242, 254, 0.2);
+    border-color: #00f2fe;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.9), inset 0 0 8px rgba(0, 242, 254, 0.4);
+    border-color: #38bdf8;
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(0, 242, 254, 0.4), inset 0 0 4px rgba(0, 242, 254, 0.2);
+    border-color: #00f2fe;
+  }
+}
+
+.btn-primary {
   position: relative;
   background: transparent !important;
   color: #ffffff !important;
@@ -276,19 +292,18 @@ body {
   letter-spacing: 0.8px !important;
   border: 1.5px solid #00f2fe !important;
   border-radius: 10px;
-  box-shadow: none !important;
+  box-shadow: none;
   z-index: 1;
-  transition: all 0.2s ease !important;
-  animation: none !important;
+  transition: all 0.25s ease !important;
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  background: rgba(0, 242, 254, 0.08) !important;
+  background: rgba(0, 242, 254, 0.12) !important;
   color: #ffffff !important;
   border-color: #00f2fe !important;
   transform: translateY(-1px);
-  animation: none !important;
+  animation: borderRotatePulse 1.8s ease-in-out infinite !important;
 }
 
 .btn-primary:disabled {
@@ -1421,16 +1436,19 @@ input:focus, select:focus {
 }
 
 .badge-wan {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-glass);
-  color: #ffffff;
-  padding: 2px 7px;
-  border-radius: 6px;
-  white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  font-family: var(--font-mono) !important;
+  background: rgba(0, 242, 254, 0.1) !important;
+  border: 1.5px solid #00f2fe !important;
+  color: #ffffff !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.25) !important;
 }
 
 .time-cell {

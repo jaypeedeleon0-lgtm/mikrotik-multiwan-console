@@ -884,7 +884,7 @@ function restoreSavedWanSpeedtestStats(wanName) {
     if (speedValEl && data.dl !== undefined && data.ul !== undefined) {
       const cyanArrowSvg = `<span class="ookla-icon-circle cyan"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>`;
       const purpleArrowSvg = `<span class="ookla-icon-circle purple"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d946ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>`;
-      speedValEl.innerHTML = `${cyanArrowSvg} <span style="color: #ffffff; font-weight: 700;">${data.dl}</span> / ${purpleArrowSvg} <span style="color: #ffffff; font-weight: 700;">${data.ul}</span> <span style="color: #ffffff; font-weight: 700;">Mbps</span>`;
+      speedValEl.innerHTML = `${cyanArrowSvg} <span style="color: #ffffff; font-weight: 700;">${data.dl}</span> &nbsp; ${purpleArrowSvg} <span style="color: #ffffff; font-weight: 700;">${data.ul}</span> <span style="color: #ffffff; font-weight: 700;">Mbps</span>`;
     }
   } catch(e) {}
 }

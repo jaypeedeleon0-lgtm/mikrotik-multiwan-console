@@ -1220,45 +1220,61 @@ async function openSpeedtestGaugeModal(wanName) {
 
   speedtestGaugeModal.style.display = 'flex';
 
+  const cliServerSubText = document.getElementById('cliServerSubText');
+
   // 1. Enable Policy Routing Mark for this WAN on MikroTik FIRST
   await switchWan(wanName);
 
-  // 2. 5-Second Route Stabilization Cooldown Countdown (GO button stays disabled)
+  // Initial display state while route stabilizes
   if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-  if (gaugeIpText) gaugeIpText.innerText = 'Routing via Gateway...';
+  if (gaugeIpText) gaugeIpText.innerText = 'Detecting Public IP...';
 
+  // Fetch Public IP in parallel while route is stabilizing
+  authFetch('/api/public-ip')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.ip && data.ip !== 'Detecting IP...') {
+        if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
+        if (gaugeIpText) gaugeIpText.innerText = data.ip;
+      }
+    })
+    .catch(() => {});
+
+  // 2. 5-Second Route Stabilization Cooldown Countdown (GO button stays disabled)
   for (let sec = 5; sec >= 1; sec--) {
-    if (cliServerText) cliServerText.innerText = `● Stabilizing WAN Route (${sec}s)...`;
+    if (cliServerText) cliServerText.innerText = `● Stabilizing Route (${sec}s)...`;
+    if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
     await new Promise(res => setTimeout(res, 1000));
   }
 
   // 3. Auto-Detect nearest Ookla Speedtest Server over the freshly routed WAN line
-  if (cliServerText) cliServerText.innerText = '● Detecting Nearest Ookla Server...';
+  if (cliServerText) cliServerText.innerText = '● Detecting Server...';
+  if (cliServerSubText) cliServerSubText.innerText = 'Finding Nearest...';
+
   try {
     const r = await authFetch('/api/detect-speedtest-server');
     const data = await r.json();
     if (data.success && data.server) {
-      const loc = data.server.location ? ` (${data.server.location})` : '';
-      if (cliServerText) cliServerText.innerText = `${data.server.name}${loc}`;
+      if (cliServerText) cliServerText.innerText = data.server.name || 'Ookla Server';
+      if (cliServerSubText) cliServerSubText.innerText = data.server.location || 'Optimal Server';
     } else {
-      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
+      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name}`;
+      if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
     }
   } catch (e) {
-    if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
+    if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name}`;
+    if (cliServerSubText) cliServerSubText.innerText = 'Ookla Server';
   }
 
-  // 4. Fetch Egress Public IP details for Modal header over the stabilized WAN line
+  // 4. Fetch final Egress Public IP details for Modal header over the stabilized WAN line
   try {
     const res = await authFetch('/api/public-ip');
     const data = await res.json();
-    if (data.success && data.ip) {
+    if (data.success && data.ip && data.ip !== 'Detecting IP...') {
       if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
       if (gaugeIpText) gaugeIpText.innerText = data.ip;
     }
-  } catch (e) {
-    if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-    if (gaugeIpText) gaugeIpText.innerText = `GW: ${wanObj.gateway || 'Active Routed Line'}`;
-  }
+  } catch (e) {}
 
   // 5. Enable GO buttons ONCE server detection is 100% complete!
   if (runServerCliBtn) runServerCliBtn.disabled = false;

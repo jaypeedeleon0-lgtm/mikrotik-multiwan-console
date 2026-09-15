@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MikroTik Multi-WAN Speedtest & Ping Monitor Console</title>
-  <link rel="stylesheet" href="css/style.css?v=20260915_pulse_6s_extra_slow">
+  <link rel="stylesheet" href="css/style.css?v=20260915_ookla_real_ip_server_layout">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -417,20 +417,25 @@
         </div>
       </div>
 
-      <!-- Bottom ISP & Server Bar -->
+      <!-- Bottom ISP & Server Bar (Authentic Ookla Layout) -->
       <div class="ookla-bottom-details">
         <div class="ookla-detail-item">
-          <div class="ookla-detail-icon">👤</div>
+          <div class="ookla-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
-            <div class="ookla-detail-title" id="gaugeIspBadge">WAN Interface</div>
+            <div class="ookla-detail-title" id="gaugeIspBadge">Detecting ISP...</div>
             <div class="ookla-detail-sub" id="gaugeIpText">Detecting Public IP...</div>
           </div>
         </div>
         <div class="ookla-detail-item">
-          <div class="ookla-detail-icon">🏢</div>
+          <div class="ookla-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          </div>
           <div>
             <div class="ookla-detail-title" id="cliServerText">Auto Speedtest Server</div>
-            <div class="ookla-detail-sub" style="color: #00c6ff;">Ookla Server</div>
+            <div class="ookla-detail-sub" id="cliServerSubText">Ookla Server</div>
+            <div class="ookla-change-server-link" id="changeServerBtn">Change Server</div>
           </div>
         </div>
       </div>
@@ -545,6 +550,6 @@
   <!-- Notification Toast Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="js/app.js?v=20260915_ookla_3states_system"></script>
+  <script src="js/app.js?v=20260915_ookla_real_ip_server_layout"></script>
 </body>
 </html>

@@ -824,32 +824,66 @@ app.post('/api/switch-wan', requireAuth, async (req, res) => {
   }
 });
 
+function cleanIspName(raw) {
+  if (!raw) return 'ISP Connection';
+  let str = String(raw).trim();
+  str = str.replace(/^AS\d+\s*/i, '');
+  if (/pldt/i.test(str)) return 'PLDT';
+  if (/globe/i.test(str)) return 'Globe Telecom';
+  if (/smart/i.test(str)) return 'Smart Communications';
+  if (/converge/i.test(str)) return 'Converge ICT';
+  if (/dito/i.test(str)) return 'DITO Telecommunity';
+  if (/starlink/i.test(str)) return 'Starlink';
+  if (/rise/i.test(str)) return 'RISE';
+  if (/radius/i.test(str)) return 'Radius Telecoms';
+  if (/eastern/i.test(str)) return 'Eastern Communications';
+  return str.split(' ')[0] || str;
+}
+
 // 5. Detect Egress Public IP & ISP Provider Details
 app.get('/api/public-ip', async (req, res) => {
   try {
     const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-    const response = await fetch('https://api.ipify.org?format=json', { timeout: 4000 });
+    
+    // Tier 1: Try ip-api.com for instant IP + ISP in 1 call
+    try {
+      const response = await fetch('http://ip-api.com/json/?fields=status,query,isp,org,as', { timeout: 3500 });
+      const ipJson = await response.json();
+      if (ipJson.status === 'success' && ipJson.query) {
+        const ispName = cleanIspName(ipJson.isp || ipJson.org || ipJson.as);
+        return res.json({
+          success: true,
+          ip: ipJson.query,
+          isp: ispName
+        });
+      }
+    } catch (e1) {}
+
+    // Tier 2: Try ipify.org fallback
+    const response = await fetch('https://api.ipify.org?format=json', { timeout: 3500 });
     const data = await response.json();
     
-    let ispName = 'WAN Connection';
-    try {
-      const ipDetails = await fetch(`https://ipapi.co/${data.ip}/json/`, { timeout: 3000 });
-      const ipJson = await ipDetails.json();
-      if (ipJson.org || ipJson.asn) {
-        ispName = cleanIspName(ipJson.org || ipJson.asn);
-      }
-    } catch(e) {}
+    let ispName = 'ISP Gateway';
+    if (data.ip) {
+      try {
+        const ipDetails = await fetch(`https://ipapi.co/${data.ip}/json/`, { timeout: 3000 });
+        const ipJson = await ipDetails.json();
+        if (ipJson.org || ipJson.asn) {
+          ispName = cleanIspName(ipJson.org || ipJson.asn);
+        }
+      } catch(e2) {}
+    }
 
     res.json({
       success: true,
-      ip: data.ip || 'Unknown Public IP',
+      ip: data.ip || 'Detecting IP...',
       isp: ispName
     });
   } catch (err) {
     res.json({
       success: true,
-      ip: 'Active Gateway IP',
-      isp: 'WAN Interface'
+      ip: 'Detecting IP...',
+      isp: 'WAN Gateway'
     });
   }
 });

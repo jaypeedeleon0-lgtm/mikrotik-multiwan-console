@@ -1917,11 +1917,28 @@ body.bw-mode .btn-green {
   font-weight: 800;
   font-size: 0.98rem;
   color: #ffffff;
+  letter-spacing: 0.2px;
 }
 
 .ookla-detail-sub {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: 0.82rem;
+  color: #00f2fe;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.ookla-change-server-link {
+  font-size: 0.75rem;
+  color: #00c6ff;
+  cursor: pointer;
+  margin-top: 3px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.ookla-change-server-link:hover {
+  color: #38bdf8;
+  text-decoration: underline;
 }
 
 /* Finished Result State (State 3) Styles */

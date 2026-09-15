@@ -251,30 +251,46 @@ body {
   white-space: nowrap;
 }
 
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes slowBorderSpin {
+  from {
+    --border-angle: 0deg;
+  }
+  to {
+    --border-angle: 360deg;
+  }
+}
+
 .btn-primary {
   position: relative;
-  background: transparent !important;
   color: #ffffff !important;
   font-weight: 500 !important;
   font-family: 'Montserrat', sans-serif !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.8px !important;
-  border: 1.5px solid #00f2fe !important;
+  border: 1.5px solid transparent !important;
   border-radius: 10px;
+  background-image: linear-gradient(#0c0d12, #0c0d12), 
+                    linear-gradient(#00f2fe, #00f2fe) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
   box-shadow: none !important;
   z-index: 1;
-  transition: none !important;
-  animation: none !important;
+  transition: transform 0.2s ease !important;
 }
 
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
-  background: transparent !important;
+  background-image: linear-gradient(#0c0d12, #0c0d12), 
+                    conic-gradient(from var(--border-angle, 0deg), #00f2fe 0%, #ffffff 20%, #00f2fe 40%, rgba(0, 242, 254, 0.25) 70%, #00f2fe 100%) !important;
+  animation: slowBorderSpin 3.5s linear infinite !important;
   color: #ffffff !important;
-  border-color: #00f2fe !important;
-  transform: none !important;
-  transition: none !important;
-  animation: none !important;
+  transform: translateY(-1px);
   box-shadow: none !important;
 }
 

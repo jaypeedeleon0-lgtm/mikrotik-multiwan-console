@@ -884,6 +884,12 @@ input:focus, select:focus {
   letter-spacing: 0.5px;
 }
 
+.green-num,
+#wanCountLabel {
+  color: #10b981 !important;
+  font-weight: 800;
+}
+
 .section-title-bar p {
   font-size: 0.78rem;
   color: var(--text-muted);

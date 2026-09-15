@@ -792,9 +792,6 @@ function renderWanCards() {
         </div>
 
         <div class="wan-graph-header">
-          <span class="wan-graph-title">
-            <span class="live-pulse-dot"></span> BYTE GRAPH
-          </span>
           <span class="wan-graph-ping-text" id="wan-ping-display-${wan.name}">-- ms</span>
         </div>
 

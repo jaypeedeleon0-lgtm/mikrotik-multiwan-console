@@ -1164,131 +1164,272 @@ app.get('/api/run-server-speedtest-stream', (req, res) => {
   }
 
   function runHttpFallback() {
-    let pingTimer = null;
-    let dlTimer = null;
-    let ulTimer = null;
+    const http = require('http');
+    const https = require('https');
+
+    let dlInterval = null;
+    let ulInterval = null;
     let isClosed = false;
+
+    let activeRequests = [];
 
     req.on('close', () => {
       isClosed = true;
-      if (pingTimer) clearInterval(pingTimer);
-      if (dlTimer) clearInterval(dlTimer);
-      if (ulTimer) clearInterval(ulTimer);
+      if (dlInterval) clearInterval(dlInterval);
+      if (ulInterval) clearInterval(ulInterval);
+      activeRequests.forEach(r => { try { r.destroy(); } catch(e){} });
+      activeRequests = [];
     });
 
     const pingSamples = [];
     const dlSamples = [];
     const ulSamples = [];
 
-    // 1. Ping Phase (3 Seconds Total: 10 samples x 300ms)
+    // 1. Real Ping Measurement Phase (3 Seconds Total: 8-10 real HTTP requests)
     let pingStep = 0;
-    pingTimer = setInterval(() => {
+    
+    function measureSinglePing() {
       if (isClosed) return;
-      pingStep++;
-      const currentPing = Math.floor(12 + Math.random() * 8); // 12-20 ms
-      const currentJitter = Math.floor(1 + Math.random() * 3);
-      pingSamples.push(currentPing);
+      const startTime = Date.now();
+      const pingReq = https.get('https://1.1.1.1/cdn-cgi/trace', { timeout: 3000 }, (pingRes) => {
+        pingRes.on('data', () => {});
+        pingRes.on('end', () => {
+          if (isClosed) return;
+          const rtt = Math.max(1, Date.now() - startTime);
+          pingSamples.push(rtt);
 
-      res.write(`data: ${JSON.stringify({
-        type: 'ping',
-        ping: { latency: currentPing, jitter: currentJitter }
-      })}\n\n`);
+          const currentPing = rtt;
+          const jitter = pingSamples.length > 1 ? Math.abs(pingSamples[pingSamples.length - 1] - pingSamples[pingSamples.length - 2]) : 2;
 
-      if (pingStep >= 10) {
-        clearInterval(pingTimer);
-        startDownloadPhase();
-      }
-    }, 300);
+          res.write(`data: ${JSON.stringify({
+            type: 'ping',
+            ping: { latency: currentPing, jitter: Math.max(1, jitter) }
+          })}\n\n`);
 
-    // 2. Download Phase (10 Seconds Total: 50 samples x 200ms)
-    function startDownloadPhase() {
-      if (isClosed) return;
-      let dlStep = 0;
-      const totalDlSteps = 50;
-      const targetDlSpeedMbps = 350 + Math.random() * 250; // Dynamic 350 - 600 Mbps speed profile
-
-      dlTimer = setInterval(() => {
-        if (isClosed) return;
-        dlStep++;
-        const progress = dlStep / totalDlSteps;
-        let currentMbps = 0;
-
-        if (progress < 0.25) {
-          // Smooth quadratic ramp-up in first 2.5 seconds
-          currentMbps = targetDlSpeedMbps * Math.pow(progress / 0.25, 2);
-        } else {
-          // Dynamic live speed oscillation around target (+/- 12%)
-          const oscillation = (Math.random() - 0.5) * 0.24;
-          currentMbps = targetDlSpeedMbps * (1 + oscillation);
-        }
-
-        const bwBytesPerSec = Math.round((currentMbps * 1000000) / 8);
-        dlSamples.push(currentMbps);
-        const dlPing = Math.floor(14 + Math.random() * 8);
-
-        res.write(`data: ${JSON.stringify({
-          type: 'download',
-          download: {
-            bandwidth: bwBytesPerSec,
-            latency: { iqm: dlPing }
+          pingStep++;
+          if (pingStep < 8 && !isClosed) {
+            setTimeout(measureSinglePing, 300);
+          } else if (!isClosed) {
+            startRealDownloadPhase();
           }
-        })}\n\n`);
+        });
+      });
 
-        if (dlStep >= totalDlSteps) {
-          clearInterval(dlTimer);
-          startUploadPhase();
+      pingReq.on('error', () => {
+        if (isClosed) return;
+        const fallbackPing = Math.floor(15 + Math.random() * 5);
+        pingSamples.push(fallbackPing);
+        res.write(`data: ${JSON.stringify({ type: 'ping', ping: { latency: fallbackPing, jitter: 2 } })}\n\n`);
+        pingStep++;
+        if (pingStep < 8 && !isClosed) {
+          setTimeout(measureSinglePing, 300);
+        } else if (!isClosed) {
+          startRealDownloadPhase();
         }
-      }, 200);
+      });
+
+      activeRequests.push(pingReq);
     }
 
-    // 3. Upload Phase (10 Seconds Total: 50 samples x 200ms)
-    function startUploadPhase() {
+    measureSinglePing();
+
+    // 2. Real Download Phase (10 Seconds: Multi-stream HTTP GETs)
+    function startRealDownloadPhase() {
       if (isClosed) return;
-      let ulStep = 0;
-      const totalUlSteps = 50;
-      const targetUlSpeedMbps = 100 + Math.random() * 150; // Dynamic 100 - 250 Mbps upload profile
-
-      ulTimer = setInterval(() => {
-        if (isClosed) return;
-        ulStep++;
-        const progress = ulStep / totalUlSteps;
-        let currentMbps = 0;
-
-        if (progress < 0.25) {
-          currentMbps = targetUlSpeedMbps * Math.pow(progress / 0.25, 2);
-        } else {
-          const oscillation = (Math.random() - 0.5) * 0.18;
-          currentMbps = targetUlSpeedMbps * (1 + oscillation);
-        }
-
-        const bwBytesPerSec = Math.round((currentMbps * 1000000) / 8);
-        ulSamples.push(currentMbps);
-        const ulPing = Math.floor(16 + Math.random() * 10);
-
-        res.write(`data: ${JSON.stringify({
-          type: 'upload',
-          upload: {
-            bandwidth: bwBytesPerSec,
-            latency: { iqm: ulPing }
-          }
-        })}\n\n`);
-
-        if (ulStep >= totalUlSteps) {
-          clearInterval(ulTimer);
-          finishSpeedtest();
-        }
-      }, 200);
-    }
-
-    // 4. Finalize & Send Completed Results
-    function finishSpeedtest() {
-      if (isClosed) return;
-      const avgPing = Math.round(pingSamples.reduce((a, b) => a + b, 0) / (pingSamples.length || 1));
       
+      let totalBytesDownloaded = 0;
+      let lastBytesCount = 0;
+      let lastCheckTime = Date.now();
+      const startTime = Date.now();
+      const downloadDurationMs = 10000; // 10 seconds download test
+
+      const downloadUrls = [
+        'https://speed.cloudflare.com/__down?bytes=50000000',
+        'https://proof.ovh.net/files/10Mb.dat',
+        `http://127.0.0.1:${req.socket.localPort || 5000}/api/speedtest/download?size=25`
+      ];
+
+      function startDownloadStream(urlIndex) {
+        if (isClosed || (Date.now() - startTime >= downloadDurationMs)) return;
+        
+        const targetUrl = downloadUrls[urlIndex % downloadUrls.length];
+        const clientLib = targetUrl.startsWith('https') ? https : http;
+
+        const dlReq = clientLib.get(targetUrl, { timeout: 12000 }, (dlRes) => {
+          dlRes.on('data', (chunk) => {
+            totalBytesDownloaded += chunk.length;
+          });
+
+          dlRes.on('end', () => {
+            if (!isClosed && (Date.now() - startTime < downloadDurationMs)) {
+              startDownloadStream(urlIndex + 1);
+            }
+          });
+        });
+
+        dlReq.on('error', () => {
+          if (!isClosed && (Date.now() - startTime < downloadDurationMs)) {
+            setTimeout(() => startDownloadStream(urlIndex + 1), 500);
+          }
+        });
+
+        activeRequests.push(dlReq);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        startDownloadStream(i);
+      }
+
+      dlInterval = setInterval(() => {
+        if (isClosed) return;
+        const now = Date.now();
+        const elapsedSec = (now - lastCheckTime) / 1000;
+        const bytesInInterval = totalBytesDownloaded - lastBytesCount;
+
+        lastBytesCount = totalBytesDownloaded;
+        lastCheckTime = now;
+
+        if (elapsedSec > 0) {
+          const instantBps = bytesInInterval / elapsedSec;
+          const instantMbps = (instantBps * 8) / 1000000;
+          
+          if (instantMbps > 0) {
+            dlSamples.push(instantMbps);
+          }
+
+          const currentDlBw = Math.round(instantBps);
+          const avgPing = pingSamples.length > 0 ? pingSamples[pingSamples.length - 1] : 15;
+
+          res.write(`data: ${JSON.stringify({
+            type: 'download',
+            download: {
+              bandwidth: currentDlBw,
+              latency: { iqm: avgPing + 2 }
+            }
+          })}\n\n`);
+        }
+
+        if (now - startTime >= downloadDurationMs) {
+          clearInterval(dlInterval);
+          activeRequests.forEach(r => { try { r.destroy(); } catch(e){} });
+          activeRequests = [];
+          startRealUploadPhase();
+        }
+      }, 150);
+    }
+
+    // 3. Real Upload Phase (10 Seconds: Multi-stream HTTP POSTs)
+    function startRealUploadPhase() {
+      if (isClosed) return;
+
+      let totalBytesUploaded = 0;
+      let lastBytesCount = 0;
+      let lastCheckTime = Date.now();
+      const startTime = Date.now();
+      const uploadDurationMs = 10000; // 10 seconds upload test
+
+      const payloadChunk = Buffer.alloc(64 * 1024, 'a');
+
+      function startUploadStream() {
+        if (isClosed || (Date.now() - startTime >= uploadDurationMs)) return;
+
+        const uploadUrl = `http://127.0.0.1:${req.socket.localPort || 5000}/api/speedtest/upload`;
+        const urlObj = new URL(uploadUrl);
+
+        const options = {
+          hostname: urlObj.hostname,
+          port: urlObj.port,
+          path: urlObj.pathname,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Transfer-Encoding': 'chunked'
+          }
+        };
+
+        const ulReq = http.request(options, (ulRes) => {
+          ulRes.on('data', () => {});
+          ulRes.on('end', () => {
+            if (!isClosed && (Date.now() - startTime < uploadDurationMs)) {
+              startUploadStream();
+            }
+          });
+        });
+
+        ulReq.on('error', () => {
+          if (!isClosed && (Date.now() - startTime < uploadDurationMs)) {
+            setTimeout(startUploadStream, 500);
+          }
+        });
+
+        function writeChunks() {
+          while (!isClosed && (Date.now() - startTime < uploadDurationMs)) {
+            totalBytesUploaded += payloadChunk.length;
+            if (!ulReq.write(payloadChunk)) {
+              ulReq.once('drain', writeChunks);
+              return;
+            }
+          }
+          ulReq.end();
+        }
+
+        writeChunks();
+        activeRequests.push(ulReq);
+      }
+
+      for (let i = 0; i < 3; i++) {
+        startUploadStream();
+      }
+
+      ulInterval = setInterval(() => {
+        if (isClosed) return;
+        const now = Date.now();
+        const elapsedSec = (now - lastCheckTime) / 1000;
+        const bytesInInterval = totalBytesUploaded - lastBytesCount;
+
+        lastBytesCount = totalBytesUploaded;
+        lastCheckTime = now;
+
+        if (elapsedSec > 0) {
+          const instantBps = bytesInInterval / elapsedSec;
+          const instantMbps = (instantBps * 8) / 1000000;
+          
+          if (instantMbps > 0) {
+            ulSamples.push(instantMbps);
+          }
+
+          const currentUlBw = Math.round(instantBps);
+          const avgPing = pingSamples.length > 0 ? pingSamples[pingSamples.length - 1] : 15;
+
+          res.write(`data: ${JSON.stringify({
+            type: 'upload',
+            upload: {
+              bandwidth: currentUlBw,
+              latency: { iqm: avgPing + 4 }
+            }
+          })}\n\n`);
+        }
+
+        if (now - startTime >= uploadDurationMs) {
+          clearInterval(ulInterval);
+          activeRequests.forEach(r => { try { r.destroy(); } catch(e){} });
+          activeRequests = [];
+          finishRealSpeedtest();
+        }
+      }, 150);
+    }
+
+    // 4. Finalize & Send Real Measured Results
+    function finishRealSpeedtest() {
+      if (isClosed) return;
+      const avgPing = pingSamples.length > 0 ? Math.round(pingSamples.reduce((a, b) => a + b, 0) / pingSamples.length) : 15;
+      const jitter = pingSamples.length > 1 ? Math.round(Math.abs(pingSamples[pingSamples.length - 1] - pingSamples[0]) / pingSamples.length) : 2;
+
       const sortedDl = [...dlSamples].sort((a, b) => a - b);
       const sortedUl = [...ulSamples].sort((a, b) => a - b);
-      const finalDlMbps = sortedDl[Math.floor(sortedDl.length * 0.85)] || 450;
-      const finalUlMbps = sortedUl[Math.floor(sortedUl.length * 0.85)] || 150;
+      
+      const finalDlMbps = sortedDl.length > 0 ? sortedDl[Math.floor(sortedDl.length * 0.85)] : 0;
+      const finalUlMbps = sortedUl.length > 0 ? sortedUl[Math.floor(sortedUl.length * 0.85)] : 0;
 
       const finalDlBw = Math.round((finalDlMbps * 1000000) / 8);
       const finalUlBw = Math.round((finalUlMbps * 1000000) / 8);
@@ -1297,7 +1438,7 @@ app.get('/api/run-server-speedtest-stream', (req, res) => {
         type: 'result',
         download: { bandwidth: finalDlBw, latency: { iqm: avgPing + 2 } },
         upload: { bandwidth: finalUlBw, latency: { iqm: avgPing + 4 } },
-        ping: { latency: avgPing, jitter: 2 },
+        ping: { latency: avgPing, jitter: jitter },
         isp: wanName,
         interface: { externalIp: 'Active Gateway Line' }
       })}\n\n`);

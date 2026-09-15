@@ -280,6 +280,43 @@ body {
   transition: none !important;
 }
 
+.btn-add-wan {
+  background: #10b981 !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid #10b981 !important;
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-add-wan:hover {
+  background: #059669 !important;
+  color: #000000 !important;
+  border-color: #059669 !important;
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-add-wan:active {
+  background: #047857 !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+.btn-add-wan:disabled {
+  background: #27272a !important;
+  color: #71717a !important;
+  border-color: #27272a !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 .btn-secondary {
   background: #18181b;
   color: #ffffff;

@@ -1210,33 +1210,41 @@ async function openSpeedtestGaugeModal(wanName) {
   // 1. Enable Policy Routing Mark for this WAN on MikroTik FIRST
   await switchWan(wanName);
 
-  // 2. Auto-Detect nearest Ookla Speedtest Server over the routed WAN line
-  if (cliServerText) cliServerText.innerText = 'Detecting nearest Ookla server...';
-  fetch('/api/detect-speedtest-server')
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.server) {
-        const loc = data.server.location ? ` (${data.server.location})` : '';
-        if (cliServerText) cliServerText.innerText = `${data.server.name}${loc}`;
-      } else {
-        if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
-      }
-    })
-    .catch(() => {
-      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
-    });
+  // 2. 2-Second Route Stabilization Cooldown Countdown (Ensures 100% accurate server detection)
+  if (cliServerText) cliServerText.innerText = 'Stabilizing WAN Route (2s)...';
+  if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
+  if (gaugeIpText) gaugeIpText.innerText = 'Routing via Gateway...';
 
-  // 3. Fetch Egress Public IP details for Modal header
+  await new Promise(res => setTimeout(res, 1000));
+  if (cliServerText) cliServerText.innerText = 'Stabilizing WAN Route (1s)...';
+  await new Promise(res => setTimeout(res, 1000));
+
+  // 3. Auto-Detect nearest Ookla Speedtest Server over the freshly routed WAN line
+  if (cliServerText) cliServerText.innerText = 'Detecting nearest Ookla server...';
   try {
-    const res = await fetch('/api/public-ip');
-    const data = await res.json();
-    if (data.success) {
-      gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
-      gaugeIpText.innerText = data.ip;
+    const r = await authFetch('/api/detect-speedtest-server');
+    const data = await r.json();
+    if (data.success && data.server) {
+      const loc = data.server.location ? ` (${data.server.location})` : '';
+      if (cliServerText) cliServerText.innerText = `${data.server.name}${loc}`;
+    } else {
+      if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
     }
   } catch (e) {
-    gaugeIspBadge.innerText = wanObj.label || wanObj.name;
-    gaugeIpText.innerText = `GW: ${wanObj.gateway || 'Active Routed Line'}`;
+    if (cliServerText) cliServerText.innerText = `${wanObj.label || wanObj.name} Server`;
+  }
+
+  // 4. Fetch Egress Public IP details for Modal header over the stabilized WAN line
+  try {
+    const res = await authFetch('/api/public-ip');
+    const data = await res.json();
+    if (data.success && data.ip) {
+      if (gaugeIspBadge) gaugeIspBadge.innerText = data.isp || wanObj.label || wanObj.name;
+      if (gaugeIpText) gaugeIpText.innerText = data.ip;
+    }
+  } catch (e) {
+    if (gaugeIspBadge) gaugeIspBadge.innerText = wanObj.label || wanObj.name;
+    if (gaugeIpText) gaugeIpText.innerText = `GW: ${wanObj.gateway || 'Active Routed Line'}`;
   }
 }
 

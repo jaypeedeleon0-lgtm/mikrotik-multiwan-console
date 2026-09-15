@@ -879,6 +879,11 @@ input:focus, select:focus {
   gap: 10px;
 }
 
+.wan-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
 .wan-title-group h4 {
   font-size: 0.95rem;
   font-weight: 800;
@@ -886,7 +891,7 @@ input:focus, select:focus {
 }
 
 .wan-subtitle {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
   display: flex;
@@ -898,7 +903,8 @@ input:focus, select:focus {
 .wan-subtitle-top {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   gap: 5px;
 }
 

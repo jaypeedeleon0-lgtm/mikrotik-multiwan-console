@@ -1823,7 +1823,7 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 4s cubic-bezier(0.1, 0.8, 0.25, 1) infinite;
+  animation: ookla3sPulseWave 6s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
 }
 
 /* Disable second outer element */
@@ -1970,7 +1970,7 @@ body.bw-mode .btn-green {
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  animation: ookla3sPulseWave 4s cubic-bezier(0.1, 0.8, 0.25, 1) infinite;
+  animation: ookla3sPulseWave 6s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
 }
 
 .ookla-go-btn-medium:hover {

@@ -1097,15 +1097,6 @@ input:focus, select:focus {
   border-color: #ffffff;
 }
 
-.wan-graph-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 4px;
-  margin-bottom: 3px;
-  padding: 0 4px;
-}
-
 /* Live WAN Sparkline Graph Section (WinBox Byte Graph Style) */
 .wan-graph-card-section {
   display: flex;
@@ -1115,18 +1106,8 @@ input:focus, select:focus {
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: 4px;
   margin-bottom: 6px;
-}
-
-.wan-graph-ping-text {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 300;
-  color: #00E5D4;
-}
-
-.wan-graph-ping-text.down {
-  color: #ef4444;
 }
 
 .wan-graph-ping-text.disabled {

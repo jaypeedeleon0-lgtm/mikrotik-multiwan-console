@@ -791,10 +791,6 @@ function renderWanCards() {
           </div>
         </div>
 
-        <div class="wan-graph-header">
-          <span class="wan-graph-ping-text" id="wan-ping-display-${wan.name}">-- ms</span>
-        </div>
-
         <div class="wan-graph-card-section">
           <div class="wan-canvas-container">
             <canvas id="wan-graph-${wan.name}" class="wan-graph-canvas"></canvas>

@@ -1335,10 +1335,17 @@ function triggerSpeedtest() {
   // Reset active state on survey buttons
   document.querySelectorAll('.survey-btn').forEach(btn => btn.classList.remove('active'));
 
-  // Switch to State 2: Show Gauge, Hide GO & Result panel
-  if (goBtnContainer) goBtnContainer.style.display = 'none';
-  if (resultPanelContainer) resultPanelContainer.style.display = 'none';
-  if (gaugeWrapper) gaugeWrapper.style.display = 'flex';
+  // Trigger State 2 Click Transition (Scale & Burst Ripple)
+  if (runServerCliBtn) runServerCliBtn.classList.add('clicked');
+  if (runServerCliBtnFinished) runServerCliBtnFinished.classList.add('clicked');
+
+  setTimeout(() => {
+    if (runServerCliBtn) runServerCliBtn.classList.remove('clicked');
+    if (runServerCliBtnFinished) runServerCliBtnFinished.classList.remove('clicked');
+    if (goBtnContainer) goBtnContainer.style.display = 'none';
+    if (resultPanelContainer) resultPanelContainer.style.display = 'none';
+    if (gaugeWrapper) gaugeWrapper.style.display = 'flex';
+  }, 220);
 
   // Disable BOTH GO buttons during active speedtest run
   if (runServerCliBtn) runServerCliBtn.disabled = true;

@@ -1762,13 +1762,43 @@ body.bw-mode .btn-green {
 }
 
 /* Crisp Clean GO Button Container */
-/* Keyframes for Authentic Ookla Outer Concentric Ring 3-Second Rotating Arc */
-@keyframes goOuterRingSpin {
+/* Keyframes 1: Idle State - Breathing Ring Loop */
+@keyframes ooklaBreathingPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+/* Keyframes 2: Idle State - Radiating Pulse Wave Ring */
+@keyframes ooklaPulseWave {
   0% {
-    transform: rotate(0deg);
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
+  45% {
+    transform: scale(1.26);
+    opacity: 0;
   }
   100% {
-    transform: rotate(360deg);
+    transform: scale(1.26);
+    opacity: 0;
+  }
+}
+
+/* Keyframes 3: Trigger Click Burst Wave */
+@keyframes fastClickBurst {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
   }
 }
 
@@ -1779,9 +1809,10 @@ body.bw-mode .btn-green {
   align-items: center;
   padding: 24px 0 36px 0;
   min-height: 220px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Inner Solid Cyan Circle with 'GO' Text */
+/* 1. Inner Solid Cyan Circle with 'GO' Text */
 .ookla-go-btn-large {
   position: relative;
   width: 140px;
@@ -1796,7 +1827,7 @@ body.bw-mode .btn-green {
   letter-spacing: 2px;
   cursor: pointer;
   box-shadow: none !important;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s ease, opacity 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1804,47 +1835,54 @@ body.bw-mode .btn-green {
   z-index: 1;
 }
 
-/* Outer Concentric Ring Track (14px Gap from Inner Circle) */
+/* Static Outer Concentric Ring with Breathing Pulse Effect */
 .ookla-go-btn-large::before {
   content: '';
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 242, 254, 0.25); /* Static Dim Outer Ring Track */
+  border: 1.5px solid rgba(0, 242, 254, 0.45);
   pointer-events: none;
   box-sizing: border-box;
+  animation: ooklaBreathingPulse 3s ease-in-out infinite;
+  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
 }
 
-/* Outer Rotating Gradient Arc Pointer (Rotates every 3 seconds) */
+/* Radiating Outer Ripple Wave Ring */
 .ookla-go-btn-large::after {
   content: '';
   position: absolute;
-  inset: -15px;
+  inset: -14px;
   border-radius: 50%;
-  padding: 2.5px;
-  background: conic-gradient(
-    from 0deg,
-    #00f2fe 0deg,
-    #00c6ff 60deg,
-    rgba(0, 242, 254, 0.05) 140deg,
-    rgba(0, 242, 254, 0) 280deg,
-    #00f2fe 360deg
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  animation: goOuterRingSpin 3s linear infinite;
+  border: 2px solid #00f2fe;
+  opacity: 0;
   pointer-events: none;
-  filter: none !important;
+  box-sizing: border-box;
+  animation: ooklaPulseWave 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
 .ookla-go-btn-large:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
   border-color: #00f2fe;
 }
 
-.ookla-go-btn-large:active {
-  transform: scale(0.96);
+.ookla-go-btn-large:hover::before {
+  inset: -20px;
+  border-color: rgba(0, 242, 254, 0.85);
+  animation: none; /* Solid ring on hover */
+}
+
+.ookla-go-btn-large:active,
+.ookla-go-btn-large.clicked {
+  transform: scale(0.92) !important;
+}
+
+.ookla-go-btn-large.clicked {
+  opacity: 0.4;
+}
+
+.ookla-go-btn-large.clicked::after {
+  animation: fastClickBurst 0.35s ease-out forwards;
 }
 
 .ookla-go-btn-large:disabled,
@@ -1865,7 +1903,7 @@ body.bw-mode .btn-green {
   animation: none !important;
 }
 
-/* Speedometer Gauge Container */
+/* 3. Speedometer Gauge Container (Morphing Active Testing View) */
 .ookla-gauge-wrapper {
   display: flex;
   flex-direction: column;
@@ -1873,6 +1911,18 @@ body.bw-mode .btn-green {
   justify-content: center;
   padding: 16px 0 28px 0;
   min-height: 250px;
+  animation: gaugeMorphFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes gaugeMorphFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .ookla-bottom-details {
@@ -1942,7 +1992,7 @@ body.bw-mode .btn-green {
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   box-shadow: none !important;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1955,38 +2005,33 @@ body.bw-mode .btn-green {
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 242, 254, 0.25);
+  border: 1.5px solid rgba(0, 242, 254, 0.45);
   pointer-events: none;
   box-sizing: border-box;
+  animation: ooklaBreathingPulse 3s ease-in-out infinite;
+  transition: inset 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
 }
 
 .ookla-go-btn-medium::after {
   content: '';
   position: absolute;
-  inset: -13px;
+  inset: -12px;
   border-radius: 50%;
-  padding: 2.5px;
-  background: conic-gradient(
-    from 0deg,
-    #00f2fe 0deg,
-    #00c6ff 60deg,
-    rgba(0, 242, 254, 0.05) 140deg,
-    rgba(0, 242, 254, 0) 280deg,
-    #00f2fe 360deg
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  animation: goOuterRingSpin 3s linear infinite;
+  border: 2px solid #00f2fe;
+  opacity: 0;
   pointer-events: none;
-  filter: none !important;
+  box-sizing: border-box;
+  animation: ooklaPulseWave 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
 .ookla-go-btn-medium:hover {
-  transform: scale(1.04);
-  color: #ffffff;
+  transform: scale(1.05);
   border-color: #00f2fe;
-  box-shadow: none !important;
+}
+
+.ookla-go-btn-medium:hover::before {
+  inset: -17px;
+  border-color: rgba(0, 242, 254, 0.75);
 }
 
 .ookla-result-right {

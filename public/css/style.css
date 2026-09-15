@@ -2872,57 +2872,52 @@ body.bw-mode .badge.connected {
   border-color: #86efac !important;
 }
 
-/* Speedtest Modal in White Mode */
-body.bw-mode .modal-card {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
+/* Speedtest Modal in White Mode - Keep Sleek Dark Ookla Theme */
+body.bw-mode #speedtestGaugeModal,
 body.bw-mode .ookla-modal-card {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  background: #000000 !important;
+  border-color: #27272a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .ookla-top-header {
-  border-bottom-color: #e2e8f0 !important;
+  border-bottom-color: #1e293b !important;
 }
 
 body.bw-mode .ookla-top-header span {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .ookla-summary-val {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .ookla-ping-row-centered {
-  background: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
 body.bw-mode .ookla-ping-val-group {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .ookla-bottom-details {
-  background: #f8fafc !important;
+  background: #020408 !important;
   border-top: none !important;
 }
 
 body.bw-mode .ookla-detail-title {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .ookla-detail-icon {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #475569 !important;
+  background: transparent !important;
+  border-color: #1e293b !important;
+  color: #94a3b8 !important;
 }
 
 body.bw-mode #gaugeSpeedNum {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 body.bw-mode .update-version-card {

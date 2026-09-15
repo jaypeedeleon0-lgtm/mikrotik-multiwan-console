@@ -914,8 +914,9 @@ async function fetchPingStats() {
       })
     });
 
-    const result = await res.json();
-    if (!result.success) return;
+    if (!res || !res.ok) return;
+    const result = await res.json().catch(() => null);
+    if (!result || !result.success || !Array.isArray(result.pingResults)) return;
 
     result.pingResults.forEach(item => {
       const pingDisplay = document.getElementById(`wan-ping-display-${item.wanName}`);
@@ -1574,8 +1575,8 @@ async function openSpeedtestGaugeModal(wanName) {
   // 3. Detect Public IP & Ookla Server simultaneously over the freshly stabilized routed line
   try {
     const [ipRes, serverRes] = await Promise.all([
-      authFetch('/api/public-ip').then(r => r.json()).catch(() => null),
-      authFetch('/api/detect-speedtest-server').then(r => r.json()).catch(() => null)
+      authFetch('/api/public-ip').then(r => r && r.ok ? r.json().catch(() => null) : null).catch(() => null),
+      authFetch('/api/detect-speedtest-server').then(r => r && r.ok ? r.json().catch(() => null) : null).catch(() => null)
     ]);
 
     // Update Left Side (ISP & Public IP)

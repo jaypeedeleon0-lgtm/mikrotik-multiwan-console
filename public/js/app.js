@@ -2088,3 +2088,10 @@ setTimeout(() => {
   checkForUpdates(false);
 }, 2000);
 
+// Redraw WAN sparkline canvases instantly on browser zoom or window resize
+window.addEventListener('resize', () => {
+  if (configuredWans && configuredWans.length > 0) {
+    configuredWans.forEach(wan => drawWanSparkline(wan.name));
+  }
+});
+

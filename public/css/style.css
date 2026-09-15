@@ -1095,7 +1095,7 @@ input:focus, select:focus {
 /* Configured WAN Cards Grid */
 .wan-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -1103,12 +1103,6 @@ input:focus, select:focus {
 @media (max-width: 900px) {
   .wan-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 1600px) {
-  .wan-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 

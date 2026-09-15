@@ -844,7 +844,6 @@ function renderWanCards() {
           id="btn-speedtest-${wan.name}"
           style="margin-top: 6px;"
           onclick="openSpeedtestGaugeModal('${wan.name}')">
-          <svg class="btn-border-svg"><rect class="btn-border-rect" rx="9" ry="9" /></svg>
           Speed Test
         </button>
       </div>

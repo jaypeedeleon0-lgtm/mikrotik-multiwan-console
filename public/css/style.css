@@ -251,12 +251,6 @@ body {
   white-space: nowrap;
 }
 
-@keyframes borderDashSpin {
-  to {
-    stroke-dashoffset: -280;
-  }
-}
-
 .btn-primary {
   position: relative;
   background: transparent !important;
@@ -273,41 +267,11 @@ body {
   animation: none !important;
 }
 
-.btn-border-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.btn-border-rect {
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
-  x: 1px;
-  y: 1px;
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
-  stroke-dasharray: 70 140;
-  stroke-dashoffset: 0;
-  animation: borderDashSpin 1.6s linear infinite;
-}
-
-.btn-primary:hover .btn-border-svg,
-.wan-card:hover .btn-primary .btn-border-svg {
-  opacity: 1;
-}
-
 .btn-primary:hover,
 .wan-card:hover .btn-primary {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: rgba(0, 242, 254, 0.4) !important;
+  border-color: #00f2fe !important;
   transform: none !important;
   transition: none !important;
   animation: none !important;

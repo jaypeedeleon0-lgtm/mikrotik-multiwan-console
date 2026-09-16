@@ -355,13 +355,16 @@ function populateRoutingMarkOptions(currentSelectedMark = '', ifaceName = '') {
   if (!modalWanRoutingMarkSelect) return;
   const defaultMark = ifaceName ? `to-${ifaceName}` : '';
   
-  let html = `<option value="${defaultMark}">Auto Default (${defaultMark || 'to-{interface}'})</option>`;
-  
   const uniqueMarks = Array.from(new Set(allFetchedRoutingMarks));
-  if (uniqueMarks.length > 0) {
+  let html = '';
+  
+  const isDefaultSelected = (currentSelectedMark === defaultMark || !currentSelectedMark);
+  html += `<option value="${escapeHtml(defaultMark)}" ${isDefaultSelected ? 'selected' : ''}>Auto Default (${defaultMark || 'to-{interface}'})</option>`;
+  
+  const filteredMarks = uniqueMarks.filter(mark => mark && mark !== 'main' && mark !== defaultMark);
+  if (filteredMarks.length > 0) {
     html += `<optgroup label="Fetched from MikroTik (WinBox)">`;
-    uniqueMarks.forEach(mark => {
-      if (!mark || mark === 'main') return;
+    filteredMarks.forEach(mark => {
       const isSelected = (currentSelectedMark === mark);
       html += `<option value="${escapeHtml(mark)}" ${isSelected ? 'selected' : ''}>${escapeHtml(mark)}</option>`;
     });

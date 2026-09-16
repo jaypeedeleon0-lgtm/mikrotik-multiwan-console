@@ -626,6 +626,7 @@ app.post('/api/configure-wans', requireAuth, async (req, res) => {
         name: wan.name,
         label: wan.label || wan.name,
         gateway: wan.gateway || 'Static / Gateway',
+        routingMark: wan.routingMark || (rule ? (rule['new-routing-mark'] || rule['routing-mark']) : `to-${wan.name}`),
         speedtestEnabled: rule ? rule.disabled !== 'true' : false
       };
     });
